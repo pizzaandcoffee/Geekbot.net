@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net
 {
@@ -70,7 +71,11 @@ namespace Geekbot.net
             if (message == null) return;
             if (message.Author.Username.Contains("Geekbot")) return;
 
-            Console.WriteLine(message.Channel + " - " + message.Author + " - " + message.Content);
+            var channel = (SocketGuildChannel) message.Channel;
+
+            Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
+
+            await StatsRecorder.Record(message);
         }
     }
 }

@@ -19,5 +19,33 @@ namespace Geekbot.net.Modules
                              $"Account created at {userInfo.CreatedAt.Day}.{userInfo.CreatedAt.Month}.{userInfo.CreatedAt.Year}, that is {age} days ago\r\n" +
                              $"Currently {userInfo.Status}");
         }
+
+        [Command("level"), Summary("Get a level based on a number")]
+        public async Task GetLevel([Summary("The (optional) user to get info for")] string xp)
+        {
+            var level = GetLevelAtExperience(int.Parse(xp));
+            await ReplyAsync(level.ToString());
+        }
+
+        public int GetExperienceAtLevel(int level){
+            double total = 0;
+            for (int i = 1; i < level; i++)
+            {
+                total += Math.Floor(i + 300 * Math.Pow(2, i / 7.0));
+            }
+
+            return (int) Math.Floor(total / 16);
+        }
+
+        public int GetLevelAtExperience(int experience) {
+            int index;
+
+            for (index = 0; index < 120; index++) {
+                if (GetExperienceAtLevel(index + 1) > experience)
+                    break;
+            }
+
+            return index;
+        }
     }
 }
