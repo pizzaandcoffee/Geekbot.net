@@ -8,7 +8,6 @@ namespace Geekbot.net.Modules
         [Command("ping"), Summary("Pong.")]
         public async Task Say()
         {
-            // ReplyAsync is a method on ModuleBase
             await ReplyAsync("Pong");
         }
     }
