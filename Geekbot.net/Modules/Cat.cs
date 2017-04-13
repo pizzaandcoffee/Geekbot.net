@@ -18,13 +18,8 @@ namespace Geekbot.net.Modules
         {
             var request = new RestRequest("meow.php", Method.GET);
 
-            var response = catClient.Client.Execute<CatObject>(request);
-            await ReplyAsync(response.Data.file);
+            dynamic response = catClient.Client.Execute<dynamic>(request);
+            await ReplyAsync(response.Data["file"]);
         }
-    }
-
-    public class CatObject
-    {
-        public string file {get;set;}
     }
 }
