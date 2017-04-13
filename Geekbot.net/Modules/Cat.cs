@@ -7,14 +7,18 @@ namespace Geekbot.net.Modules
 {
     public class Cat : ModuleBase
     {
+        private readonly ICatClient catClient;
+        public Cat(ICatClient catClient)
+        {
+            this.catClient = catClient;
+        }
+
         [Command("cat"), Summary("Return a random image of a cat.")]
         public async Task Say()
         {
-            var client = new RestClient("http://random.cat");
-
             var request = new RestRequest("meow.php", Method.GET);
 
-            var response = client.Execute<CatObject>(request);
+            var response = catClient.Client.Execute<CatObject>(request);
             await ReplyAsync(response.Data.file);
         }
     }

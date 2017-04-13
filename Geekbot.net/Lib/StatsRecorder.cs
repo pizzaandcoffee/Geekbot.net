@@ -7,20 +7,24 @@ namespace Geekbot.net.Lib
     public class StatsRecorder
     {
 
-        public static async Task Record(SocketMessage message)
+        private SocketMessage message;
+
+        public StatsRecorder(SocketMessage message)
         {
-            await UpdateUserRecordTask(message);
+            this.message = message;
         }
 
-        private static Task UpdateUserRecordTask(SocketMessage message)
-        {
-            return Task.Run(() => UpdateUserRecord(message));
-
-        }
-
-        private static void UpdateUserRecord(SocketMessage message)
+        public async Task UpdateUserRecordAsync()
         {
             Console.WriteLine(message.Author.Username + " earned a point");
+            await Task.FromResult(true);
+        }
+
+        public async Task UpdateGuildRecordAsync()
+        {
+            var channel = (SocketGuildChannel) message.Channel;
+            Console.WriteLine(channel.Guild.Name + " earned a point");
+            await Task.FromResult(true);
         }
     }
 }

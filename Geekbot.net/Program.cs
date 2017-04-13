@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Modules;
 
 namespace Geekbot.net
 {
@@ -23,7 +24,7 @@ namespace Geekbot.net
             Console.WriteLine(" \\____|_____|_____|_|\\_\\____/ \\___/ |_|");
             Console.WriteLine("=========================================");
             Console.WriteLine("Starting...");
-            new Program().MainAsync().GetAwaiter().GetResult();
+            Task.WaitAll(new Program().MainAsync());
         }
 
         public async Task MainAsync()
@@ -34,6 +35,7 @@ namespace Geekbot.net
             const string token = "MTgxMDkyOTgxMDUzNDU2Mzg0.C8_UTw.PvXLAVOTccbrWKLMeyvN9WqRPlU";
 
             map = new DependencyMap();
+            map.Add<ICatClient>(new CatClient());
 
             await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
@@ -75,7 +77,9 @@ namespace Geekbot.net
 
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
-            await StatsRecorder.Record(message);
+            var statsRecorder =  new StatsRecorder(message);
+            var updateUserRecordAsync = statsRecorder.UpdateUserRecordAsync();
+            var updateGuildRecordAsync = statsRecorder.UpdateGuildRecordAsync();
         }
     }
 }
