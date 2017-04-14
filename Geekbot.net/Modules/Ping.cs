@@ -10,5 +10,11 @@ namespace Geekbot.net.Modules
         {
             await ReplyAsync("Pong");
         }
+
+        [Command("hui"), Summary("hui!!!.")]
+        public async Task Hui()
+        {
+            await ReplyAsync("hui!!!");
+        }
     }
 }

@@ -3,10 +3,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Net.Queue;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Modules;
+using StackExchange.Redis;
 
 namespace Geekbot.net
 {
@@ -15,6 +15,7 @@ namespace Geekbot.net
         private CommandService commands;
         private DiscordSocketClient client;
         private DependencyMap map;
+        private IDatabase redis;
 
         private static void Main(string[] args)
         {
@@ -42,6 +43,7 @@ namespace Geekbot.net
             Console.WriteLine("Connecting to Discord...");
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
+            redis = new RedisClient().Client;
             Console.WriteLine("Done and ready for use...\n");
 
             await Task.Delay(-1);
@@ -81,18 +83,20 @@ namespace Geekbot.net
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
             var statsRecorder =  new StatsRecorder(message);
-#pragma warning disable 4014
-            statsRecorder.UpdateUserRecordAsync();
-            statsRecorder.UpdateGuildRecordAsync();
-#pragma warning restore 4014
+            await statsRecorder.UpdateUserRecordAsync();
+            await statsRecorder.UpdateGuildRecordAsync();
         }
 
         public async Task HandleUserJoined(SocketGuildUser user)
         {
             if (!user.IsBot)
             {
-                var message = $"Sali und wilkomme {user.Mention}";
-                await user.Guild.DefaultChannel.SendMessageAsync(message);
+                var message = redis.StringGet(user.Guild.Id + "-welcome-msg");
+                if (!message.IsNullOrEmpty)
+                {
+                    message = message.ToString().Replace("$user", user.Mention);
+                    await user.Guild.DefaultChannel.SendMessageAsync(message);
+                }
             }
         }
     }
