@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Net.Queue;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Modules;
@@ -51,6 +52,8 @@ namespace Geekbot.net
             client.MessageReceived += HandleCommand;
             client.MessageReceived += HandleMessageReceived;
 
+            client.UserJoined += HandleUserJoined;
+
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
         public async Task HandleCommand(SocketMessage messageParam)
@@ -78,8 +81,19 @@ namespace Geekbot.net
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
             var statsRecorder =  new StatsRecorder(message);
-            var updateUserRecordAsync = statsRecorder.UpdateUserRecordAsync();
-            var updateGuildRecordAsync = statsRecorder.UpdateGuildRecordAsync();
+#pragma warning disable 4014
+            statsRecorder.UpdateUserRecordAsync();
+            statsRecorder.UpdateGuildRecordAsync();
+#pragma warning restore 4014
+        }
+
+        public async Task HandleUserJoined(SocketGuildUser user)
+        {
+            if (!user.IsBot)
+            {
+                var message = $"Sali und wilkomme {user.Mention}";
+                await user.Guild.DefaultChannel.SendMessageAsync(message);
+            }
         }
     }
 }

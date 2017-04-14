@@ -3,28 +3,24 @@ using StackExchange.Redis;
 
 namespace Geekbot.net.Lib
 {
-    public sealed class RedisSingleton
+    public interface IRedisClient
     {
-        private RedisSingleton()
+        IDatabase Client { get; set; }
+    }
+
+    public sealed class RedisClient : IRedisClient
+    {
+        public RedisClient()
         {
-            var redis = ConnectionMultiplexer.Connect("localhost:6379");
-            if (redis.IsConnected)
+            var redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+            if (!redis.IsConnected)
             {
-                Console.WriteLine("Connection to Redis Enstablished");
+                Console.WriteLine("Could not Connect to the Server...");
             }
-            else
-            {
-                Console.WriteLine("Connection to Redis Failed");
-            }
+            Client = redis.GetDatabase();
         }
-        private static readonly Lazy<RedisSingleton> lazy = new Lazy<RedisSingleton>(() => new RedisSingleton());
-        public static RedisSingleton Instance
-        {
-            get
-            {
-                return lazy.Value;
-            }
-        }
+
+        public IDatabase Client { get; set; }
     }
 }
 

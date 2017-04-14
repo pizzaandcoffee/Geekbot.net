@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net.Modules
 {
@@ -15,9 +16,17 @@ namespace Geekbot.net.Modules
 
             var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
 
-            await ReplyAsync($"{userInfo.Username}#{userInfo.Discriminator}\r\n" +
-                             $"Account created at {userInfo.CreatedAt.Day}.{userInfo.CreatedAt.Month}.{userInfo.CreatedAt.Year}, that is {age} days ago\r\n" +
-                             $"Currently {userInfo.Status}");
+            var redis = new RedisClient().Client;
+            var key = Context.Guild.Id + "-" + userInfo.Id + "-messages";
+            var messages = (int)redis.StringGet(key);
+            var level = GetLevelAtExperience(messages);
+
+            await ReplyAsync($"```\r\n" +
+                             $"{userInfo.Username}#{userInfo.Discriminator}\r\n" +
+                             $"Messages Sent:    {messages}\r\n" +
+                             $"Level:            {level}\r\n" +
+                             $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)" +
+                             $"```");
         }
 
         [Command("level"), Summary("Get a level based on a number")]

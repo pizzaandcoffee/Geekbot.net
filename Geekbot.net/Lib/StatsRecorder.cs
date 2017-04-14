@@ -1,31 +1,37 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using Geekbot.net.Lib;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Lib
 {
     public class StatsRecorder
     {
 
-        private SocketMessage message;
+        private readonly SocketMessage message;
+        private readonly IDatabase redis;
 
         public StatsRecorder(SocketMessage message)
         {
             this.message = message;
-            var db = new RedisSingleton();
+            redis = new RedisClient().Client;
         }
 
         public async Task UpdateUserRecordAsync()
         {
-//            Console.WriteLine(message.Author.Username + " earned a point");
+            var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
+            var key = guildId + "-" + message.Author.Id + "-messages";
+            var messages = (int)redis.StringGet(key);
+            redis.StringSet(key, (messages + 1).ToString());
             await Task.FromResult(true);
         }
 
         public async Task UpdateGuildRecordAsync()
         {
-            var channel = (SocketGuildChannel) message.Channel;
-//            Console.WriteLine(channel.Guild.Name + " earned a point");
+            var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
+            var key = guildId + "-messages";
+            var messages = (int)redis.StringGet(key);
+            redis.StringSet(key, (messages + 1).ToString());
             await Task.FromResult(true);
         }
     }
