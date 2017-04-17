@@ -14,11 +14,11 @@ namespace Geekbot.net.Modules
             await ReplyAsync(Context.Message.Author.Mention + ", you rolled " + number);
         }
 
-        [Command("dice"), Summary("Roll a number between 1 and 100.")]
-        public async Task DiceCommand()
+        [Command("dice"), Summary("Roll a dice")]
+        public async Task DiceCommand([Summary("The highest number on the dice")] int max = 6)
         {
             var rnd = new Random();
-            var number = rnd.Next(1, 6);
+            var number = rnd.Next(1, max);
             await ReplyAsync(Context.Message.Author.Mention + ", you rolled " + number);
         }
     }

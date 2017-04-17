@@ -12,22 +12,22 @@ namespace Geekbot.net
 {
     class Program
     {
-        private CommandService commands;
+        public CommandService commands;
         private DiscordSocketClient client;
         private DependencyMap map;
         private IDatabase redis;
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("  ____ _____ _____ _  ______   ___ _____");
-            Console.WriteLine(" / ___| ____| ____| |/ / __ ) / _ \\_   _|");
-            Console.WriteLine("| |  _|  _| |  _| | ' /|  _ \\| | | || |");
-            Console.WriteLine("| |_| | |___| |___| . \\| |_) | |_| || |");
-            Console.WriteLine(" \\____|_____|_____|_|\\_\\____/ \\___/ |_|");
+            Console.WriteLine(@"  ____ _____ _____ _  ______   ___ _____");
+            Console.WriteLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
+            Console.WriteLine(@"| |  _|  _| |  _| | ' /|  _ \| | | || |");
+            Console.WriteLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
+            Console.WriteLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             Console.WriteLine("=========================================");
             Console.WriteLine("Starting...");
 
-//            Task.WaitAll(BootTasks.CheckSettingsFile());
+            //Task.WaitAll(BootTasks.CheckSettingsFile());
 
             Task.WaitAll(new Program().MainAsync());
         }
@@ -66,13 +66,24 @@ namespace Geekbot.net
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
             int argPos = 0;
+            if (message.ToString().ToLower().Equals("ping"))
+            {
+                await message.Channel.SendMessageAsync("pong");
+                return;
+            }
+            if (message.ToString().ToLower().Equals("hui"))
+            {
+                await message.Channel.SendMessageAsync("hui!!!");
+                return;
+            }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            var result = await commands.ExecuteAsync(context, argPos, map);
-            if (!result.IsSuccess)
-            {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
-            }
+            commands.ExecuteAsync(context, argPos, map);
+            //var result = await commands.ExecuteAsync(context, argPos, map);
+            //if (!result.IsSuccess)
+            //{
+            //    await context.Channel.SendMessageAsync(result.ErrorReason);
+            //}
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)
@@ -81,11 +92,11 @@ namespace Geekbot.net
             if (message == null) return;
             if (message.Author.Username.Contains("Geekbot")) return;
 
-            var channel = (SocketGuildChannel) message.Channel;
+            var channel = (SocketGuildChannel)message.Channel;
 
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
-            var statsRecorder =  new StatsRecorder(message);
+            var statsRecorder = new StatsRecorder(message);
             await statsRecorder.UpdateUserRecordAsync();
             await statsRecorder.UpdateGuildRecordAsync();
         }
@@ -94,7 +105,7 @@ namespace Geekbot.net
         {
             if (!user.IsBot)
             {
-                var message = redis.StringGet(user.Guild.Id + "-welcome-msg");
+                var message = redis.StringGet(user.Guild.Id + "-welcomeMsg");
                 if (!message.IsNullOrEmpty)
                 {
                     message = message.ToString().Replace("$user", user.Mention);

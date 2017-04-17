@@ -8,7 +8,7 @@ namespace Geekbot.net.Modules
 {
     public class UserInfo : ModuleBase
     {
-        [Alias("stats", "whois")]
+        [Alias("stats")]
         [Command("user"), Summary("Get information about this user")]
         public async Task User([Summary("The (optional) user to get info for")] IUser user = null)
         {
@@ -17,8 +17,8 @@ namespace Geekbot.net.Modules
             var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
 
             var redis = new RedisClient().Client;
-            var key = Context.Guild.Id + "-" + userInfo.Id + "-messages";
-            var messages = (int)redis.StringGet(key);
+            var key = Context.Guild.Id + "-" + userInfo.Id;
+            var messages = (int)redis.StringGet(key + "-messages");
             var level = GetLevelAtExperience(messages);
 
             var reply = "";
@@ -33,17 +33,21 @@ namespace Geekbot.net.Modules
             }
 
             reply = reply + $"```\r\n";
+            reply = reply + $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)\r\n";
             reply = reply + $"Level:            {level}\r\n";
             reply = reply + $"Messages Sent:    {messages}\r\n";
-            reply =
-                reply +
-                $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)";
+            
+            var jokeKarma = redis.StringGet(key + "-karma");
+            if (!jokeKarma.IsNullOrEmpty)
+            {
+                reply = reply + $"Karma:           {jokeKarma}\r\n";
+            }
+
             reply = reply + $"```";
 
             await ReplyAsync(reply);
         }
 
-        [Command("level"), Summary("Get a level based on a number")]
         public async Task GetLevel([Summary("The (optional) user to get info for")] string xp)
         {
             var level = GetLevelAtExperience(int.Parse(xp));

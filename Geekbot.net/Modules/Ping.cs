@@ -8,13 +8,8 @@ namespace Geekbot.net.Modules
         [Command("ping"), Summary("Pong.")]
         public async Task Say()
         {
+            await Task.Delay(5000);
             await ReplyAsync("Pong");
-        }
-
-        [Command("hui"), Summary("hui!!!.")]
-        public async Task Hui()
-        {
-            await ReplyAsync("hui!!!");
         }
     }
 }
