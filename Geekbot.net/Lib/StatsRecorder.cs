@@ -23,7 +23,6 @@ namespace Geekbot.net.Lib
             var key = guildId + "-" + message.Author.Id + "-messages";
             var messages = (int)redis.StringGet(key);
             redis.StringSet(key, (messages + 1).ToString());
-            await Task.FromResult(true);
         }
 
         public async Task UpdateGuildRecordAsync()
@@ -32,7 +31,6 @@ namespace Geekbot.net.Lib
             var key = guildId + "-messages";
             var messages = (int)redis.StringGet(key);
             redis.StringSet(key, (messages + 1).ToString());
-            await Task.FromResult(true);
         }
     }
 }

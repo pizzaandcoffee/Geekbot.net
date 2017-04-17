@@ -26,6 +26,9 @@ namespace Geekbot.net
             Console.WriteLine(" \\____|_____|_____|_|\\_\\____/ \\___/ |_|");
             Console.WriteLine("=========================================");
             Console.WriteLine("Starting...");
+
+//            Task.WaitAll(BootTasks.CheckSettingsFile());
+
             Task.WaitAll(new Program().MainAsync());
         }
 

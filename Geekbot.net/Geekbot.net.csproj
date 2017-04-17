@@ -7,6 +7,9 @@
     <PackageReference Include="Discord.Net">
       <Version>1.0.0-rc</Version>
     </PackageReference>
+    <PackageReference Include="Google.Apis.YouTube.v3">
+      <Version>1.25.0.760</Version>
+    </PackageReference>
     <PackageReference Include="RestSharp.NetCore">
       <Version>105.2.4-rc4-24214-01</Version>
     </PackageReference>

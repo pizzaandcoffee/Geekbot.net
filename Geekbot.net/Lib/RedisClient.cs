@@ -3,6 +3,46 @@ using StackExchange.Redis;
 
 namespace Geekbot.net.Lib
 {
+
+//    public class RedisClient
+//    {
+//        private static readonly Lazy<RedisClient> _instance
+//            = new Lazy<RedisClient>(() => new RedisClient());
+//        private static readonly object ThreadLock = new object();
+//        public static IDatabase Client;
+//
+//        private RedisClient()
+//        { }
+//
+//        public static RedisClient Instance
+//        {
+//            get
+//            {
+//                if (_instance.IsValueCreated)
+//                {
+//                    return _instance.Value;
+//                }
+//                lock (ThreadLock)
+//                {
+//                    if (Client == null)
+//                    {
+//                        try
+//                        {
+//                            var redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+//                            Client = redis.GetDatabase();
+//                        }
+//                        catch (Exception)
+//                        {
+//                            Console.WriteLine("Start Reids already you fucking faggot!");
+//                            Environment.Exit(69);
+//                        }
+//                    }
+//                }
+//                return _instance.Value;
+//            }
+//        }
+//    }
+
     public interface IRedisClient
     {
         IDatabase Client { get; set; }
@@ -12,12 +52,16 @@ namespace Geekbot.net.Lib
     {
         public RedisClient()
         {
-            var redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-            if (!redis.IsConnected)
+            try
             {
-                Console.WriteLine("Could not Connect to the Server...");
+                var redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+                Client = redis.GetDatabase();
             }
-            Client = redis.GetDatabase();
+            catch (Exception)
+            {
+                Console.WriteLine("Start Redis already you fucking faggot!");
+                Environment.Exit(69);
+            }
         }
 
         public IDatabase Client { get; set; }

@@ -21,12 +21,26 @@ namespace Geekbot.net.Modules
             var messages = (int)redis.StringGet(key);
             var level = GetLevelAtExperience(messages);
 
-            await ReplyAsync($"```\r\n" +
-                             $"{userInfo.Username}#{userInfo.Discriminator}\r\n" +
-                             $"Messages Sent:    {messages}\r\n" +
-                             $"Level:            {level}\r\n" +
-                             $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)" +
-                             $"```");
+            var reply = "";
+
+            if (Context.Message.Author.Id == userInfo.Id)
+            {
+                reply = reply + $"here are your stats {userInfo.Mention}\r\n";
+            }
+            else
+            {
+                reply = reply + $"here are {userInfo.Mention}'s stats\r\n";
+            }
+
+            reply = reply + $"```\r\n";
+            reply = reply + $"Level:            {level}\r\n";
+            reply = reply + $"Messages Sent:    {messages}\r\n";
+            reply =
+                reply +
+                $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)";
+            reply = reply + $"```";
+
+            await ReplyAsync(reply);
         }
 
         [Command("level"), Summary("Get a level based on a number")]
