@@ -21,34 +21,25 @@ namespace Geekbot.net.Modules
             var messages = (int)redis.StringGet(key + "-messages");
             var level = GetLevelAtExperience(messages);
 
-            var reply = "";
-
-            if (Context.Message.Author.Id == userInfo.Id)
-            {
-                reply = reply + $"here are your stats {userInfo.Mention}\r\n";
-            }
-            else
-            {
-                reply = reply + $"here are {userInfo.Mention}'s stats\r\n";
-            }
-
-            reply = reply + $"```\r\n";
-            reply = reply + $"Discordian Since: {userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)\r\n";
-            reply = reply + $"Level:            {level}\r\n";
-            reply = reply + $"Messages Sent:    {messages}\r\n";
+            var eb = new EmbedBuilder();
+            eb.WithAuthor(new EmbedAuthorBuilder()
+                .WithIconUrl(userInfo.GetAvatarUrl())
+                .WithName(userInfo.Username));
             
-            var jokeKarma = redis.StringGet(key + "-karma");
-            if (!jokeKarma.IsNullOrEmpty)
+            eb.AddField("Discordian Since", $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");
+            eb.AddField("Level", level);
+            eb.AddField("Messages Sent", messages);
+
+            var karma = redis.StringGet(key + "-karma");
+            if (!karma.IsNullOrEmpty)
             {
-                reply = reply + $"Karma:           {jokeKarma}\r\n";
+                eb.AddField("Karma", karma);
             }
-
-            reply = reply + $"```";
-
-            await ReplyAsync(reply);
+                                    
+            await ReplyAsync("", false, eb.Build());
         }
 
-        public async Task GetLevel([Summary("The (optional) user to get info for")] string xp)
+        public async Task GetLevel(string xp)
         {
             var level = GetLevelAtExperience(int.Parse(xp));
             await ReplyAsync(level.ToString());

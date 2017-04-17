@@ -12,7 +12,7 @@ namespace Geekbot.net
 {
     class Program
     {
-        public CommandService commands;
+        private CommandService commands;
         private DiscordSocketClient client;
         private DependencyMap map;
         private IDatabase redis;
@@ -28,7 +28,6 @@ namespace Geekbot.net
             Console.WriteLine("Starting...");
 
             //Task.WaitAll(BootTasks.CheckSettingsFile());
-
             Task.WaitAll(new Program().MainAsync());
         }
 
@@ -36,8 +35,20 @@ namespace Geekbot.net
         {
             client = new DiscordSocketClient();
             commands = new CommandService();
+            redis = new RedisClient().Client;
 
-            const string token = "MTgxMDkyOTgxMDUzNDU2Mzg0.C8_UTw.PvXLAVOTccbrWKLMeyvN9WqRPlU";
+            var token = redis.StringGet("discordToken");
+            if (token.IsNullOrEmpty)
+            {
+                Console.Write("Your bot Token: ");
+                var newToken = Console.ReadLine();
+                redis.StringSet("discordToken", newToken);
+                token = newToken;
+
+                Console.Write("Bot Owner User ID: ");
+                var ownerId = Console.ReadLine();
+                redis.StringSet("botOwner", ownerId);
+            }
 
             map = new DependencyMap();
             map.Add<ICatClient>(new CatClient());
@@ -90,7 +101,7 @@ namespace Geekbot.net
         {
             var message = messsageParam;
             if (message == null) return;
-            if (message.Author.Username.Contains("Geekbot")) return;
+            if (message.Author.Username.Equals(client.CurrentUser.Username)) return;
 
             var channel = (SocketGuildChannel)message.Channel;
 

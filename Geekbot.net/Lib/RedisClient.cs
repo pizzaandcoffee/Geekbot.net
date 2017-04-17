@@ -18,10 +18,6 @@ namespace Geekbot.net.Lib
 //        {
 //            get
 //            {
-//                if (_instance.IsValueCreated)
-//                {
-//                    return _instance.Value;
-//                }
 //                lock (ThreadLock)
 //                {
 //                    if (Client == null)
