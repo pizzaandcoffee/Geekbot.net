@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
@@ -8,7 +6,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Modules;
-using StackExchange.Redis;
 
 namespace Geekbot.net
 {
@@ -30,6 +27,11 @@ namespace Geekbot.net
             Console.WriteLine("Starting...");
 
             //Task.WaitAll(BootTasks.CheckSettingsFile());
+            if (args.Length == 2 && args[0] == "--parse-db")
+            {
+                BootTasks.ParseOldDatabase(args[1]);
+                Environment.Exit(1);
+            }
             Task.WaitAll(new Program().MainAsync());
         }
 
@@ -54,7 +56,7 @@ namespace Geekbot.net
 
             map = new DependencyMap();
             map.Add<ICatClient>(new CatClient());
-            map.Add<IRedisClient>(redis);
+            map.Add(redis);
 
             await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
@@ -116,11 +118,6 @@ namespace Geekbot.net
 
         public async Task HandleUserJoined(SocketGuildUser user)
         {
-//            var list = Directory.EnumerateFiles("", "", SearchOption.AllDirectories).ToList();
-//            foreach (var file in list)
-//            {
-//
-//            }
             if (!user.IsBot)
             {
                 var message = redis.Client.StringGet(user.Guild.Id + "-welcomeMsg");

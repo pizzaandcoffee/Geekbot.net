@@ -9,7 +9,6 @@ namespace Geekbot.net.Modules
 
     public class CatClient : ICatClient
     {
-        //Manage a restClient
         public CatClient()
         {
             Client = new RestClient("http://random.cat");

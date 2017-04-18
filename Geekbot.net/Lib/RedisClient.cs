@@ -15,7 +15,7 @@ namespace Geekbot.net.Lib
             try
             {
                 var redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-                Client = redis.GetDatabase();
+                Client = redis.GetDatabase(6);
             }
             catch (Exception)
             {
