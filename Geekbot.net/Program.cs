@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
@@ -15,7 +17,7 @@ namespace Geekbot.net
         private CommandService commands;
         private DiscordSocketClient client;
         private DependencyMap map;
-        private IDatabase redis;
+        private IRedisClient redis;
 
         private static void Main(string[] args)
         {
@@ -35,29 +37,29 @@ namespace Geekbot.net
         {
             client = new DiscordSocketClient();
             commands = new CommandService();
-            redis = new RedisClient().Client;
+            redis = new RedisClient();
 
-            var token = redis.StringGet("discordToken");
+            var token = redis.Client.StringGet("discordToken");
             if (token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
-                redis.StringSet("discordToken", newToken);
+                redis.Client.StringSet("discordToken", newToken);
                 token = newToken;
 
                 Console.Write("Bot Owner User ID: ");
                 var ownerId = Console.ReadLine();
-                redis.StringSet("botOwner", ownerId);
+                redis.Client.StringSet("botOwner", ownerId);
             }
 
             map = new DependencyMap();
             map.Add<ICatClient>(new CatClient());
+            map.Add<IRedisClient>(redis);
 
             await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
-            redis = new RedisClient().Client;
             Console.WriteLine("Done and ready for use...\n");
 
             await Task.Delay(-1);
@@ -107,16 +109,21 @@ namespace Geekbot.net
 
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
-            var statsRecorder = new StatsRecorder(message);
+            var statsRecorder = new StatsRecorder(message, redis);
             await statsRecorder.UpdateUserRecordAsync();
             await statsRecorder.UpdateGuildRecordAsync();
         }
 
         public async Task HandleUserJoined(SocketGuildUser user)
         {
+//            var list = Directory.EnumerateFiles("", "", SearchOption.AllDirectories).ToList();
+//            foreach (var file in list)
+//            {
+//
+//            }
             if (!user.IsBot)
             {
-                var message = redis.StringGet(user.Guild.Id + "-welcomeMsg");
+                var message = redis.Client.StringGet(user.Guild.Id + "-welcomeMsg");
                 if (!message.IsNullOrEmpty)
                 {
                     message = message.ToString().Replace("$user", user.Mention);

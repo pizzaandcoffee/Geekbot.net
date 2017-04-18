@@ -11,10 +11,10 @@ namespace Geekbot.net.Lib
         private readonly SocketMessage message;
         private readonly IDatabase redis;
 
-        public StatsRecorder(SocketMessage message)
+        public StatsRecorder(SocketMessage message, IRedisClient redisClient)
         {
             this.message = message;
-            redis = new RedisClient().Client;
+            redis = redisClient.Client;
         }
 
         public async Task UpdateUserRecordAsync()
