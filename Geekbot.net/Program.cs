@@ -81,12 +81,12 @@ namespace Geekbot.net
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
             int argPos = 0;
-            if (message.ToString().ToLower().Equals("ping"))
+            if (message.ToString().ToLower().StartsWith("ping"))
             {
                 await message.Channel.SendMessageAsync("pong");
                 return;
             }
-            if (message.ToString().ToLower().Equals("hui"))
+            if (message.ToString().ToLower().StartsWith("hui"))
             {
                 await message.Channel.SendMessageAsync("hui!!!");
                 return;
