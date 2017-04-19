@@ -114,7 +114,7 @@ namespace Geekbot.net
         {
             var message = messsageParam;
             if (message == null) return;
-            if (message.Author.Username.Equals(client.CurrentUser.Username)) return;
+//            if (message.Author.Username.Equals(client.CurrentUser.Username)) return;
 
             var channel = (SocketGuildChannel)message.Channel;
 

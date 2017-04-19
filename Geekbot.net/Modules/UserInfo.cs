@@ -30,7 +30,8 @@ namespace Geekbot.net.Modules
             eb.WithAuthor(new EmbedAuthorBuilder()
                 .WithIconUrl(userInfo.GetAvatarUrl())
                 .WithName(userInfo.Username));
-            
+            eb.WithColor(new Color(221, 255, 119));
+
             eb.AddField("Discordian Since", $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");
             eb.AddInlineField("Level", level)
                 .AddInlineField("Messages Sent", messages);
