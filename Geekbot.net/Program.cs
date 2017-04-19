@@ -60,8 +60,16 @@ namespace Geekbot.net
 
             await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            try
+            {
+                await client.LoginAsync(TokenType.Bot, token);
+                await client.StartAsync();
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("Could not connect to discord...");
+                Environment.Exit(1);
+            }
             Console.WriteLine("Done and ready for use...\n");
 
             await Task.Delay(-1);

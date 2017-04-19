@@ -32,8 +32,8 @@ namespace Geekbot.net.Modules
                 .WithName(userInfo.Username));
             
             eb.AddField("Discordian Since", $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");
-            eb.AddField("Level", level);
-            eb.AddField("Messages Sent", messages);
+            eb.AddInlineField("Level", level)
+                .AddInlineField("Messages Sent", messages);
 
             var karma = redis.Client.StringGet(key + "-karma");
             if (!karma.IsNullOrEmpty)
