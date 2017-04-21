@@ -18,7 +18,6 @@ namespace Geekbot.net.Modules
         public async Task Good([Summary("The someone")] IUser user)
         {
             var lastKarma = GetLastKarma();
-            Console.WriteLine(lastKarma.ToString());
             if (user.Id == Context.User.Id)
             {
                 await ReplyAsync($"Sorry {Context.User.Username}, but you can't give yourself karma");

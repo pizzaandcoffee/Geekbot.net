@@ -20,7 +20,6 @@ namespace Geekbot.net.Modules
         [Command("yt"), Summary("Search for something on youtube.")]
         public async Task Yt([Remainder, Summary("A Song Title")] string searchQuery)
         {
-            // AIzaSyDQoJvtNXPVwIcUbSeeDEchnA4a-q1go0E
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = "AIzaSyDQoJvtNXPVwIcUbSeeDEchnA4a-q1go0E",
@@ -36,7 +35,7 @@ namespace Geekbot.net.Modules
 
             var result = searchListResponse.Items[0];
 
-            await ReplyAsync($"'{result.Snippet.Title}' from '{result.Snippet.ChannelTitle}' https://youtu.be/{result.Id.VideoId}");
+            await ReplyAsync($"\"{result.Snippet.Title}\" from \"{result.Snippet.ChannelTitle}\" https://youtu.be/{result.Id.VideoId}");
         }
     }
 }
