@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net.Modules
 {
     public class Roll : ModuleBase
     {
+        private readonly IRedisClient redis;
+        public Roll(IRedisClient redisClient)
+        {
+            redis = redisClient;
+        }
+
         [Command("roll"), Summary("Roll a number between 1 and 100.")]
         public async Task RollCommand([Remainder, Summary("stuff...")] string stuff = "nothing")
         {
@@ -19,6 +26,9 @@ namespace Geekbot.net.Modules
                 if (guess == number)
                 {
                     await ReplyAsync($"Congratulations {Context.User.Username}, your guess was correct!");
+                    var key = $"{Context.Guild.Id}-{Context.User.Id}-correctRolls";
+                    var messages = (int)redis.Client.StringGet(key);
+                    redis.Client.StringSet(key, (messages + 1).ToString());
                 }
             }
             else

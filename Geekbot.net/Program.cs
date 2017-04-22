@@ -100,14 +100,19 @@ namespace Geekbot.net
                 await message.Channel.SendMessageAsync("hui!!!");
                 return;
             }
+            if (message.ToString().ToLower().Contains("teamspeak") || message.ToString().ToLower().Contains("skype"))
+            {
+                await message.Channel.SendMessageAsync("How dare you to use such a filthy word in here http://bit.ly/2poL2IZ");
+                return;
+            }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            commands.ExecuteAsync(context, argPos, map);
-            //var result = await commands.ExecuteAsync(context, argPos, map);
-            //if (!result.IsSuccess)
-            //{
-            //    await context.Channel.SendMessageAsync(result.ErrorReason);
-            //}
+            //commands.ExecuteAsync(context, argPos, map);
+            var result = await Task.Run(() => commands.ExecuteAsync(context, argPos, map));
+            if (!result.IsSuccess)
+            {
+                await context.Channel.SendMessageAsync(result.ErrorReason);
+            }
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)

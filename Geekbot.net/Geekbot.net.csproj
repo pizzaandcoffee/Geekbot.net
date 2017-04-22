@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Cleverbot" Version="0.9.0" />
     <PackageReference Include="Discord.Net">
       <Version>1.0.0-rc</Version>
     </PackageReference>

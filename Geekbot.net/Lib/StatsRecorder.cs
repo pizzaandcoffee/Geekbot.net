@@ -21,16 +21,14 @@ namespace Geekbot.net.Lib
         {
             var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
             var key = guildId + "-" + message.Author.Id + "-messages";
-            var messages = (int)redis.StringGet(key);
-            redis.StringSet(key, (messages + 1).ToString());
+            await redis.StringIncrementAsync(key);
         }
 
         public async Task UpdateGuildRecordAsync()
         {
             var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
             var key = guildId + "-messages";
-            var messages = (int)redis.StringGet(key);
-            redis.StringSet(key, (messages + 1).ToString());
+            await redis.StringIncrementAsync(key);
         }
     }
 }

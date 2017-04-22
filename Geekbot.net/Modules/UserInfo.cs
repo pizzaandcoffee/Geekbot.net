@@ -41,7 +41,13 @@ namespace Geekbot.net.Modules
             {
                 eb.AddField("Karma", karma);
             }
-                                    
+
+            var correctRolls = redis.Client.StringGet($"{Context.Guild.Id}-{Context.User.Id}-correctRolls");
+            if (!correctRolls.IsNullOrEmpty)
+            {
+                eb.AddField("Guessed Rolls", correctRolls);
+            }
+
             await ReplyAsync("", false, eb.Build());
         }
 
