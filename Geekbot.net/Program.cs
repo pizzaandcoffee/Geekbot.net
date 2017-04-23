@@ -26,12 +26,6 @@ namespace Geekbot.net
             Console.WriteLine("=========================================");
             Console.WriteLine("Starting...");
 
-            //Task.WaitAll(BootTasks.CheckSettingsFile());
-            if (args.Length == 2 && args[0] == "--parse-db")
-            {
-                BootTasks.ParseOldDatabase(args[1]);
-                Environment.Exit(1);
-            }
             Task.WaitAll(new Program().MainAsync());
         }
 
