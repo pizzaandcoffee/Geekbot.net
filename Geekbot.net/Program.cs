@@ -101,12 +101,7 @@ namespace Geekbot.net
             }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            //commands.ExecuteAsync(context, argPos, map);
-            var result = await Task.Run(() => commands.ExecuteAsync(context, argPos, map));
-            if (!result.IsSuccess)
-            {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
-            }
+            Task.Run(() => commands.ExecuteAsync(context, argPos, map));
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)
