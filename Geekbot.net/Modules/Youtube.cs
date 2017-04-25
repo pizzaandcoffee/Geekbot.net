@@ -1,41 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord.Commands;
-
-using Google.Apis.Auth.OAuth2;
+using Geekbot.net.Lib;
 using Google.Apis.Services;
-using Google.Apis.Upload;
-using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
 
 namespace Geekbot.net.Modules
 {
     public class Youtube : ModuleBase
     {
+        private readonly IRedisClient redis;
+        public Youtube(IRedisClient redisClient)
+        {
+            redis = redisClient;
+        }
+
         [Command("yt", RunMode = RunMode.Async), Summary("Search for something on youtube.")]
         public async Task Yt([Remainder, Summary("A Song Title")] string searchQuery)
         {
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            var key = redis.Client.StringGet("youtubeKey");
+            if (key.IsNullOrEmpty)
             {
-                ApiKey = "AIzaSyDQoJvtNXPVwIcUbSeeDEchnA4a-q1go0E",
-                ApplicationName = this.GetType().ToString()
-            });
+                await ReplyAsync("No youtube key set, please tell my senpai to set one");
+                return;
+            }
 
-            var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = searchQuery; // Replace with your search term.
-            searchListRequest.MaxResults = 50;
+            try
+            {
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+                {
+                    ApiKey = key.ToString(),
+                    ApplicationName = this.GetType().ToString()
+                });
 
-            // Call the search.list method to retrieve results matching the specified query term.
-            var searchListResponse = await searchListRequest.ExecuteAsync();
+                var searchListRequest = youtubeService.Search.List("snippet");
+                searchListRequest.Q = searchQuery;
+                searchListRequest.MaxResults = 2;
 
-            var result = searchListResponse.Items[0];
+                var searchListResponse = await searchListRequest.ExecuteAsync();
 
-            await ReplyAsync($"\"{result.Snippet.Title}\" from \"{result.Snippet.ChannelTitle}\" https://youtu.be/{result.Id.VideoId}");
+                var result = searchListResponse.Items[0];
+
+                await ReplyAsync(
+                    $"\"{result.Snippet.Title}\" from \"{result.Snippet.ChannelTitle}\" https://youtu.be/{result.Id.VideoId}");
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync("Something went wrong... informing my senpai...");
+                var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.Client.StringGet("botOwner"))).Result;
+                var dm = await botOwner.CreateDMChannelAsync();
+                await dm.SendMessageAsync($"Something went wrong while getting a video from youtube:\r\n```\r\n{e.Message}\r\n```");
+            }
         }
     }
 }

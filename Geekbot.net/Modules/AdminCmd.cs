@@ -23,5 +23,19 @@ namespace Geekbot.net.Modules
             await ReplyAsync("Welcome message has been changed\r\nHere is an example of how it would look:\r\n" +
                         formatedMessage);
         }
+
+        [Command("youtubekey", RunMode = RunMode.Async), Summary("Set the youtube api key")]
+        public async Task SetYoutubeKey([Summary("API Key")] string key)
+        {
+            var botOwner = redis.Client.StringGet("botOwner");
+            if (!Context.User.Id.ToString().Equals(botOwner.ToString()))
+            {
+                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner}");
+                return;
+            }
+
+            redis.Client.StringSet("youtubeKey", key);
+            await ReplyAsync("Apikey has been set");
+        }
     }
 }
