@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -7,6 +8,7 @@ using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.IClients;
 using Geekbot.net.Modules;
+using StackExchange.Redis;
 
 namespace Geekbot.net
 {
@@ -16,6 +18,7 @@ namespace Geekbot.net
         private DiscordSocketClient client;
         private DependencyMap map;
         private IRedisClient redis;
+        private RedisValue token;
 
         private static void Main(string[] args)
         {
@@ -36,7 +39,7 @@ namespace Geekbot.net
             commands = new CommandService();
             redis = new RedisClient();
 
-            var token = redis.Client.StringGet("discordToken");
+            token = redis.Client.StringGet("discordToken");
             if (token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
@@ -55,6 +58,14 @@ namespace Geekbot.net
             map.Add<IRandomClient>(new RandomClient());
 
             Console.WriteLine("Connecting to Discord...");
+
+            await Login();
+
+            await Task.Delay(-1);
+        }
+
+        public async Task Login()
+        {
             try
             {
                 await client.LoginAsync(TokenType.Bot, token);
@@ -66,8 +77,18 @@ namespace Geekbot.net
                 Console.WriteLine("Could not connect to discord...");
                 Environment.Exit(1);
             }
+        }
 
-            await Task.Delay(-1);
+        public async Task Reconnect(Exception exception)
+        {
+            Console.WriteLine("=========================================");
+            Console.WriteLine("Geekbot Disconnected from the Discord Gateway...");
+            Console.WriteLine(exception.Message);
+            Console.WriteLine("Attempting Reconnect...");
+            Console.WriteLine("=========================================");
+            await client.StopAsync();
+            System.Threading.Thread.Sleep(10000);
+            await Login();
         }
 
         public async Task FinishStartup()
@@ -80,6 +101,7 @@ namespace Geekbot.net
             client.MessageReceived += HandleCommand;
             client.MessageReceived += HandleMessageReceived;
             client.UserJoined += HandleUserJoined;
+            client.Disconnected += Reconnect;
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
             Console.WriteLine("Done and ready for use...\n");
