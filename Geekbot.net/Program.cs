@@ -54,32 +54,37 @@ namespace Geekbot.net
             map.Add(redis);
             map.Add<IRandomClient>(new RandomClient());
 
-            await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
             try
             {
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
+                client.Connected += FinishStartup;
             }
             catch (AggregateException)
             {
                 Console.WriteLine("Could not connect to discord...");
                 Environment.Exit(1);
             }
-            Console.WriteLine("Done and ready for use...\n");
 
             await Task.Delay(-1);
         }
 
-        public async Task InstallCommands()
+        public async Task FinishStartup()
         {
+            await client.SetGameAsync("Ping Pong");
+            Console.WriteLine($"Now Connected to {client.Guilds.Count} Servers");
+
+            Console.WriteLine("Registering Stuff");
+
             client.MessageReceived += HandleCommand;
             client.MessageReceived += HandleMessageReceived;
-
             client.UserJoined += HandleUserJoined;
-
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
+            Console.WriteLine("Done and ready for use...\n");
         }
+
         public async Task HandleCommand(SocketMessage messageParam)
         {
             var message = messageParam as SocketUserMessage;
@@ -110,7 +115,6 @@ namespace Geekbot.net
         {
             var message = messsageParam;
             if (message == null) return;
-//            if (message.Author.Username.Equals(client.CurrentUser.Username)) return;
 
             var channel = (SocketGuildChannel)message.Channel;
 

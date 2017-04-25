@@ -6,7 +6,7 @@ namespace Geekbot.net.Modules
 {
     public class Help : ModuleBase
     {
-        [Command("help"), Summary("List all Commands")]
+        [Command("help", RunMode = RunMode.Async), Summary("List all Commands")]
         public async Task GetHelp()
         {
             var commands = new CommandService();

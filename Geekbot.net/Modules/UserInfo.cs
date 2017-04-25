@@ -15,7 +15,7 @@ namespace Geekbot.net.Modules
         }
 
         [Alias("stats")]
-        [Command("user"), Summary("Get information about this user")]
+        [Command("user", RunMode = RunMode.Async), Summary("Get information about this user")]
         public async Task User([Summary("The (optional) user to get info for")] IUser user = null)
         {
             var userInfo = user ?? Context.Message.Author;
@@ -30,6 +30,7 @@ namespace Geekbot.net.Modules
             eb.WithAuthor(new EmbedAuthorBuilder()
                 .WithIconUrl(userInfo.GetAvatarUrl())
                 .WithName(userInfo.Username));
+
             eb.WithColor(new Color(221, 255, 119));
 
             eb.AddField("Discordian Since", $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");

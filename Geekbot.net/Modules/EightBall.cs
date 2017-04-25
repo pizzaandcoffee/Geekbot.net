@@ -13,8 +13,7 @@ namespace Geekbot.net.Modules
         {
             rnd = randomClient;
         }
-
-        [Command("8ball"), Summary("Ask 8Ball a Question.")]
+        [Command("8ball", RunMode = RunMode.Async), Summary("Ask 8Ball a Question.")]
         public async Task Ball([Remainder, Summary("The Question")] string echo)
         {
             var replies = new List<string> {

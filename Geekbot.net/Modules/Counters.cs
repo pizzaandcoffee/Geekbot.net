@@ -14,7 +14,7 @@ namespace Geekbot.net.Modules
             redis = redisClient;
         }
 
-        [Command("good"), Summary("Increase Someones Karma")]
+        [Command("good", RunMode = RunMode.Async), Summary("Increase Someones Karma")]
         public async Task Good([Summary("The someone")] IUser user)
         {
             var lastKarma = GetLastKarma();
@@ -37,7 +37,7 @@ namespace Geekbot.net.Modules
             }
         }
 
-        [Command("bad"), Summary("Decrease Someones Karma")]
+        [Command("bad", RunMode = RunMode.Async), Summary("Decrease Someones Karma")]
         public async Task Bad([Summary("The someone")] IUser user)
         {
             var lastKarma = GetLastKarma();

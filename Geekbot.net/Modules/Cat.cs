@@ -13,7 +13,7 @@ namespace Geekbot.net.Modules
             this.catClient = catClient;
         }
 
-        [Command("cat"), Summary("Return a random image of a cat.")]
+        [Command("cat", RunMode = RunMode.Async), Summary("Return a random image of a cat.")]
         public async Task Say()
         {
             var request = new RestRequest("meow.php", Method.GET);

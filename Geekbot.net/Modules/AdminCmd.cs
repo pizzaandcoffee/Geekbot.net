@@ -14,7 +14,7 @@ namespace Geekbot.net.Modules
         }
 
         [RequireUserPermission(Discord.GuildPermission.Administrator)]
-        [Command("welcome"), Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
+        [Command("welcome", RunMode = RunMode.Async), Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder, Summary("The message")] string welcomeMessage)
         {
             var key = Context.Guild.Id + "-welcomeMsg";

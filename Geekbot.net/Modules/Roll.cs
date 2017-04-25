@@ -15,7 +15,7 @@ namespace Geekbot.net.Modules
             rnd = randomClient;
         }
 
-        [Command("roll"), Summary("Roll a number between 1 and 100.")]
+        [Command("roll", RunMode = RunMode.Async), Summary("Roll a number between 1 and 100.")]
         public async Task RollCommand([Remainder, Summary("stuff...")] string stuff = "nothing")
         {
             var number = rnd.Client.Next(1, 100);
@@ -38,7 +38,7 @@ namespace Geekbot.net.Modules
             }
         }
 
-        [Command("dice"), Summary("Roll a dice")]
+        [Command("dice", RunMode = RunMode.Async), Summary("Roll a dice")]
         public async Task DiceCommand([Summary("The highest number on the dice")] int max = 6)
         {
             var number = rnd.Client.Next(1, max);

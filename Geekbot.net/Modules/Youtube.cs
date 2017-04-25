@@ -17,7 +17,7 @@ namespace Geekbot.net.Modules
 {
     public class Youtube : ModuleBase
     {
-        [Command("yt"), Summary("Search for something on youtube.")]
+        [Command("yt", RunMode = RunMode.Async), Summary("Search for something on youtube.")]
         public async Task Yt([Remainder, Summary("A Song Title")] string searchQuery)
         {
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
