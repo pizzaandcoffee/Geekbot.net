@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib.IClients;
 
 namespace Geekbot.net.Modules
 {
     public class EightBall : ModuleBase
     {
+        private readonly IRandomClient rnd;
+        public EightBall(IRandomClient randomClient)
+        {
+            rnd = randomClient;
+        }
+
         [Command("8ball"), Summary("Ask 8Ball a Question.")]
         public async Task Ball([Remainder, Summary("The Question")] string echo)
         {
@@ -32,8 +39,7 @@ namespace Geekbot.net.Modules
                 "Outlook not so good",
                 "Very doubtful"};
 
-            var rnd = new Random();
-            var answer = rnd.Next(replies.Count);
+            var answer = rnd.Client.Next(replies.Count);
             await ReplyAsync(replies[answer]);
         }
     }

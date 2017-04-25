@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.IClients;
 using Geekbot.net.Modules;
 
 namespace Geekbot.net
@@ -51,6 +52,7 @@ namespace Geekbot.net
             map = new DependencyMap();
             map.Add<ICatClient>(new CatClient());
             map.Add(redis);
+            map.Add<IRandomClient>(new RandomClient());
 
             await InstallCommands();
             Console.WriteLine("Connecting to Discord...");
