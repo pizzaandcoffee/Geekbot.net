@@ -101,7 +101,7 @@ namespace Geekbot.net
             client.MessageReceived += HandleCommand;
             client.MessageReceived += HandleMessageReceived;
             client.UserJoined += HandleUserJoined;
-            client.Disconnected += Reconnect;
+//            client.Disconnected += Reconnect;
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
             Console.WriteLine("Done and ready for use...\n");
