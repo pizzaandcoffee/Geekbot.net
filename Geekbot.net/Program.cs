@@ -130,7 +130,7 @@ namespace Geekbot.net
             }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            Task.Run(() => commands.ExecuteAsync(context, argPos, map));
+            Task.Run(async () => await commands.ExecuteAsync(context, argPos, map));
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)

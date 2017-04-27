@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Geekbot.net.Lib
 {
-    class LevelCalc
+    public class LevelCalc
     {
         private static int GetExperienceAtLevel(int level)
         {

@@ -1,5 +1,7 @@
 Geekbot.net/bin
 Geekbot.net/obj
+Tests/bin
+Tests/obj
 Backup/
 .vs/
 UpgradeLog.htm

@@ -1,0 +1,28 @@
+﻿<Properties StartupConfiguration="{FDCB3D92-E7B5-47BB-A9B5-CFAEFA57CDB4}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Tests/UnitTest1.cs">
+    <Files>
+      <File FileName="Tests/UnitTest1.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Geekbot.net" expanded="True">
+            <Node name="Tests" expanded="True">
+              <Node name="Tests" expanded="True">
+                <Node name="UnitTest1" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/dboerlage/dev/priv/Geekbot.net/Tests/UnitTest1.cs" relfile="Tests/UnitTest1.cs" line="27" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
