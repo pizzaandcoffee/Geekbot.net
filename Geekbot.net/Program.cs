@@ -70,13 +70,36 @@ namespace Geekbot.net
             {
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
-                client.Connected += FinishStartup;
+                var isConneted = await isConnected();
+                if (isConneted)
+                {
+                    await client.SetGameAsync("Ping Pong");
+                    Console.WriteLine($"Now Connected to {client.Guilds.Count} Servers");
+
+                    Console.WriteLine("Registering Stuff");
+
+                    client.MessageReceived += HandleCommand;
+                    client.MessageReceived += HandleMessageReceived;
+                    client.UserJoined += HandleUserJoined;
+                    await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
+                    Console.WriteLine("Done and ready for use...\n");
+                }
             }
             catch (AggregateException)
             {
                 Console.WriteLine("Could not connect to discord...");
                 Environment.Exit(1);
             }
+        }
+
+        public async Task<bool> isConnected()
+        {
+            while (!client.ConnectionState.Equals(ConnectionState.Connected))
+            {
+                await Task.Delay(25);
+            }
+            return true;
         }
 
         public async Task Reconnect(Exception exception)
@@ -93,18 +116,7 @@ namespace Geekbot.net
 
         public async Task FinishStartup()
         {
-            await client.SetGameAsync("Ping Pong");
-            Console.WriteLine($"Now Connected to {client.Guilds.Count} Servers");
 
-            Console.WriteLine("Registering Stuff");
-
-            client.MessageReceived += HandleCommand;
-            client.MessageReceived += HandleMessageReceived;
-            client.UserJoined += HandleUserJoined;
-//            client.Disconnected += Reconnect;
-            await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-
-            Console.WriteLine("Done and ready for use...\n");
         }
 
         public async Task HandleCommand(SocketMessage messageParam)
@@ -130,7 +142,7 @@ namespace Geekbot.net
             }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            Task.Run(() => commands.ExecuteAsync(context, argPos, map));
+            Task.Run(async () => await commands.ExecuteAsync(context, argPos, map));
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)
