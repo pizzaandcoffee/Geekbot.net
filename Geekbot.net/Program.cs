@@ -123,7 +123,7 @@ namespace Geekbot.net
         {
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
-            if (message.Author.Username.Equals(client.CurrentUser.Username)) return;
+            if (message.Author.IsBot) return;
             int argPos = 0;
             if (message.ToString().ToLower().StartsWith("ping"))
             {
