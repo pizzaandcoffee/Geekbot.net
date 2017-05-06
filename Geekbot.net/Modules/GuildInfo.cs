@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord;
 using Geekbot.net.Lib;
 using System.Linq;
+using Geekbot.net.Lib.IClients;
 
 namespace Geekbot.net.Modules
 {

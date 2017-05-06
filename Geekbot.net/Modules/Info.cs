@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Lib.IClients;
 
 namespace Geekbot.net.Modules
 {

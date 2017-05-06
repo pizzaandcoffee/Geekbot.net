@@ -54,6 +54,7 @@ namespace Geekbot.net
 
             map = new DependencyMap();
             map.Add<ICatClient>(new CatClient());
+            map.Add<IDogClient>(new DogClient());
             map.Add(redis);
             map.Add<IRandomClient>(new RandomClient());
 

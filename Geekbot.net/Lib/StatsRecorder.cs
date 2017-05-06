@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Geekbot.net.Lib.IClients;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Lib

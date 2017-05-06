@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Lib.IClients;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 

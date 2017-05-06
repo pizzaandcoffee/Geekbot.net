@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib.IClients;
 using RestSharp;
 
 namespace Geekbot.net.Modules

@@ -2,16 +2,16 @@
 
 namespace Geekbot.net.Lib.IClients
 {
-    public interface ICatClient
+    public interface IDogClient
     {
         IRestClient Client { get; set; }
     }
 
-    public class CatClient : ICatClient
+    public class DogClient : IDogClient
     {
-        public CatClient()
+        public DogClient()
         {
-            Client = new RestClient("http://random.cat");
+            Client = new RestClient("http://random.dog");
         }
 
         public IRestClient Client { get; set; }

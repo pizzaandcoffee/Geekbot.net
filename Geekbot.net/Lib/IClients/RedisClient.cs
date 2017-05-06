@@ -1,7 +1,7 @@
 ﻿using System;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Lib
+namespace Geekbot.net.Lib.IClients
 {
     public interface IRedisClient
     {

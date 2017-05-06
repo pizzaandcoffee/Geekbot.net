@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Lib.IClients;
 
 namespace Geekbot.net.Modules
 {
