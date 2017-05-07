@@ -29,5 +29,8 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives">
       <Version>4.3.0</Version>
     </PackageReference>
+    <ProjectReference Include="..\lambda\lambda.fsproj">
+      <Name>lambda</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

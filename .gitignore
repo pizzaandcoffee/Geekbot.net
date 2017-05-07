@@ -6,3 +6,6 @@ Backup/
 .vs/
 UpgradeLog.htm
 .idea
+lambda/bin/
+lambda/obj/
+redis.conf

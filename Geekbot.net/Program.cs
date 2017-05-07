@@ -9,6 +9,7 @@ using Geekbot.net.Lib;
 using Geekbot.net.Lib.IClients;
 using Geekbot.net.Modules;
 using StackExchange.Redis;
+using Geekbot.net.Lambda;
 
 namespace Geekbot.net
 {
@@ -22,6 +23,7 @@ namespace Geekbot.net
 
         private static void Main(string[] args)
         {
+            Console.WriteLine(kekistan.kek("top"));
             Console.WriteLine(@"  ____ _____ _____ _  ______   ___ _____");
             Console.WriteLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
             Console.WriteLine(@"| |  _|  _| |  _| | ' /|  _ \| | | || |");
