@@ -1,8 +1,8 @@
 # Geekbot.net
 
-The Geekbot rewritten in C# and dotnet core
+A General Purpose Discord Bot written in DotNet Core
 
-### Running
+### Building
 
 Geekbot.net Requires dotnet core 1.0.1 and dotnet core cli 1.1
 
@@ -11,3 +11,7 @@ Geekbot.net Requires dotnet core 1.0.1 and dotnet core cli 1.1
 `cd Geekbot.net`
 
 `dotnet run`
+
+### Contributing
+
+Everyone is free to open an issue or create a pull request
