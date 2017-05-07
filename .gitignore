@@ -2,6 +2,8 @@ Geekbot.net/bin
 Geekbot.net/obj
 Tests/bin
 Tests/obj
+lambda/bin
+lambda/obj
 Backup/
 .vs/
 UpgradeLog.htm
