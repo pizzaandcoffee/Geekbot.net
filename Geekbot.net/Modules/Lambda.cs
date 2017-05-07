@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using System;
-using Discord;
 using Discord.Commands;
 using Geekbot.net.Lambda;
 
@@ -11,10 +9,10 @@ namespace Geekbot.net.Modules
         [Command("λ", RunMode = RunMode.Async), Summary("λ")]
         public async Task SICP()
         {
-            await ReplyAsync(autism.sicp("https://a.pomf.cat/tgdevn.png"));
+            await ReplyAsync(autism.sicp("https://files.catbox.moe/39m1o7.png"));
         }
 
-        [Command("kek", RunMode = RunMode.Async), Summary("λ")]
+        [Command("kek", RunMode = RunMode.Async), Summary("kek")]
         public async Task kek()
         {
             await ReplyAsync(kekistan.kek("top"));
