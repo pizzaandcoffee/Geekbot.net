@@ -45,31 +45,53 @@ namespace Geekbot.net.Modules
                 shippingRate = int.Parse(dbval.ToString());
             }
 
-            var reply = "";
-            reply = reply + $"{user1.Username} :heart: {user2.Username}\r\n";
-            reply = reply + $"0% [----{shippingRate}%----] 100% - {determinateSuccess(shippingRate)}";
-            ReplyAsync(reply);
+            var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";
+            reply = reply + $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
+            reply = reply + $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
+            await ReplyAsync(reply);
         }
 
-        private string determinateSuccess(int rate)
+        private string DeterminateSuccess(int rate)
         {
             if (rate < 20)
             {
                 return "Not gonna happen";
             }  if (rate >= 20 && rate < 40)
             {
-                return "A slight chance";
+                return "Not such a good idea";
             }  if (rate >= 40 && rate < 60)
             {
-                return "Perhaps it could work";
+                return "There might be a chance";
             }  if (rate >= 60 && rate < 80)
             {
-                return "A good match";
+                return "Almost a match, but could work";
             }  if (rate >= 80)
             {
-                return "10/10";
+                return "It's a match";
             }
             return "a";
+        }
+
+        private string BlockCounter(int rate)
+        {
+            var amount = Math.Floor(decimal.Floor(rate / 10));
+            Console.WriteLine(amount);
+            var blocks = "";
+            for(int i = 1; i <= 10; i++)
+            {
+                if(i <= amount)
+                {
+                    blocks = blocks + ":white_medium_small_square:";
+                    if(i == amount)
+                    {
+                        blocks = blocks + $" {rate}% ";
+                    }
+                } else
+                {
+                    blocks = blocks + ":black_medium_small_square:";
+                }
+            }
+            return blocks;
         }
     }
 }

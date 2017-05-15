@@ -18,7 +18,7 @@ namespace Geekbot.net.Modules
         {
             var choicesArray = choices.Split(';');
             var choice = rnd.Client.Next(choicesArray.Length);
-            ReplyAsync($"I choose **{choicesArray[choice]}**");
+            await ReplyAsync($"I choose **{choicesArray[choice]}**");
         }
     }
 }
