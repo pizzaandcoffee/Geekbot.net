@@ -30,10 +30,22 @@ namespace Geekbot.net.Modules
             {
                 var key = Context.Guild.Id + "-" + user.Id + "-karma";
                 var badJokes = (int)redis.Client.StringGet(key);
-                redis.Client.StringSet(key, (badJokes + 1).ToString());
+                var newBadJokes = badJokes + 1;
+                redis.Client.StringSet(key, newBadJokes.ToString());
                 var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
                 redis.Client.StringSet(lastKey, GetNewLastKarma());
-                await ReplyAsync($"{Context.User.Username} gave {user.Mention} karma");
+
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder()
+                    .WithIconUrl(user.GetAvatarUrl())
+                    .WithName(user.Username));
+
+                eb.WithColor(new Color(138, 219, 146));
+                eb.Title = "Karma Increased";
+                eb.AddInlineField("By", Context.User.Username);
+                eb.AddInlineField("amount", "+1");
+                eb.AddInlineField("Current Karma",newBadJokes);
+                await ReplyAsync("", false, eb.Build());
             }
         }
 
@@ -53,10 +65,22 @@ namespace Geekbot.net.Modules
             {
                 var key = Context.Guild.Id + "-" + user.Id + "-karma";
                 var badJokes = (int)redis.Client.StringGet(key);
-                redis.Client.StringSet(key, (badJokes - 1).ToString());
+                var newBadJokes = badJokes - 1;
+                redis.Client.StringSet(key, newBadJokes.ToString());
                 var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
                 redis.Client.StringSet(lastKey, GetNewLastKarma());
-                await ReplyAsync($"{Context.User.Username} lowered {user.Mention}'s karma");
+                
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder()
+                    .WithIconUrl(user.GetAvatarUrl())
+                    .WithName(user.Username));
+
+                eb.WithColor(new Color(138, 219, 146));
+                eb.Title = "Karma Decreased";
+                eb.AddInlineField("By", Context.User.Username);
+                eb.AddInlineField("amount", "-1");
+                eb.AddInlineField("Current Karma",newBadJokes);
+                await ReplyAsync("", false, eb.Build());
             }
         }
 
