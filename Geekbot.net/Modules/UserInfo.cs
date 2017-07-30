@@ -67,6 +67,8 @@ namespace Geekbot.net.Modules
         public async Task Rank() 
         {
             await ReplyAsync("this will take a moment...");
+            var guildKey = Context.Guild.Id.ToString();
+            var guildMessages = (int)redis.Client.StringGet(guildKey + "-messages");
             var allGuildUsers = await Context.Guild.GetUsersAsync();
             var unsortedDict = new Dictionary<string, int>();
             foreach(var user in allGuildUsers) 
@@ -74,16 +76,18 @@ namespace Geekbot.net.Modules
                 var key = Context.Guild.Id + "-" + user.Id;
                 var messages = (int)redis.Client.StringGet(key + "-messages");
                 if(messages > 0) {
-                    unsortedDict.Add(user.Username, messages);
+                    unsortedDict.Add($"{user.Username}#{user.Discriminator}", messages);
                 }
             }
             var sortedDict = unsortedDict.OrderByDescending(x => x.Value);
             var reply = new StringBuilder();
+            reply.AppendLine($"Total Messages on {Context.Guild.Name}: {guildMessages}");
             var count = 1;
             foreach(KeyValuePair<string, int> entry in sortedDict)
             {
                 if(count < 11){
-                    reply.Append($"#{count} - **{entry.Key}** - {entry.Value}\r\n");
+                    var percent = Math.Round((double)(100 * entry.Value) / guildMessages, 2);
+                    reply.AppendLine($"#{count} - **{entry.Key}** - {percent}% of total - {entry.Value} messages");
                     count++;
                 } else {
                     break;
