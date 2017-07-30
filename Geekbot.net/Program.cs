@@ -103,44 +103,28 @@ namespace Geekbot.net
             return true;
         }
 
-        public async Task Reconnect(Exception exception)
-        {
-            Console.WriteLine("=========================================");
-            Console.WriteLine("Geekbot Disconnected from the Discord Gateway...");
-            Console.WriteLine(exception.Message);
-            Console.WriteLine("Attempting Reconnect...");
-            Console.WriteLine("=========================================");
-            await client.StopAsync();
-            System.Threading.Thread.Sleep(10000);
-            await Login();
-        }
-
-        public async Task FinishStartup()
-        {
-
-        }
-
         public async Task HandleCommand(SocketMessage messageParam)
         {
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
             if (message.Author.IsBot) return;
             int argPos = 0;
-            if (message.ToString().ToLower().StartsWith("ping"))
+            var lowCaseMsg = message.ToString().ToLower();
+            if (lowCaseMsg.StartsWith("ping"))
             {
                 await message.Channel.SendMessageAsync("pong");
                 return;
             }
-            if (message.ToString().ToLower().StartsWith("hui"))
+            if (lowCaseMsg.StartsWith("hui"))
             {
                 await message.Channel.SendMessageAsync("hui!!!");
                 return;
             }
-            if (message.ToString().ToLower().Contains("teamspeak") || message.ToString().ToLower().Contains("skype"))
-            {
-                await message.Channel.SendMessageAsync("How dare you to use such a filthy word in here http://bit.ly/2poL2IZ");
-                return;
-            }
+            // if (message.ToString().ToLower().Contains("teamspeak") || message.ToString().ToLower().Contains("skype"))
+            // {
+            //     await message.Channel.SendMessageAsync("How dare you to use such a filthy word in here http://bit.ly/2poL2IZ");
+            //     return;
+            // }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
             Task.Run(async () => await commands.ExecuteAsync(context, argPos, map));

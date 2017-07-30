@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
@@ -59,6 +62,34 @@ namespace Geekbot.net.Modules
             await ReplyAsync("", false, eb.Build());
         }
 
-        
+        [Alias("highscore")]
+        [Command("rank", RunMode = RunMode.Async), Summary("get user top 10")]
+        public async Task Rank() 
+        {
+            await ReplyAsync("this will take a moment...");
+            var allGuildUsers = await Context.Guild.GetUsersAsync();
+            var unsortedDict = new Dictionary<string, int>();
+            foreach(var user in allGuildUsers) 
+            {
+                var key = Context.Guild.Id + "-" + user.Id;
+                var messages = (int)redis.Client.StringGet(key + "-messages");
+                if(messages > 0) {
+                    unsortedDict.Add(user.Username, messages);
+                }
+            }
+            var sortedDict = unsortedDict.OrderByDescending(x => x.Value);
+            var reply = new StringBuilder();
+            var count = 1;
+            foreach(KeyValuePair<string, int> entry in sortedDict)
+            {
+                if(count < 11){
+                    reply.Append($"#{count} - **{entry.Key}** - {entry.Value}\r\n");
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            await ReplyAsync(reply.ToString());
+        }
     }
 }
