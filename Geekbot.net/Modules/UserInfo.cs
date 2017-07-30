@@ -27,6 +27,11 @@ namespace Geekbot.net.Modules
             var messages = (int)redis.Client.StringGet(key + "-messages");
             var level = LevelCalc.GetLevelAtExperience(messages);
 
+            var guildKey = Context.Guild.Id.ToString();
+            var guildMessages = (int)redis.Client.StringGet(guildKey + "-messages");
+
+            var percent = Math.Round((double)(100 * messages) / guildMessages, 2);
+
             var eb = new EmbedBuilder();
             eb.WithAuthor(new EmbedAuthorBuilder()
                 .WithIconUrl(userInfo.GetAvatarUrl())
@@ -36,18 +41,19 @@ namespace Geekbot.net.Modules
 
             eb.AddField("Discordian Since", $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");
             eb.AddInlineField("Level", level)
-                .AddInlineField("Messages Sent", messages);
+                .AddInlineField("Messages Sent", messages)
+                .AddInlineField("Server Total", $"{percent}%");
 
             var karma = redis.Client.StringGet(key + "-karma");
             if (!karma.IsNullOrEmpty)
             {
-                eb.AddField("Karma", karma);
+                eb.AddInlineField("Karma", karma);
             }
 
             var correctRolls = redis.Client.StringGet($"{Context.Guild.Id}-{userInfo.Id}-correctRolls");
             if (!correctRolls.IsNullOrEmpty)
             {
-                eb.AddField("Guessed Rolls", correctRolls);
+                eb.AddInlineField("Guessed Rolls", correctRolls);
             }
 
             await ReplyAsync("", false, eb.Build());
