@@ -2,6 +2,10 @@
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -16,9 +20,9 @@ namespace Geekbot.net
     {
         private CommandService commands;
         private DiscordSocketClient client;
-        private DependencyMap map;
         private IRedisClient redis;
         private RedisValue token;
+        private ServiceCollection services;
 
         private static void Main(string[] args)
         {
@@ -30,7 +34,7 @@ namespace Geekbot.net
             Console.WriteLine("=========================================");
             Console.WriteLine("Starting...");
 
-            Task.WaitAll(new Program().MainAsync());
+            new Program().MainAsync().GetAwaiter().GetResult();
         }
 
         public async Task MainAsync()
@@ -52,11 +56,11 @@ namespace Geekbot.net
                 redis.Client.StringSet("botOwner", ownerId);
             }
 
-            map = new DependencyMap();
-            map.Add<ICatClient>(new CatClient());
-            map.Add<IDogClient>(new DogClient());
-            map.Add(redis);
-            map.Add<IRandomClient>(new RandomClient());
+            services = new ServiceCollection();
+            services.AddSingleton<ICatClient>(new CatClient());
+            services.AddSingleton<IDogClient>(new DogClient());
+            services.AddSingleton<IRandomClient>(new RandomClient());
+            services.AddSingleton(redis);
 
             Console.WriteLine("Connecting to Discord...");
 
@@ -127,7 +131,7 @@ namespace Geekbot.net
             // }
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
-            Task.Run(async () => await commands.ExecuteAsync(context, argPos, map));
+            Task.Run(async () => await commands.ExecuteAsync(context, argPos, services));
         }
 
         public async Task HandleMessageReceived(SocketMessage messsageParam)
