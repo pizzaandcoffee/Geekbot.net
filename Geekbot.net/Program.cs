@@ -149,8 +149,8 @@ namespace Geekbot.net
             Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
 
             var statsRecorder = new StatsRecorder(message, redis);
-            Task.Run(() => statsRecorder.UpdateUserRecordAsync());
-            Task.Run(() => statsRecorder.UpdateGuildRecordAsync());
+            Task.Run(async () => await statsRecorder.UpdateUserRecordAsync());
+            Task.Run(async () => await statsRecorder.UpdateGuildRecordAsync());
         }
 
         public async Task HandleUserJoined(SocketGuildUser user)
