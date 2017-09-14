@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Youtube : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public Youtube(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public Youtube(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [Command("yt", RunMode = RunMode.Async), Summary("Search for something on youtube.")]
         public async Task Yt([Remainder, Summary("A Song Title")] string searchQuery)
         {
-            var key = redis.Client.StringGet("youtubeKey");
+            var key = redis.StringGet("youtubeKey");
             if (key.IsNullOrEmpty)
             {
                 await ReplyAsync("No youtube key set, please tell my senpai to set one");
@@ -47,8 +47,8 @@ namespace Geekbot.net.Modules
             catch (Exception e)
             {
                 await ReplyAsync("Something went wrong... informing my senpai...");
-                var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.Client.StringGet("botOwner"))).Result;
-                var dm = await botOwner.CreateDMChannelAsync();
+                var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
+                var dm = await botOwner.GetOrCreateDMChannelAsync();
                 await dm.SendMessageAsync($"Something went wrong while getting a video from youtube:\r\n```\r\n{e.Message}\r\n```");
             }
         }

@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Info : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public Info(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public Info(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [Command("info", RunMode = RunMode.Async), Summary("Get Information about the bot")]
@@ -18,9 +18,9 @@ namespace Geekbot.net.Modules
         {
             var eb = new EmbedBuilder();
 
-            eb.WithTitle("Geekbot V3");
+            eb.WithTitle("Geekbot V3.1");
 
-            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.Client.StringGet("botOwner"))).Result;
+            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
 
             eb.AddInlineField("Status", Context.Client.ConnectionState.ToString())
                 .AddInlineField("Bot Name", Context.Client.CurrentUser.Username)

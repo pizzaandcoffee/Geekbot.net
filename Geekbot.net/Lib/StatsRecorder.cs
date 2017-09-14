@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using Geekbot.net.Lib.IClients;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Lib
@@ -12,10 +11,10 @@ namespace Geekbot.net.Lib
         private readonly SocketMessage message;
         private readonly IDatabase redis;
 
-        public StatsRecorder(SocketMessage message, IRedisClient redisClient)
+        public StatsRecorder(SocketMessage message, IDatabase redis)
         {
             this.message = message;
-            redis = redisClient.Client;
+            this.redis = redis;
         }
 
         public async Task UpdateUserRecordAsync()

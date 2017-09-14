@@ -1,25 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
 using RestSharp;
 
 namespace Geekbot.net.Modules
 {
     public class Cat : ModuleBase
     {
-        private readonly ICatClient catClient;
-        public Cat(ICatClient catClient)
-        {
-            this.catClient = catClient;
-        }
-
         [Command("cat", RunMode = RunMode.Async), Summary("Return a random image of a cat.")]
         public async Task Say()
         {
+            var catClient = new RestClient("http://random.cat");
             var request = new RestRequest("meow.php", Method.GET);
 
-            dynamic response = catClient.Client.Execute<dynamic>(request);
-            await ReplyAsync(response.Data["file"]);
+            catClient.ExecuteAsync<CatResponse>(request, async response => {
+                await ReplyAsync(response.Data.file);
+            });
         }
+
+    }
+
+    public class CatResponse
+    {
+        public string file { get; set; }
     }
 }

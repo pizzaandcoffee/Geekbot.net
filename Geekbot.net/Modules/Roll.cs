@@ -1,24 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Roll : ModuleBase
     {
-        private readonly IRedisClient redis;
-        private readonly IRandomClient rnd;
-        public Roll(IRedisClient redisClient, IRandomClient randomClient)
+        private readonly IDatabase redis;
+        private readonly Random rnd;
+        public Roll(IDatabase redis, Random RandomClient)
         {
-            redis = redisClient;
-            rnd = randomClient;
+            this.redis = redis;
+            this.rnd = RandomClient;
         }
 
         [Command("roll", RunMode = RunMode.Async), Summary("Roll a number between 1 and 100.")]
         public async Task RollCommand([Remainder, Summary("stuff...")] string stuff = "nothing")
         {
-            var number = rnd.Client.Next(1, 100);
+            var number = rnd.Next(1, 100);
             var guess = 1000;
             int.TryParse(stuff, out guess);
             if (guess <= 100 && guess > 0)
@@ -28,8 +29,8 @@ namespace Geekbot.net.Modules
                 {
                     await ReplyAsync($"Congratulations {Context.User.Username}, your guess was correct!");
                     var key = $"{Context.Guild.Id}-{Context.User.Id}-correctRolls";
-                    var messages = (int)redis.Client.StringGet(key);
-                    redis.Client.StringSet(key, (messages + 1).ToString());
+                    var messages = (int)redis.StringGet(key);
+                    redis.StringSet(key, (messages + 1).ToString());
                 }
             }
             else
@@ -41,7 +42,7 @@ namespace Geekbot.net.Modules
         [Command("dice", RunMode = RunMode.Async), Summary("Roll a dice")]
         public async Task DiceCommand([Summary("The highest number on the dice")] int max = 6)
         {
-            var number = rnd.Client.Next(1, max);
+            var number = rnd.Next(1, max);
             await ReplyAsync(Context.Message.Author.Mention + ", you rolled " + number);
         }
     }

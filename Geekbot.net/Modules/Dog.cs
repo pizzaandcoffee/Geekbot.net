@@ -1,25 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
 using RestSharp;
 
 namespace Geekbot.net.Modules
 {
     public class Dog : ModuleBase
     {
-        private readonly IDogClient dogClient;
-        public Dog(IDogClient dogClient)
-        {
-            this.dogClient = dogClient;
-        }
-
         [Command("dog", RunMode = RunMode.Async), Summary("Return a random image of a dog.")]
         public async Task Say()
         {
+            var dogClient = new RestClient("http://random.dog");
             var request = new RestRequest("woof.json", Method.GET);
+            Console.WriteLine(dogClient.BaseUrl);
 
-            dynamic response = dogClient.Client.Execute<dynamic>(request);
-            await ReplyAsync(response.Data["url"]);
+            dogClient.ExecuteAsync<DogResponse>(request, async response => {
+                await ReplyAsync(response.Data.url);
+            });
         }
+    }
+
+    public class DogResponse
+    {
+        public string url { get; set; }
     }
 }
