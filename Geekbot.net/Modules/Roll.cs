@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
@@ -37,13 +36,6 @@ namespace Geekbot.net.Modules
             {
                 await ReplyAsync(Context.Message.Author.Mention + ", you rolled " + number);
             }
-        }
-
-        [Command("dice", RunMode = RunMode.Async), Summary("Roll a dice")]
-        public async Task DiceCommand([Summary("The highest number on the dice")] int max = 6)
-        {
-            var number = rnd.Next(1, max);
-            await ReplyAsync(Context.Message.Author.Mention + ", you rolled " + number);
         }
     }
 }
