@@ -32,13 +32,14 @@ namespace Geekbot.net
             Console.WriteLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
             Console.WriteLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             Console.WriteLine("=========================================");
-            Console.WriteLine("Starting...");
+            Console.WriteLine("* Starting...");
 
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 
         public async Task MainAsync()
         {
+            Console.WriteLine("* Initing Stuff");
             client = new DiscordSocketClient();
             commands = new CommandService();
 
@@ -67,11 +68,13 @@ namespace Geekbot.net
             }
 
             services = new ServiceCollection();
+            var fortunes = new Fortunes();
             var RandomClient = new Random();
+            services.AddSingleton<IFortunes>(fortunes);
             services.AddSingleton(RandomClient);
             services.AddSingleton(redis);
 
-            Console.WriteLine("Connecting to Discord...");
+            Console.WriteLine("* Connecting to Discord");
 
             await Login();
 
@@ -88,9 +91,9 @@ namespace Geekbot.net
                 if (isConneted)
                 {
                     await client.SetGameAsync("Ping Pong");
-                    Console.WriteLine($"Now Connected to {client.Guilds.Count} Servers");
+                    Console.WriteLine($"* Now Connected to {client.Guilds.Count} Servers");
 
-                    Console.WriteLine("Registering Stuff");
+                    Console.WriteLine("* Registering Stuff");
 
                     client.MessageReceived += HandleCommand;
                     client.MessageReceived += HandleMessageReceived;
@@ -98,7 +101,7 @@ namespace Geekbot.net
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     servicesProvider = services.BuildServiceProvider();
 
-                    Console.WriteLine("Done and ready for use...\n");
+                    Console.WriteLine("* Done and ready for use\n");
                 }
             }
             catch (AggregateException)
