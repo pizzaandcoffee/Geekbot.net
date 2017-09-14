@@ -4,16 +4,16 @@ using Discord.Commands;
 using Discord;
 using Geekbot.net.Lib;
 using System.Linq;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class GuildInfo : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public GuildInfo(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public GuildInfo(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [Command("serverstats", RunMode = RunMode.Async), Summary("Show some info about the bot.")]
@@ -28,7 +28,7 @@ namespace Geekbot.net.Modules
             var created = Context.Guild.CreatedAt;
             var age = Math.Floor((DateTime.Now - created).TotalDays);
 
-            var messages = redis.Client.StringGet($"{Context.Guild.Id}-messages");
+            var messages = redis.StringGet($"{Context.Guild.Id}-messages");
             var level = LevelCalc.GetLevelAtExperience((int)messages);
 
             eb.AddField("Server Age", $"{created.Day}/{created.Month}/{created.Year} ({age} days)");

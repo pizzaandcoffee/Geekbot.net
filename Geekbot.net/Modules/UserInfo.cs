@@ -6,16 +6,16 @@ using System.Linq;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class UserInfo : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public UserInfo(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public UserInfo(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [Alias("stats")]
@@ -27,11 +27,11 @@ namespace Geekbot.net.Modules
             var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
 
             var key = Context.Guild.Id + "-" + userInfo.Id;
-            var messages = (int)redis.Client.StringGet(key + "-messages");
+            var messages = (int)redis.StringGet(key + "-messages");
             var level = LevelCalc.GetLevelAtExperience(messages);
 
             var guildKey = Context.Guild.Id.ToString();
-            var guildMessages = (int)redis.Client.StringGet(guildKey + "-messages");
+            var guildMessages = (int)redis.StringGet(guildKey + "-messages");
 
             var percent = Math.Round((double)(100 * messages) / guildMessages, 2);
 
@@ -47,13 +47,13 @@ namespace Geekbot.net.Modules
                 .AddInlineField("Messages Sent", messages)
                 .AddInlineField("Server Total", $"{percent}%");
 
-            var karma = redis.Client.StringGet(key + "-karma");
+            var karma = redis.StringGet(key + "-karma");
             if (!karma.IsNullOrEmpty)
             {
                 eb.AddInlineField("Karma", karma);
             }
 
-            var correctRolls = redis.Client.StringGet($"{Context.Guild.Id}-{userInfo.Id}-correctRolls");
+            var correctRolls = redis.StringGet($"{Context.Guild.Id}-{userInfo.Id}-correctRolls");
             if (!correctRolls.IsNullOrEmpty)
             {
                 eb.AddInlineField("Guessed Rolls", correctRolls);
@@ -68,13 +68,13 @@ namespace Geekbot.net.Modules
         {
             await ReplyAsync("this will take a moment...");
             var guildKey = Context.Guild.Id.ToString();
-            var guildMessages = (int)redis.Client.StringGet(guildKey + "-messages");
+            var guildMessages = (int)redis.StringGet(guildKey + "-messages");
             var allGuildUsers = await Context.Guild.GetUsersAsync();
             var unsortedDict = new Dictionary<string, int>();
             foreach(var user in allGuildUsers) 
             {
                 var key = Context.Guild.Id + "-" + user.Id;
-                var messages = (int)redis.Client.StringGet(key + "-messages");
+                var messages = (int)redis.StringGet(key + "-messages");
                 if(messages > 0) {
                     unsortedDict.Add($"{user.Username}#{user.Discriminator}", messages);
                 }

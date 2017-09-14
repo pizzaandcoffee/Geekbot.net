@@ -1,28 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <ApplicationIcon>derp.ico</ApplicationIcon>
+    <Version>1.1.0</Version>
+    <Company>Pizza and Coffee Studios</Company>
+    <Authors>Pizza and Coffee Studios</Authors>
+    <Description>A Discord bot</Description>
+    <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cleverbot" Version="0.9.0" />
     <PackageReference Include="Discord.Net">
-      <Version>1.0.0-rc</Version>
+      <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="Google.Apis.YouTube.v3">
-      <Version>1.25.0.760</Version>
+      <Version>1.29.1.976</Version>
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack.NetCore">
       <Version>1.5.0.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="RestSharp.NetCore">
-      <Version>105.2.4-rc4-24214-01</Version>
+      <Version>105.2.3</Version>
     </PackageReference>
     <PackageReference Include="StackExchange.Redis">
-      <Version>1.2.1</Version>
+      <Version>1.2.6</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Http">
-      <Version>4.3.1</Version>
+      <Version>4.3.2</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Json">
       <Version>4.3.0</Version>
     </PackageReference>

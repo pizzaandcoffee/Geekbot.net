@@ -2,16 +2,16 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Counters : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public Counters(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public Counters(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [Command("good", RunMode = RunMode.Async), Summary("Increase Someones Karma")]
@@ -29,11 +29,11 @@ namespace Geekbot.net.Modules
             else
             {
                 var key = Context.Guild.Id + "-" + user.Id + "-karma";
-                var badJokes = (int)redis.Client.StringGet(key);
+                var badJokes = (int)redis.StringGet(key);
                 var newBadJokes = badJokes + 1;
-                redis.Client.StringSet(key, newBadJokes.ToString());
+                redis.StringSet(key, newBadJokes.ToString());
                 var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-                redis.Client.StringSet(lastKey, GetNewLastKarma());
+                redis.StringSet(lastKey, GetNewLastKarma());
 
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
@@ -64,11 +64,11 @@ namespace Geekbot.net.Modules
             else
             {
                 var key = Context.Guild.Id + "-" + user.Id + "-karma";
-                var badJokes = (int)redis.Client.StringGet(key);
+                var badJokes = (int)redis.StringGet(key);
                 var newBadJokes = badJokes - 1;
-                redis.Client.StringSet(key, newBadJokes.ToString());
+                redis.StringSet(key, newBadJokes.ToString());
                 var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-                redis.Client.StringSet(lastKey, GetNewLastKarma());
+                redis.StringSet(lastKey, GetNewLastKarma());
                 
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
@@ -87,7 +87,7 @@ namespace Geekbot.net.Modules
         private int GetLastKarma()
         {
             var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-            var redisReturn = redis.Client.StringGet(lastKey);
+            var redisReturn = redis.StringGet(lastKey);
             if (!int.TryParse(redisReturn.ToString(), out var i))
             {
                 i = GetUnixTimestamp();

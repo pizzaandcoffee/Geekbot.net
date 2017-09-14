@@ -2,19 +2,19 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Ship : ModuleBase
     {
 
-        private readonly IRedisClient redis;
-        private readonly IRandomClient rnd;
-        public Ship(IRedisClient redisClient, IRandomClient randomClient)
+        private readonly IDatabase redis;
+        private readonly Random rnd;
+        public Ship(IDatabase redis, Random RandomClient)
         {
-            redis = redisClient;
-            rnd = randomClient;
+            this.redis = redis;
+            this.rnd = RandomClient;
         }
 
         [Command("Ship", RunMode = RunMode.Async), Summary("Ask the Shipping meter")]
@@ -33,12 +33,12 @@ namespace Geekbot.net.Modules
             dbstring = $"{Context.Guild.Id}-{dbstring}";
             Console.WriteLine(dbstring);
 
-            var dbval = redis.Client.StringGet(dbstring);
+            var dbval = redis.StringGet(dbstring);
             var shippingRate = 0;
             if (dbval.IsNullOrEmpty)
             {
-                shippingRate = rnd.Client.Next(1, 100);
-                redis.Client.StringSet(dbstring, shippingRate);
+                shippingRate = rnd.Next(1, 100);
+                redis.StringSet(dbstring, shippingRate);
             }
             else
             {

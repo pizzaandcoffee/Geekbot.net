@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib.IClients;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     [Group("admin")]
     public class AdminCmd : ModuleBase
     {
-        private readonly IRedisClient redis;
-        public AdminCmd(IRedisClient redisClient)
+        private readonly IDatabase redis;
+        public AdminCmd(IDatabase redis)
         {
-            redis = redisClient;
+            this.redis = redis;
         }
 
         [RequireUserPermission(Discord.GuildPermission.Administrator)]
@@ -18,7 +18,7 @@ namespace Geekbot.net.Modules
         public async Task SetWelcomeMessage([Remainder, Summary("The message")] string welcomeMessage)
         {
             var key = Context.Guild.Id + "-welcomeMsg";
-            redis.Client.StringSet(key, welcomeMessage);
+            redis.StringSet(key, welcomeMessage);
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
             await ReplyAsync("Welcome message has been changed\r\nHere is an example of how it would look:\r\n" +
                         formatedMessage);
@@ -27,14 +27,14 @@ namespace Geekbot.net.Modules
         [Command("youtubekey", RunMode = RunMode.Async), Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
-            var botOwner = redis.Client.StringGet("botOwner");
+            var botOwner = redis.StringGet("botOwner");
             if (!Context.User.Id.ToString().Equals(botOwner.ToString()))
             {
                 await ReplyAsync($"Sorry, only the botowner can do this ({botOwner}");
                 return;
             }
 
-            redis.Client.StringSet("youtubeKey", key);
+            redis.StringSet("youtubeKey", key);
             await ReplyAsync("Apikey has been set");
         }
     }
