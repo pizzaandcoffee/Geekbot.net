@@ -9,19 +9,22 @@ namespace Geekbot.net.Modules
 {
     public class CheckEm : ModuleBase
     {
-        private readonly Random rnd;
         private readonly ICheckEmImageProvider checkEmImages;
+        private readonly Random rnd;
+
         public CheckEm(Random RandomClient, ICheckEmImageProvider checkEmImages)
         {
-            this.rnd = RandomClient;
+            rnd = RandomClient;
             this.checkEmImages = checkEmImages;
         }
-        [Command("checkem", RunMode = RunMode.Async), Summary("Check for dubs")]
+
+        [Command("checkem", RunMode = RunMode.Async)]
+        [Summary("Check for dubs")]
         public async Task MuhDubs()
         {
             try
             {
-                int number = rnd.Next(10000000, 99999999);
+                var number = rnd.Next(10000000, 99999999);
                 var dubtriqua = "";
 
                 var ns = GetIntArray(number);
@@ -33,9 +36,7 @@ namespace Geekbot.net.Modules
                     {
                         dubtriqua = "TRIPS";
                         if (ns[5] == ns[4])
-                        {
                             dubtriqua = "QUADS";
-                        }
                     }
                 }
 
@@ -43,9 +44,7 @@ namespace Geekbot.net.Modules
                 sb.AppendLine($"Check em {Context.User.Mention}");
                 sb.AppendLine($"**{number}**");
                 if (!string.IsNullOrEmpty(dubtriqua))
-                {
                     sb.AppendLine($":tada: {dubtriqua} :tada:");
-                }
                 sb.AppendLine(checkEmImages.GetRandomCheckEmPic());
 
                 await ReplyAsync(sb.ToString());
@@ -54,12 +53,11 @@ namespace Geekbot.net.Modules
             {
                 Console.WriteLine(e.Message);
             }
-         
         }
 
         private int[] GetIntArray(int num)
         {
-            List<int> listOfInts = new List<int>();
+            var listOfInts = new List<int>();
             while (num > 0)
             {
                 listOfInts.Add(num % 10);

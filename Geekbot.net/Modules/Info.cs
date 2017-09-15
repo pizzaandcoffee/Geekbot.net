@@ -8,12 +8,14 @@ namespace Geekbot.net.Modules
     public class Info : ModuleBase
     {
         private readonly IDatabase redis;
+
         public Info(IDatabase redis)
         {
             this.redis = redis;
         }
 
-        [Command("info", RunMode = RunMode.Async), Summary("Get Information about the bot")]
+        [Command("info", RunMode = RunMode.Async)]
+        [Summary("Get Information about the bot")]
         public async Task BotInfo()
         {
             var eb = new EmbedBuilder();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
 
@@ -8,12 +7,14 @@ namespace Geekbot.net.Modules
     public class Fortune : ModuleBase
     {
         private readonly IFortunesProvider fortunes;
+
         public Fortune(IFortunesProvider fortunes)
         {
             this.fortunes = fortunes;
         }
-        
-        [Command("fortune", RunMode = RunMode.Async), Summary("Get a random fortune")]
+
+        [Command("fortune", RunMode = RunMode.Async)]
+        [Summary("Get a random fortune")]
         public async Task GetAFortune()
         {
             await ReplyAsync(fortunes.GetRandomFortune());

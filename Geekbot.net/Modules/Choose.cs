@@ -7,13 +7,15 @@ namespace Geekbot.net.Modules
     public class Choose : ModuleBase
     {
         private readonly Random rnd;
+
         public Choose(Random RandomClient)
         {
             rnd = RandomClient;
         }
 
-        [Command("choose", RunMode = RunMode.Async), Summary("Let the bot make a choice for you.")]
-        public async Task Command([Remainder, Summary("The choices, sepperated by a ;")] string choices)
+        [Command("choose", RunMode = RunMode.Async)]
+        [Summary("Seperate options with a semicolon.")]
+        public async Task Command([Remainder] [Summary("option1;option2")] string choices)
         {
             var choicesArray = choices.Split(';');
             var choice = rnd.Next(choicesArray.Length);

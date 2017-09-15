@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Geekbot.net.Lib
 {
-    class FortunesProvider : IFortunesProvider
+    internal class FortunesProvider : IFortunesProvider
     {
-        private string[] fortuneArray;
-        private int totalFortunes;
-        private Random rnd;
+        private readonly string[] fortuneArray;
+        private readonly Random rnd;
+        private readonly int totalFortunes;
 
         public FortunesProvider()
         {
             var path = Path.GetFullPath("./Storage/fortunes");
             if (File.Exists(path))
             {
-                var rawFortunes= File.ReadAllText(path);
+                var rawFortunes = File.ReadAllText(path);
                 fortuneArray = rawFortunes.Split("%");
                 totalFortunes = fortuneArray.Length;
                 rnd = new Random();

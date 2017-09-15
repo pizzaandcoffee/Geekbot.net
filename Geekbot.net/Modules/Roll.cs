@@ -9,14 +9,16 @@ namespace Geekbot.net.Modules
     {
         private readonly IDatabase redis;
         private readonly Random rnd;
+
         public Roll(IDatabase redis, Random RandomClient)
         {
             this.redis = redis;
-            this.rnd = RandomClient;
+            rnd = RandomClient;
         }
 
-        [Command("roll", RunMode = RunMode.Async), Summary("Roll a number between 1 and 100.")]
-        public async Task RollCommand([Remainder, Summary("stuff...")] string stuff = "nothing")
+        [Command("roll", RunMode = RunMode.Async)]
+        [Summary("Roll a number between 1 and 100.")]
+        public async Task RollCommand([Remainder] [Summary("stuff...")] string stuff = "nothing")
         {
             var number = rnd.Next(1, 100);
             var guess = 1000;
@@ -28,7 +30,7 @@ namespace Geekbot.net.Modules
                 {
                     await ReplyAsync($"Congratulations {Context.User.Username}, your guess was correct!");
                     var key = $"{Context.Guild.Id}-{Context.User.Id}-correctRolls";
-                    var messages = (int)redis.StringGet(key);
+                    var messages = (int) redis.StringGet(key);
                     redis.StringSet(key, (messages + 1).ToString());
                 }
             }

@@ -1,27 +1,48 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Discord.Commands;
-using System.Reflection;
 
 namespace Geekbot.net.Modules
 {
     public class Help : ModuleBase
     {
-        [Command("help", RunMode = RunMode.Async), Summary("List all Commands")]
+        private readonly CommandService commands;
+
+        public Help(CommandService commands)
+        {
+            this.commands = commands;
+        }
+
+        [Command("help", RunMode = RunMode.Async)]
+        [Summary("List all Commands")]
         public async Task GetHelp()
         {
-            var commands = new CommandService();
-            await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-            var cmdList = commands.Commands;
-            var reply = "**Geekbot Command list**\r\n";
-            foreach (var cmd in cmdList)
+            var sb = new StringBuilder();
+            sb.AppendLine("```");
+            sb.AppendLine("**Geekbot Command list**");
+            sb.AppendLine("");
+            sb.AppendLine(tp("Name", 15) + tp("Parameters", 19) + "Description");
+            foreach (var cmd in commands.Commands)
             {
-                var param = string.Join(", !",cmd.Aliases);
+                var param = string.Join(", !", cmd.Aliases);
                 if (!param.Contains("admin"))
-                {
-                    reply = reply + $"**{cmd.Name}** (!{param}) - {cmd.Summary}\r\n";
-                }
+                    if (cmd.Parameters.Any())
+                        sb.AppendLine(tp(param, 15) +
+                                      tp(string.Join(",", cmd.Parameters.Select(e => e.Summary)), 19) +
+                                      cmd.Summary);
+                    else
+                        sb.AppendLine(tp(param, 34) + cmd.Summary);
             }
-            await ReplyAsync(reply);
+            sb.AppendLine("```");
+            var dm = await Context.User.GetOrCreateDMChannelAsync();
+            await dm.SendMessageAsync(sb.ToString());
+        }
+
+        // Table Padding, short function name because of many usages
+        private string tp(string text, int shouldHave)
+        {
+            return text.PadRight(shouldHave);
         }
     }
 }

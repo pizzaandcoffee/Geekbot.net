@@ -5,9 +5,9 @@ namespace Geekbot.net.Lib
 {
     public class CheckEmImageProvider : ICheckEmImageProvider
     {
-        private string[] checkEmImageArray;
-        private int totalCheckEmImages;
-        private Random rnd;
+        private readonly string[] checkEmImageArray;
+        private readonly Random rnd;
+        private readonly int totalCheckEmImages;
 
         public CheckEmImageProvider()
         {
