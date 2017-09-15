@@ -68,9 +68,11 @@ namespace Geekbot.net
             }
 
             services = new ServiceCollection();
-            var fortunes = new Fortunes();
+            var fortunes = new FortunesProvider();
+            var checkEmImages = new CheckEmImageProvider();
             var RandomClient = new Random();
-            services.AddSingleton<IFortunes>(fortunes);
+            services.AddSingleton<IFortunesProvider>(fortunes);
+            services.AddSingleton<ICheckEmImageProvider>(checkEmImages);
             services.AddSingleton(RandomClient);
             services.AddSingleton(redis);
 

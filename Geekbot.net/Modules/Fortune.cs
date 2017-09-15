@@ -7,8 +7,8 @@ namespace Geekbot.net.Modules
 {
     public class Fortune : ModuleBase
     {
-        private readonly IFortunes fortunes;
-        public Fortune(IFortunes fortunes)
+        private readonly IFortunesProvider fortunes;
+        public Fortune(IFortunesProvider fortunes)
         {
             this.fortunes = fortunes;
         }
