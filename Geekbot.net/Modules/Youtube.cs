@@ -10,13 +10,15 @@ namespace Geekbot.net.Modules
     public class Youtube : ModuleBase
     {
         private readonly IDatabase redis;
+
         public Youtube(IDatabase redis)
         {
             this.redis = redis;
         }
 
-        [Command("yt", RunMode = RunMode.Async), Summary("Search for something on youtube.")]
-        public async Task Yt([Remainder, Summary("A Song Title")] string searchQuery)
+        [Command("yt", RunMode = RunMode.Async)]
+        [Summary("Search for something on youtube.")]
+        public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
         {
             var key = redis.StringGet("youtubeKey");
             if (key.IsNullOrEmpty)
@@ -27,10 +29,10 @@ namespace Geekbot.net.Modules
 
             try
             {
-                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer
                 {
                     ApiKey = key.ToString(),
-                    ApplicationName = this.GetType().ToString()
+                    ApplicationName = GetType().ToString()
                 });
 
                 var searchListRequest = youtubeService.Search.List("snippet");
@@ -49,7 +51,8 @@ namespace Geekbot.net.Modules
                 await ReplyAsync("Something went wrong... informing my senpai...");
                 var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
                 var dm = await botOwner.GetOrCreateDMChannelAsync();
-                await dm.SendMessageAsync($"Something went wrong while getting a video from youtube:\r\n```\r\n{e.Message}\r\n```");
+                await dm.SendMessageAsync(
+                    $"Something went wrong while getting a video from youtube:\r\n```\r\n{e.Message}\r\n```");
             }
         }
     }

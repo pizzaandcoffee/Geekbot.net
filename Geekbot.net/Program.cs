@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
-using Geekbot.net.Modules;
-using RestSharp;
+using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
 namespace Geekbot.net
 {
-    class Program
+    internal class Program
     {
-        private CommandService commands;
         private DiscordSocketClient client;
+        private CommandService commands;
         private IDatabase redis;
-        private RedisValue token;
         private IServiceCollection services;
         private IServiceProvider servicesProvider;
+        private RedisValue token;
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.WriteLine(@"  ____ _____ _____ _  ______   ___ _____");
             Console.WriteLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
@@ -68,11 +63,13 @@ namespace Geekbot.net
             }
 
             services = new ServiceCollection();
-            var fortunes = new Fortunes();
+            var fortunes = new FortunesProvider();
+            var checkEmImages = new CheckEmImageProvider();
             var RandomClient = new Random();
-            services.AddSingleton<IFortunes>(fortunes);
-            services.AddSingleton(RandomClient);
             services.AddSingleton(redis);
+            services.AddSingleton(RandomClient);
+            services.AddSingleton<IFortunesProvider>(fortunes);
+            services.AddSingleton<ICheckEmImageProvider>(checkEmImages);
 
             Console.WriteLine("* Connecting to Discord");
 
@@ -99,6 +96,7 @@ namespace Geekbot.net
                     client.MessageReceived += HandleMessageReceived;
                     client.UserJoined += HandleUserJoined;
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+                    services.AddSingleton(commands);
                     servicesProvider = services.BuildServiceProvider();
 
                     Console.WriteLine("* Done and ready for use\n");
@@ -114,9 +112,7 @@ namespace Geekbot.net
         public async Task<bool> isConnected()
         {
             while (!client.ConnectionState.Equals(ConnectionState.Connected))
-            {
                 await Task.Delay(25);
-            }
             return true;
         }
 
@@ -125,7 +121,7 @@ namespace Geekbot.net
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
             if (message.Author.IsBot) return;
-            int argPos = 0;
+            var argPos = 0;
             var lowCaseMsg = message.ToString().ToLower();
             if (lowCaseMsg.StartsWith("ping"))
             {
@@ -137,7 +133,8 @@ namespace Geekbot.net
                 await message.Channel.SendMessageAsync("hui!!!");
                 return;
             }
-            if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
+            if (!(message.HasCharPrefix('!', ref argPos) ||
+                  message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
             var context = new CommandContext(client, message);
             Task.Run(async () => await commands.ExecuteAsync(context, argPos, servicesProvider));
         }
@@ -146,14 +143,15 @@ namespace Geekbot.net
         {
             var message = messsageParam;
             if (message == null) return;
-
-            var channel = (SocketGuildChannel)message.Channel;
-
-            Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " + message.Content);
-
+            
             var statsRecorder = new StatsRecorder(message, redis);
             Task.Run(async () => await statsRecorder.UpdateUserRecordAsync());
             Task.Run(async () => await statsRecorder.UpdateGuildRecordAsync());
+            
+            if (message.Author.Id == client.CurrentUser.Id) return;
+            var channel = (SocketGuildChannel) message.Channel;
+            Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " +
+                              message.Content);
         }
 
         public async Task HandleUserJoined(SocketGuildUser user)

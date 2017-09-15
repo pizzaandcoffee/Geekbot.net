@@ -8,28 +8,25 @@ namespace Geekbot.net.Modules
 {
     public class Ship : ModuleBase
     {
-
         private readonly IDatabase redis;
         private readonly Random rnd;
+
         public Ship(IDatabase redis, Random RandomClient)
         {
             this.redis = redis;
-            this.rnd = RandomClient;
+            rnd = RandomClient;
         }
 
-        [Command("Ship", RunMode = RunMode.Async), Summary("Ask the Shipping meter")]
-        public async Task Command([Summary("User 1")] IUser user1, [Summary("User 2")] IUser user2)
+        [Command("Ship", RunMode = RunMode.Async)]
+        [Summary("Ask the Shipping meter")]
+        public async Task Command([Summary("@User1")] IUser user1, [Summary("@User2")] IUser user2)
         {
             // Create a String
             var dbstring = "";
             if (user1.Id > user2.Id)
-            {
                 dbstring = $"{user1.Id}-{user2.Id}";
-            }
             else
-            {
                 dbstring = $"{user2.Id}-{user1.Id}";
-            }
             dbstring = $"{Context.Guild.Id}-{dbstring}";
             Console.WriteLine(dbstring);
 
@@ -54,21 +51,15 @@ namespace Geekbot.net.Modules
         private string DeterminateSuccess(int rate)
         {
             if (rate < 20)
-            {
                 return "Not gonna happen";
-            }  if (rate >= 20 && rate < 40)
-            {
+            if (rate >= 20 && rate < 40)
                 return "Not such a good idea";
-            }  if (rate >= 40 && rate < 60)
-            {
+            if (rate >= 40 && rate < 60)
                 return "There might be a chance";
-            }  if (rate >= 60 && rate < 80)
-            {
+            if (rate >= 60 && rate < 80)
                 return "Almost a match, but could work";
-            }  if (rate >= 80)
-            {
+            if (rate >= 80)
                 return "It's a match";
-            }
             return "a";
         }
 
@@ -77,20 +68,17 @@ namespace Geekbot.net.Modules
             var amount = Math.Floor(decimal.Floor(rate / 10));
             Console.WriteLine(amount);
             var blocks = "";
-            for(int i = 1; i <= 10; i++)
-            {
-                if(i <= amount)
+            for (var i = 1; i <= 10; i++)
+                if (i <= amount)
                 {
                     blocks = blocks + ":white_medium_small_square:";
-                    if(i == amount)
-                    {
+                    if (i == amount)
                         blocks = blocks + $" {rate}% ";
-                    }
-                } else
+                }
+                else
                 {
                     blocks = blocks + ":black_medium_small_square:";
                 }
-            }
             return blocks;
         }
     }

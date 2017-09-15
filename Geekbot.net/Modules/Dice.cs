@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
 {
     public class Dice : ModuleBase
     {
         private readonly Random rnd;
+
         public Dice(Random RandomClient)
         {
             rnd = RandomClient;
         }
 
-        [Command("dice", RunMode = RunMode.Async), Summary("Roll a dice.")]
-        public async Task RollCommand([Remainder, Summary("1d20, 1d6, 2d3, etc...")] string diceType = "1d6")
+        [Command("dice", RunMode = RunMode.Async)]
+        [Summary("Roll a dice.")]
+        public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d6")
         {
             var dice = diceType.Split("d");
 
@@ -45,9 +45,7 @@ namespace Geekbot.net.Modules
             eb.WithColor(new Color(133, 189, 219));
             eb.Title = $":game_die:  Dice Roll - Type {diceType} :game_die:";
             for (var i = 0; i < times; i++)
-            {
-                eb.AddInlineField($"Dice {i+1}", rnd.Next(1, max));
-            }
+                eb.AddInlineField($"Dice {i + 1}", rnd.Next(1, max));
             await ReplyAsync("", false, eb.Build());
         }
     }

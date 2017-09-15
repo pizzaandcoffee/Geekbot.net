@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.WebSocket;
 using StackExchange.Redis;
 
@@ -7,7 +6,6 @@ namespace Geekbot.net.Lib
 {
     public class StatsRecorder
     {
-
         private readonly SocketMessage message;
         private readonly IDatabase redis;
 

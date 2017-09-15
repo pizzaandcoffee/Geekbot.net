@@ -8,14 +8,18 @@ namespace Geekbot.net.Modules
     public class EightBall : ModuleBase
     {
         private readonly Random rnd;
+
         public EightBall(Random RandomClient)
         {
             rnd = RandomClient;
         }
-        [Command("8ball", RunMode = RunMode.Async), Summary("Ask 8Ball a Question.")]
-        public async Task Ball([Remainder, Summary("The Question")] string echo)
+
+        [Command("8ball", RunMode = RunMode.Async)]
+        [Summary("Ask 8Ball a Question.")]
+        public async Task Ball([Remainder] [Summary("Question")] string echo)
         {
-            var replies = new List<string> {
+            var replies = new List<string>
+            {
                 "It is certain",
                 "It is decidedly so",
                 "Without a doubt",
@@ -35,7 +39,8 @@ namespace Geekbot.net.Modules
                 "My reply is no",
                 "My sources say no",
                 "Outlook not so good",
-                "Very doubtful"};
+                "Very doubtful"
+            };
 
             var answer = rnd.Next(replies.Count);
             await ReplyAsync(replies[answer]);
