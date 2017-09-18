@@ -19,7 +19,7 @@ namespace Geekbot.net.Modules
             this.redis = redis;
         }
 
-        [Command("user", RunMode = RunMode.Async)]
+        [Command("stats", RunMode = RunMode.Async)]
         [Summary("Get information about this user")]
         public async Task User([Summary("@someone")] IUser user = null)
         {
