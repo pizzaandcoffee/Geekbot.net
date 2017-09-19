@@ -37,14 +37,6 @@ namespace Geekbot.net
         {
             Console.WriteLine("* Initing Stuff");
             
-            var ping = new Ping().Send("8.8.8.8");
-            if(ping.Status != IPStatus.Success)
-            {
-                Console.WriteLine("It seems that you are offline");
-                Console.WriteLine("Please connect to the Internet");
-                Environment.Exit(101);
-            }
-            
             client = new DiscordSocketClient();
             commands = new CommandService();
 
