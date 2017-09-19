@@ -42,6 +42,7 @@ namespace Geekbot.net
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
                 redis = redisMultiplexer.GetDatabase(6);
+                Console.WriteLine("- Connected to Redis (db6)");
             }
             catch (Exception)
             {

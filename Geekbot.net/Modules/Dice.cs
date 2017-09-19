@@ -63,7 +63,7 @@ namespace Geekbot.net.Modules
                 total = total + roll;
             }
             
-            eb.AddField("Total", modifier == 0 ? $"{total}" : $"{total} (+{modifier})");
+            eb.AddField("Total", modifier == 0 ? $"{total}" : $"{total + modifier} ({total} +{modifier})");
             await ReplyAsync("", false, eb.Build());
         }
     }

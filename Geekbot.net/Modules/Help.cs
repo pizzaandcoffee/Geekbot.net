@@ -29,7 +29,7 @@ namespace Geekbot.net.Modules
                 if (!param.Contains("admin"))
                     if (cmd.Parameters.Any())
                         sb.AppendLine(tp(param, 15) +
-                                      tp(string.Join(",", cmd.Parameters.Select(e => e.Summary)), 19) +
+                                      tp(string.Join(" ", cmd.Parameters.Select(e => e.Summary)), 19) +
                                       cmd.Summary);
                     else
                         sb.AppendLine(tp(param, 34) + cmd.Summary);
