@@ -28,7 +28,6 @@ namespace Geekbot.net.Modules
                 var dubtriqua = "";
 
                 var ns = GetIntArray(number);
-                Console.WriteLine(ns.Length);
                 if (ns[7] == ns[6])
                 {
                     dubtriqua = "DUBS";

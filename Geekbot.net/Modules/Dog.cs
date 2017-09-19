@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Discord.Commands;
-using RestSharp;
+using Newtonsoft.Json;
 
 namespace Geekbot.net.Modules
 {
@@ -11,11 +12,23 @@ namespace Geekbot.net.Modules
         [Summary("Return a random image of a dog.")]
         public async Task Say()
         {
-            var dogClient = new RestClient("http://random.dog");
-            var request = new RestRequest("woof.json", Method.GET);
-            Console.WriteLine(dogClient.BaseUrl);
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    client.BaseAddress = new Uri("http://random.dog");
+                    var response = await client.GetAsync("/woof.json");
+                    response.EnsureSuccessStatusCode();
 
-            dogClient.ExecuteAsync<DogResponse>(request, async response => { await ReplyAsync(response.Data.url); });
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var dogFile = JsonConvert.DeserializeObject<DogResponse>(stringResponse);
+                    await ReplyAsync(dogFile.url);
+                }
+                catch (HttpRequestException e)
+                {
+                    await ReplyAsync($"Seems like the dog got lost (error occured)\r\n{e.Message}");
+                }
+            }
         }
     }
 

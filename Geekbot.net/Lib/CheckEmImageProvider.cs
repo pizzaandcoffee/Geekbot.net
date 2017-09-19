@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib
         private readonly Random rnd;
         private readonly int totalCheckEmImages;
 
-        public CheckEmImageProvider()
+        public CheckEmImageProvider(Random rnd)
         {
             var path = Path.GetFullPath("./Storage/checkEmPics");
             if (File.Exists(path))
@@ -17,8 +17,8 @@ namespace Geekbot.net.Lib
                 var rawCheckEmPics = File.ReadAllText(path);
                 checkEmImageArray = rawCheckEmPics.Split("\n");
                 totalCheckEmImages = checkEmImageArray.Length;
-                rnd = new Random();
-                Console.WriteLine($"- Loaded {totalCheckEmImages} CheckEm Images");
+                this.rnd = rnd;
+                Console.WriteLine($"-- Loaded {totalCheckEmImages} CheckEm Images");
             }
             else
             {

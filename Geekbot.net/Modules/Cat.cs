@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Discord.Commands;
-using RestSharp;
+using Newtonsoft.Json;
 
 namespace Geekbot.net.Modules
 {
@@ -10,10 +12,23 @@ namespace Geekbot.net.Modules
         [Summary("Return a random image of a cat.")]
         public async Task Say()
         {
-            var catClient = new RestClient("http://random.cat");
-            var request = new RestRequest("meow.php", Method.GET);
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    client.BaseAddress = new Uri("http://random.cat");
+                    var response = await client.GetAsync("/meow.php");
+                    response.EnsureSuccessStatusCode();
 
-            catClient.ExecuteAsync<CatResponse>(request, async response => { await ReplyAsync(response.Data.file); });
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var catFile = JsonConvert.DeserializeObject<CatResponse>(stringResponse);
+                    await ReplyAsync(catFile.file);
+                }
+                catch (HttpRequestException e)
+                {
+                    await ReplyAsync($"Seems like the dog cought the cat (error occured)\r\n{e.Message}");
+                }
+            }
         }
     }
 

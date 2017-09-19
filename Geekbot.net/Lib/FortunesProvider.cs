@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib
         private readonly Random rnd;
         private readonly int totalFortunes;
 
-        public FortunesProvider()
+        public FortunesProvider(Random rnd)
         {
             var path = Path.GetFullPath("./Storage/fortunes");
             if (File.Exists(path))
@@ -17,8 +17,8 @@ namespace Geekbot.net.Lib
                 var rawFortunes = File.ReadAllText(path);
                 fortuneArray = rawFortunes.Split("%");
                 totalFortunes = fortuneArray.Length;
-                rnd = new Random();
-                Console.WriteLine($"- Loaded {totalFortunes} Fortunes");
+                this.rnd = rnd;
+                Console.WriteLine($"-- Loaded {totalFortunes} Fortunes");
             }
             else
             {
@@ -31,16 +31,10 @@ namespace Geekbot.net.Lib
         {
             return fortuneArray[rnd.Next(0, totalFortunes)];
         }
-
-        public string GetFortune(int id)
-        {
-            return fortuneArray[id];
-        }
     }
 
     public interface IFortunesProvider
     {
         string GetRandomFortune();
-        string GetFortune(int id);
     }
 }
