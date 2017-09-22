@@ -6,7 +6,7 @@ You can invite Geekbot to your server with [this link](https://discordapp.com/oa
 
 ### Building
 
-Geekbot.net Requires dotnet core 1.0.1 and dotnet core cli 1.1
+Geekbot.net Requires dotnet core 2.0.0 and dotnet core cli 2.0.0
 
 `dotnet restore`
 
