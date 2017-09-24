@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 
 namespace Geekbot.net.Modules
@@ -16,55 +18,107 @@ namespace Geekbot.net.Modules
 
         [Command("dice", RunMode = RunMode.Async)]
         [Summary("Roll a dice.")]
-        public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d6")
+        public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d20")
         {
-            var dice = diceType.Split("d");
-            var maxAndMod = dice[1].Split("+");
+            var splitedDices = diceType.Split("+");
+            var dices = new List<DiceTypeDto>();
+            var mod = 0;
+            foreach (var i in splitedDices)
+            {
+                var dice = toDice(i);
+                if (dice.sides != 0 && dice.times != 0)
+                {
+                    dices.Add(dice);
+                }
+                else if (dice.mod != 0)
+                {
+                    if (mod != 0)
+                    {
+                        await ReplyAsync("You can only have one mod");
+                        return;
+                    }
+                    mod = dice.mod;
+                }
+            }
 
-            if (dice.Length != 2
-                || !int.TryParse(dice[0], out int times)
-                || !int.TryParse(maxAndMod[0], out int max))
+            if (!dices.Any())
             {
-                await ReplyAsync("That is not a valid dice, examples are: 1d20, 1d6, 2d10, 5d12, 1d20+5, 1d6+2, etc...");
+                await ReplyAsync(
+                    "That is not a valid dice, examples are: 1d20, 1d6, 2d6, 1d6+2, 1d6+2d8+1d20+6, etc...");
                 return;
             }
-            
-            int modifier = 0;
-            if (maxAndMod.Length == 2 && !int.TryParse(maxAndMod[1], out modifier) || maxAndMod.Length > 2)
-            {
-                await ReplyAsync("That is not a valid dice, examples are: 1d20, 1d6, 2d10, 5d12, 1d20+5, 1d6+2, etc...");
-                return;
-            }
-            
-            if (times > 10 && !(times < 0))
-            {
-                await ReplyAsync("You can only roll between 1 and 10 dices");
-                return;
-            }
-            
-            if (max > 100 && !(max < 1))
-            {
-                await ReplyAsync("The dice must have between 1 and 100 sides");
-                return;
-            }
-            
-            var eb = new EmbedBuilder();
-            eb.WithAuthor(new EmbedAuthorBuilder()
-                .WithIconUrl(Context.User.GetAvatarUrl())
-                .WithName(Context.User.Username));
-            eb.WithColor(new Color(133, 189, 219));
-            eb.Title = $":game_die:  Dice Roll - Type {diceType} :game_die:";
-            
+
+            var rep = new StringBuilder();
+            rep.AppendLine($":game_die: {Context.User.Mention}");
+            rep.Append("**Result:** ");
+            var resultStrings = new List<string>();
             var total = 0;
-            for (var i = 0; i < times; i++)
+            var extraText = "";
+            foreach (var dice in dices)
             {
-                var roll = rnd.Next(1, max);
-                eb.AddInlineField($"Dice {i + 1}", roll);
-                total = total + roll;
+                var results = new List<int>();
+                for (var i = 0; i < dice.times; i++)
+                {
+                    var roll = rnd.Next(1, dice.sides);
+                    total += roll;
+                    results.Add(roll);
+                    if (roll == dice.sides)
+                    {
+                        extraText = "**Critical Hit!**";
+                    }
+                    if (roll == 1)
+                    {
+                        extraText = "**Critical Fail!**";
+                    }
+                }
+                resultStrings.Add($"{dice.diceType} ({string.Join(",", results)})");
             }
-            
-            eb.AddField("Total", modifier == 0 ? $"{total}" : $"{total + modifier} ({total} +{modifier})");
-            await ReplyAsync("", false, eb.Build());
+            rep.Append(string.Join(" + ", resultStrings));
+            if (mod != 0)
+            {
+                rep.Append($" + {mod}");
+                total += mod;
+            }
+            rep.AppendLine();
+            rep.AppendLine($"**Total:** {total}");
+            if (extraText != "")
+            {
+                rep.AppendLine(extraText);
+            }
+            await ReplyAsync(rep.ToString());
         }
+
+        private DiceTypeDto toDice(string dice)
+        {
+            var diceParts = dice.Split('d');
+            if (diceParts.Length == 2
+                && int.TryParse(diceParts[0], out int times)
+                && int.TryParse(diceParts[1], out int max))
+            {
+                return new DiceTypeDto()
+                {
+                    diceType = dice,
+                    times = times,
+                    sides = max
+                };
+            } 
+            if (dice.Length == 1
+                && int.TryParse(diceParts[0], out int mod))
+            {
+                return new DiceTypeDto()
+                {
+                    mod = mod
+                };
+            }
+            return new DiceTypeDto();
+        }
+    }
+
+    class DiceTypeDto
+    {
+        public string diceType { get; set; }
+        public int times { get; set; }
+        public int sides { get; set; }
+        public int mod { get; set; }
     }
 }
