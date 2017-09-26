@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Serilog;
 
 namespace Geekbot.net.Lib
 {
@@ -9,7 +10,7 @@ namespace Geekbot.net.Lib
         private readonly Random rnd;
         private readonly int totalPandas;
 
-        public PandaProvider(Random rnd)
+        public PandaProvider(Random rnd, ILogger logger)
         {
             var path = Path.GetFullPath("./Storage/pandas");
             if (File.Exists(path))
@@ -18,12 +19,12 @@ namespace Geekbot.net.Lib
                 PandaArray = rawFortunes.Split("\n");
                 totalPandas = PandaArray.Length;
                 this.rnd = rnd;
-                Console.WriteLine($"-- Loaded {totalPandas} Panda Images");
+                logger.Information($"[Geekbot] [Pandas] Loaded {totalPandas} Panda Images");
             }
             else
             {
-                Console.WriteLine("Pandas File not found");
-                Console.WriteLine($"Path should be {path}");
+                logger.Error("Pandas File not found");
+                logger.Error($"Path should be {path}");
             }
         }
 
@@ -32,7 +33,7 @@ namespace Geekbot.net.Lib
             return PandaArray[rnd.Next(0, totalPandas)];
         }
     }
-    
+
     public interface IPandaProvider
     {
         string GetRandomPanda();

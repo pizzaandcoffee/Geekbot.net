@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Serilog;
 
 namespace Geekbot.net.Lib
 {
@@ -9,7 +10,7 @@ namespace Geekbot.net.Lib
         private readonly Random rnd;
         private readonly int totalCheckEmImages;
 
-        public CheckEmImageProvider(Random rnd)
+        public CheckEmImageProvider(Random rnd, ILogger logger)
         {
             var path = Path.GetFullPath("./Storage/checkEmPics");
             if (File.Exists(path))
@@ -18,12 +19,12 @@ namespace Geekbot.net.Lib
                 checkEmImageArray = rawCheckEmPics.Split("\n");
                 totalCheckEmImages = checkEmImageArray.Length;
                 this.rnd = rnd;
-                Console.WriteLine($"-- Loaded {totalCheckEmImages} CheckEm Images");
+                logger.Information($"[Geekbot] [CheckEm] Loaded {totalCheckEmImages} CheckEm Images");
             }
             else
             {
-                Console.WriteLine("checkEmPics File not found");
-                Console.WriteLine($"Path should be {path}");
+                logger.Error("checkEmPics File not found");
+                logger.Error($"Path should be {path}");
             }
         }
 
