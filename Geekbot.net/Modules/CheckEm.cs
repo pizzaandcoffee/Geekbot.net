@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Serilog;
 
 namespace Geekbot.net.Modules
 {
@@ -11,11 +12,15 @@ namespace Geekbot.net.Modules
     {
         private readonly ICheckEmImageProvider checkEmImages;
         private readonly Random rnd;
+        private readonly ILogger logger;
+        private readonly IErrorHandler errorHandler;
 
-        public CheckEm(Random RandomClient, ICheckEmImageProvider checkEmImages)
+        public CheckEm(Random RandomClient, ICheckEmImageProvider checkEmImages, ILogger logger, IErrorHandler errorHandler)
         {
-            rnd = RandomClient;
+            this.rnd = RandomClient;
             this.checkEmImages = checkEmImages;
+            this.logger = logger;
+            this.errorHandler = errorHandler;
         }
 
         [Command("checkem", RunMode = RunMode.Async)]
@@ -50,7 +55,7 @@ namespace Geekbot.net.Modules
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                errorHandler.HandleCommandException(e, Context);
             }
         }
 
