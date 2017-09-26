@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using StackExchange.Redis;
 
 namespace Geekbot.net
@@ -19,23 +21,32 @@ namespace Geekbot.net
         private IServiceCollection services;
         private IServiceProvider servicesProvider;
         private RedisValue token;
+        private ILogger logger;
 
-        private static void Main()
+        private static void Main(string[] args)
         {
-            Console.WriteLine(@"  ____ _____ _____ _  ______   ___ _____");
-            Console.WriteLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
-            Console.WriteLine(@"| |  _|  _| |  _| | ' /|  _ \| | | || |");
-            Console.WriteLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
-            Console.WriteLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
-            Console.WriteLine("=========================================");
-            Console.WriteLine("* Starting...");
-
-            new Program().MainAsync().GetAwaiter().GetResult();
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.LiterateConsole()
+                .WriteTo.RollingFile("Logs/geekbot-{Hour}.txt", shared: true)
+                .CreateLogger();
+            
+            var logo = new StringBuilder(); 
+            logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
+            logo.AppendLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
+            logo.AppendLine(@"| |  _|  _| |  _| | ' /|  _ \| | | || |");
+            logo.AppendLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
+            logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
+            logo.AppendLine("=========================================");
+            Console.WriteLine(logo.ToString());
+            logger.Information("* Starting...");
+            new Program().MainAsync(logger).GetAwaiter().GetResult();
         }
 
-        public async Task MainAsync()
+        private async Task MainAsync(ILogger logger)
         {
-            Console.WriteLine("* Initing Stuff");
+            this.logger = logger;
+            logger.Information("* Initing Stuff");
             
             client = new DiscordSocketClient();
             commands = new CommandService();
@@ -44,11 +55,11 @@ namespace Geekbot.net
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
                 redis = redisMultiplexer.GetDatabase(6);
-                Console.WriteLine("-- Connected to Redis (db6)");
+                logger.Information($"-- Connected to Redis ({redis.Database})");
             }
             catch (Exception)
             {
-                Console.WriteLine("Start Redis pls...");
+                logger.Information("Start Redis pls...");
                 Environment.Exit(102);
             }
 
@@ -67,16 +78,17 @@ namespace Geekbot.net
 
             services = new ServiceCollection();
             var RandomClient = new Random();
-            var fortunes = new FortunesProvider(RandomClient);
-            var checkEmImages = new CheckEmImageProvider(RandomClient);
-            var pandaImages = new PandaProvider(RandomClient);
+            var fortunes = new FortunesProvider(RandomClient, logger);
+            var checkEmImages = new CheckEmImageProvider(RandomClient, logger);
+            var pandaImages = new PandaProvider(RandomClient, logger);
             services.AddSingleton(redis);
             services.AddSingleton(RandomClient);
+            services.AddSingleton<ILogger>(logger);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<ICheckEmImageProvider>(checkEmImages);
             services.AddSingleton<IPandaProvider>(pandaImages);
 
-            Console.WriteLine("* Connecting to Discord");
+            logger.Information("* Connecting to Discord", Color.Teal);
 
             await Login();
 
@@ -93,9 +105,9 @@ namespace Geekbot.net
                 if (isConneted)
                 {
                     await client.SetGameAsync("Ping Pong");
-                    Console.WriteLine($"* Now Connected to {client.Guilds.Count} Servers");
+                    logger.Information($"* Now Connected to {client.Guilds.Count} Servers");
 
-                    Console.WriteLine("* Registering Stuff");
+                    logger.Information("* Registering Stuff", Color.Teal);
 
                     client.MessageReceived += HandleCommand;
                     client.MessageReceived += HandleMessageReceived;
@@ -104,12 +116,12 @@ namespace Geekbot.net
                     services.AddSingleton(commands);
                     servicesProvider = services.BuildServiceProvider();
 
-                    Console.WriteLine("* Done and ready for use\n");
+                    logger.Information("* Done and ready for use\n", Color.Teal);
                 }
             }
             catch (AggregateException)
             {
-                Console.WriteLine("Could not connect to discord...");
+                logger.Information("Could not connect to discord...");
                 Environment.Exit(103);
             }
         }
@@ -155,7 +167,7 @@ namespace Geekbot.net
             
             if (message.Author.Id == client.CurrentUser.Id) return;
             var channel = (SocketGuildChannel) message.Channel;
-            Console.WriteLine(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " +
+            logger.Information(channel.Guild.Name + " - " + message.Channel + " - " + message.Author.Username + " - " +
                               message.Content);
             await userRec;
             await guildRec;

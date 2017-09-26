@@ -7,3 +7,5 @@ Backup/
 UpgradeLog.htm
 .idea
 .vscode
+Geekbot.net/Logs/*
+!/Geekbot.net/Logs/.keep

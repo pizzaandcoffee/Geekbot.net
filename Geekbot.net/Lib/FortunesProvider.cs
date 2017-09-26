@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Serilog;
 
 namespace Geekbot.net.Lib
 {
@@ -9,7 +10,7 @@ namespace Geekbot.net.Lib
         private readonly Random rnd;
         private readonly int totalFortunes;
 
-        public FortunesProvider(Random rnd)
+        public FortunesProvider(Random rnd, ILogger logger)
         {
             var path = Path.GetFullPath("./Storage/fortunes");
             if (File.Exists(path))
@@ -18,12 +19,12 @@ namespace Geekbot.net.Lib
                 fortuneArray = rawFortunes.Split("%");
                 totalFortunes = fortuneArray.Length;
                 this.rnd = rnd;
-                Console.WriteLine($"-- Loaded {totalFortunes} Fortunes");
+                logger.Information($"-- Loaded {totalFortunes} Fortunes");
             }
             else
             {
-                Console.WriteLine("Fortunes File not found");
-                Console.WriteLine($"Path should be {path}");
+                logger.Error("Fortunes File not found");
+                logger.Error($"Path should be {path}");
             }
         }
 
