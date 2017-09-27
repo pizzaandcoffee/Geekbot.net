@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Modules
@@ -13,10 +13,14 @@ namespace Geekbot.net.Modules
     public class UserInfo : ModuleBase
     {
         private readonly IDatabase redis;
-
-        public UserInfo(IDatabase redis)
+        private readonly IErrorHandler errorHandler;
+        private readonly ILogger logger;
+        
+        public UserInfo(IDatabase redis, IErrorHandler errorHandler, ILogger logger)
         {
             this.redis = redis;
+            this.errorHandler = errorHandler;
+            this.logger = logger;
         }
 
         [Command("stats", RunMode = RunMode.Async)]
@@ -27,12 +31,11 @@ namespace Geekbot.net.Modules
 
             var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
 
-            var key = Context.Guild.Id + "-" + userInfo.Id;
-            var messages = (int) redis.StringGet(key + "-messages");
+            var messages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
             var level = LevelCalc.GetLevelAtExperience(messages);
 
             var guildKey = Context.Guild.Id.ToString();
-            var guildMessages = (int) redis.StringGet(guildKey + "-messages");
+            var guildMessages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
 
             var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
@@ -49,11 +52,11 @@ namespace Geekbot.net.Modules
                 .AddInlineField("Messages Sent", messages)
                 .AddInlineField("Server Total", $"{percent}%");
 
-            var karma = redis.StringGet(key + "-karma");
+            var karma = redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id.ToString());
             if (!karma.IsNullOrEmpty)
                 eb.AddInlineField("Karma", karma);
 
-            var correctRolls = redis.StringGet($"{Context.Guild.Id}-{userInfo.Id}-correctRolls");
+            var correctRolls = redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
             if (!correctRolls.IsNullOrEmpty)
                 eb.AddInlineField("Guessed Rolls", correctRolls);
 
@@ -64,34 +67,43 @@ namespace Geekbot.net.Modules
         [Summary("get user top 10")]
         public async Task Rank()
         {
-            await ReplyAsync("this will take a moment...");
-            var guildKey = Context.Guild.Id.ToString();
-            var guildMessages = (int) redis.StringGet(guildKey + "-messages");
-            var allGuildUsers = await Context.Guild.GetUsersAsync();
-            var unsortedDict = new Dictionary<string, int>();
-            foreach (var user in allGuildUsers)
+            try
             {
-                var key = Context.Guild.Id + "-" + user.Id;
-                var messages = (int) redis.StringGet(key + "-messages");
-                if (messages > 0)
-                    unsortedDict.Add($"{user.Username}#{user.Discriminator}", messages);
+                var messageList = redis.HashGetAll($"{Context.Guild.Id}:Messages");
+                var sortedList = messageList.OrderByDescending(e => e.Value).ToList().Take(11).ToList();
+                var guildMessages = (int) sortedList.First().Value;
+                sortedList.RemoveAt(0);
+                var highScore = new StringBuilder();
+                highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
+                var counter = 1;
+                foreach (var user in sortedList)
+                {
+                    var guildUser = Context.Guild.GetUserAsync((ulong) user.Name).Result;
+                    var percent = Math.Round((double) (100 * (int) user.Value) / guildMessages, 2);
+                    highScore.AppendLine(
+                        $"{NumerToEmoji(counter)} **{guildUser.Username}#{guildUser.Discriminator}** - {percent}% of total - {user.Value} messages");
+                    counter++;
+                }
+                await ReplyAsync(highScore.ToString());
             }
-            var sortedDict = unsortedDict.OrderByDescending(x => x.Value);
-            var reply = new StringBuilder();
-            reply.AppendLine($"Total Messages on {Context.Guild.Name}: {guildMessages}");
-            var count = 1;
-            foreach (var entry in sortedDict)
-                if (count < 11)
-                {
-                    var percent = Math.Round((double) (100 * entry.Value) / guildMessages, 2);
-                    reply.AppendLine($"#{count} - **{entry.Key}** - {percent}% of total - {entry.Value} messages");
-                    count++;
-                }
-                else
-                {
-                    break;
-                }
-            await ReplyAsync(reply.ToString());
+            catch (Exception e)
+            {
+                errorHandler.HandleCommandException(e, Context);
+            }
+        }
+
+        private string NumerToEmoji(int number)
+        {
+            var emojis = new string[] {":one:", ":two:", ":three:", ":four:", ":five:", ":six", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
+            try
+            {
+                return emojis[number - 1];
+            }
+            catch (Exception e)
+            {
+                logger.Warning(e, $"Can't provide emoji number {number}");
+                return ":zero:";
+            }
         }
     }
 }

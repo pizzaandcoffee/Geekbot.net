@@ -19,7 +19,7 @@ namespace Geekbot.net.Lib.Media
                 PandaArray = rawFortunes.Split("\n");
                 totalPandas = PandaArray.Length;
                 this.rnd = rnd;
-                logger.Information($"[Geekbot] [Pandas] Loaded {totalPandas} Panda Images");
+                logger.Verbose($"[Geekbot] [Pandas] Loaded {totalPandas} Panda Images");
             }
             else
             {

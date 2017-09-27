@@ -29,9 +29,7 @@ namespace Geekbot.net.Modules
                 if (guess == number)
                 {
                     await ReplyAsync($"Congratulations {Context.User.Username}, your guess was correct!");
-                    var key = $"{Context.Guild.Id}-{Context.User.Id}-correctRolls";
-                    var messages = (int) redis.StringGet(key);
-                    redis.StringSet(key, (messages + 1).ToString());
+                    redis.HashIncrement($"{Context.Guild.Id}:Rolls", Context.User.Id.ToString()); 
                 }
             }
             else

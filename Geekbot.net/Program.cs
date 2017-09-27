@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,12 +28,7 @@ namespace Geekbot.net
 
         private static void Main(string[] args)
         {
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.LiterateConsole()
-                .WriteTo.RollingFile("Logs/geekbot-{Date}.txt", shared: true)
-                .CreateLogger();
-
+            var logger = LoggerFactory.createLogger(args);
             var logo = new StringBuilder();
             logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
             logo.AppendLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
@@ -41,10 +38,10 @@ namespace Geekbot.net
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
             logger.Information("[Geekbot] Starting...");
-            new Program().MainAsync(logger).GetAwaiter().GetResult();
+            new Program().MainAsync(args, logger).GetAwaiter().GetResult();
         }
 
-        private async Task MainAsync(ILogger logger)
+        private async Task MainAsync(string[] args, ILogger logger)
         {
             this.logger = logger;
             logger.Information("[Geekbot] Initing Stuff");
@@ -64,16 +61,35 @@ namespace Geekbot.net
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "Redis Connection Failed");
+                logger.Fatal(e, "[Redis] Redis Connection Failed");
                 Environment.Exit(102);
             }
 
+            if (args.Length != 0 && args.Contains("--migrate"))
+            {
+                Console.WriteLine("\nYou are about to migrate the database, this will overwrite an already migrated database?");
+                Console.Write("Are you sure [y:N]: ");
+                var migrateDbConfirm = Console.ReadKey();
+                Console.WriteLine();
+                if (migrateDbConfirm.Key == ConsoleKey.Y)
+                {
+                    logger.Warning("[Geekbot] Starting Migration");
+                    await MigrateDatabaseToHash();
+                    logger.Warning("[Geekbot] Finished Migration");
+                }
+                else
+                {
+                    logger.Information("[Geekbot] Not Migrating db");
+                }
+            }
+            
             token = redis.StringGet("discordToken");
             if (token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
                 redis.StringSet("discordToken", newToken);
+                redis.StringSet("Game", "Ping Pong");
                 token = newToken;
             }
 
@@ -92,6 +108,7 @@ namespace Geekbot.net
             var checkEmImages = new CheckEmImageProvider(RandomClient, logger);
             var pandaImages = new PandaProvider(RandomClient, logger);
             var errorHandler = new ErrorHandler(logger);
+            
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
             services.AddSingleton(RandomClient);
@@ -116,7 +133,7 @@ namespace Geekbot.net
                 var isConneted = await isConnected();
                 if (isConneted)
                 {
-                    await client.SetGameAsync("Ping Pong");
+                    await client.SetGameAsync(redis.StringGet("Game"));
                     logger.Information($"[Geekbot] Now Connected to {client.Guilds.Count} Servers");
 
                     logger.Information("[Geekbot] Registering Stuff");
@@ -126,13 +143,14 @@ namespace Geekbot.net
                     client.UserJoined += HandleUserJoined;
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
+                    services.AddSingleton<DiscordSocketClient>(client);
                     this.servicesProvider = services.BuildServiceProvider();
                     logger.Information("[Geekbot] Done and ready for use\n");
                 }
             }
-            catch (AggregateException)
+            catch (Exception e)
             {
-                logger.Information("Could not connect to discord...");
+                logger.Fatal(e, "Could not connect to discord...");
                 Environment.Exit(103);
             }
         }
@@ -171,23 +189,21 @@ namespace Geekbot.net
         {
             var message = messsageParam;
             if (message == null) return;
-
-            var statsRecorder = new StatsRecorder(message, redis);
-            var userRec = statsRecorder.UpdateUserRecordAsync();
-            var guildRec = statsRecorder.UpdateGuildRecordAsync();
-
-            if (message.Author.Id == client.CurrentUser.Id) return;
+            
             var channel = (SocketGuildChannel) message.Channel;
+            
+            await redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
+            await redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
+
+            if (message.Author.IsBot) return;
             logger.Information($"[Message] {channel.Guild.Name} - {message.Channel} - {message.Author.Username} - {message.Content}");
-            await userRec;
-            await guildRec;
         }
 
         private async Task HandleUserJoined(SocketGuildUser user)
         {
             if (!user.IsBot)
             {
-                var message = redis.StringGet(user.Guild.Id + "-welcomeMsg");
+                var message = redis.HashGet($"{user.Guild.Id}:Settings", "WelcomeMsg");
                 if (!message.IsNullOrEmpty)
                 {
                     message = message.ToString().Replace("$user", user.Mention);
@@ -218,6 +234,49 @@ namespace Geekbot.net
                 default:
                     logger.Information($"{logMessage} --- {message.Severity.ToString()}");
                     break;
+            }
+            return Task.CompletedTask;
+        }
+        
+        // temporary db migration script
+        private Task MigrateDatabaseToHash()
+        {
+            foreach (var key in redis.Multiplexer.GetServer("127.0.0.1", 6379).Keys(6))
+            {
+                var keyParts = key.ToString().Split("-");
+                if (keyParts.Length == 2 || keyParts.Length == 3)
+                {
+                    logger.Verbose($"Migrating key {key}");
+                    var stuff = new List<string>();
+                    stuff.Add("messages");
+                    stuff.Add("karma");
+                    stuff.Add("welcomeMsg");
+                    stuff.Add("correctRolls");
+                    if(stuff.Contains(keyParts[keyParts.Length - 1]))
+                    {
+                        var val = redis.StringGet(key);
+                        ulong.TryParse(keyParts[0], out ulong guildId);
+                        ulong.TryParse(keyParts[1], out ulong userId);
+
+                        switch (keyParts[keyParts.Length - 1])
+                        {
+                            case "messages":
+                                redis.HashSet($"{guildId}:Messages", new HashEntry[] { new HashEntry(userId.ToString(), val) });
+                                break;
+                            case "karma":
+                                redis.HashSet($"{guildId}:Karma", new HashEntry[] { new HashEntry(userId.ToString(), val) });
+                                break;
+                            case "correctRolls":
+                                redis.HashSet($"{guildId}:Rolls", new HashEntry[] { new HashEntry(userId.ToString(), val) });
+                                break;
+                            case "welcomeMsg":
+                                redis.HashSet($"{guildId}:Settings", new HashEntry[] { new HashEntry("WelcomeMsg", val) });
+                                break;
+                        }
+                        //redis.KeyDelete(key);
+
+                    }
+                }
             }
             return Task.CompletedTask;
         }

@@ -19,7 +19,7 @@ namespace Geekbot.net.Lib.Media
                 fortuneArray = rawFortunes.Split("%");
                 totalFortunes = fortuneArray.Length;
                 this.rnd = rnd;
-                logger.Information($"[Geekbot] [Fortunes] Loaded {totalFortunes} Fortunes");
+                logger.Verbose($"[Geekbot] [Fortunes] Loaded {totalFortunes} Fortunes");
             }
             else
             {

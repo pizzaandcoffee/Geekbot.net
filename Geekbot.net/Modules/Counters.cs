@@ -2,53 +2,64 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using StackExchange.Redis;
+using Serilog;
 
 namespace Geekbot.net.Modules
 {
     public class Counters : ModuleBase
     {
         private readonly IDatabase redis;
+        private readonly ILogger logger;
+        private readonly IErrorHandler errorHandler;
 
-        public Counters(IDatabase redis)
+        public Counters(IDatabase redis, ILogger logger, IErrorHandler errorHandler)
         {
             this.redis = redis;
+            this.logger = logger;
+            this.errorHandler = errorHandler;
         }
 
         [Command("good", RunMode = RunMode.Async)]
         [Summary("Increase Someones Karma")]
         public async Task Good([Summary("@someone")] IUser user)
         {
-            var lastKarma = GetLastKarma();
-            if (user.Id == Context.User.Id)
+            try
             {
-                await ReplyAsync($"Sorry {Context.User.Username}, but you can't give yourself karma");
-            }
-            else if (lastKarma > GetUnixTimestamp())
-            {
-                await ReplyAsync(
-                    $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can give karma again...");
-            }
-            else
-            {
-                var key = Context.Guild.Id + "-" + user.Id + "-karma";
-                var badJokes = (int) redis.StringGet(key);
-                var newBadJokes = badJokes + 1;
-                redis.StringSet(key, newBadJokes.ToString());
-                var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-                redis.StringSet(lastKey, GetNewLastKarma());
+                var lastKarmaFromRedis = redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
+                var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
+                if (user.Id == Context.User.Id)
+                {
+                    await ReplyAsync($"Sorry {Context.User.Username}, but you can't lower your own karma");
+                }
+                else if (TimeoutFinished(lastKarma))
+                {
+                    await ReplyAsync(
+                        $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can give karma again...");
+                }
+                else
+                {
+                    var newKarma = redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
+                    redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
+                        new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
 
-                var eb = new EmbedBuilder();
-                eb.WithAuthor(new EmbedAuthorBuilder()
-                    .WithIconUrl(user.GetAvatarUrl())
-                    .WithName(user.Username));
+                    var eb = new EmbedBuilder();
+                    eb.WithAuthor(new EmbedAuthorBuilder()
+                        .WithIconUrl(user.GetAvatarUrl())
+                        .WithName(user.Username));
 
-                eb.WithColor(new Color(138, 219, 146));
-                eb.Title = "Karma Increased";
-                eb.AddInlineField("By", Context.User.Username);
-                eb.AddInlineField("amount", "+1");
-                eb.AddInlineField("Current Karma", newBadJokes);
-                await ReplyAsync("", false, eb.Build());
+                    eb.WithColor(new Color(138, 219, 146));
+                    eb.Title = "Karma Increased";
+                    eb.AddInlineField("By", Context.User.Username);
+                    eb.AddInlineField("amount", "+1");
+                    eb.AddInlineField("Current Karma", newKarma);
+                    await ReplyAsync("", false, eb.Build());
+                }
+            }
+            catch (Exception e)
+            {
+                errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -56,64 +67,58 @@ namespace Geekbot.net.Modules
         [Summary("Decrease Someones Karma")]
         public async Task Bad([Summary("@someone")] IUser user)
         {
-            var lastKarma = GetLastKarma();
-            if (user.Id == Context.User.Id)
+            try
             {
-                await ReplyAsync($"Sorry {Context.User.Username}, but you can't lower your own karma");
+                var lastKarmaFromRedis = redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
+                var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
+                if (user.Id == Context.User.Id)
+                {
+                    await ReplyAsync($"Sorry {Context.User.Username}, but you can't lower your own karma");
+                }
+                else if (TimeoutFinished(lastKarma))
+                {
+                    await ReplyAsync(
+                        $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can take karma again...");
+                }
+                else
+                {
+                    var newKarma = redis.HashDecrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
+                    redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
+                        new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
+
+                    var eb = new EmbedBuilder();
+                    eb.WithAuthor(new EmbedAuthorBuilder()
+                        .WithIconUrl(user.GetAvatarUrl())
+                        .WithName(user.Username));
+
+                    eb.WithColor(new Color(138, 219, 146));
+                    eb.Title = "Karma Decreased";
+                    eb.AddInlineField("By", Context.User.Username);
+                    eb.AddInlineField("amount", "-1");
+                    eb.AddInlineField("Current Karma", newKarma);
+                    await ReplyAsync("", false, eb.Build());
+                }
             }
-            else if (lastKarma > GetUnixTimestamp())
+            catch (Exception e)
             {
-                await ReplyAsync(
-                    $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can take karma again...");
-            }
-            else
-            {
-                var key = Context.Guild.Id + "-" + user.Id + "-karma";
-                var badJokes = (int) redis.StringGet(key);
-                var newBadJokes = badJokes - 1;
-                redis.StringSet(key, newBadJokes.ToString());
-                var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-                redis.StringSet(lastKey, GetNewLastKarma());
-
-                var eb = new EmbedBuilder();
-                eb.WithAuthor(new EmbedAuthorBuilder()
-                    .WithIconUrl(user.GetAvatarUrl())
-                    .WithName(user.Username));
-
-                eb.WithColor(new Color(138, 219, 146));
-                eb.Title = "Karma Decreased";
-                eb.AddInlineField("By", Context.User.Username);
-                eb.AddInlineField("amount", "-1");
-                eb.AddInlineField("Current Karma", newBadJokes);
-                await ReplyAsync("", false, eb.Build());
+                errorHandler.HandleCommandException(e, Context);
             }
         }
 
-        private int GetLastKarma()
+        private DateTimeOffset ConvertToDateTimeOffset(string dateTimeOffsetString)
         {
-            var lastKey = Context.Guild.Id + "-" + Context.User.Id + "-karma-timeout";
-            var redisReturn = redis.StringGet(lastKey);
-            if (!int.TryParse(redisReturn.ToString(), out var i))
-                i = GetUnixTimestamp();
-            return i;
+            if(string.IsNullOrEmpty(dateTimeOffsetString)) return DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0));
+            return DateTimeOffset.Parse(dateTimeOffsetString);
         }
-
-        private int GetNewLastKarma()
+        
+        private bool TimeoutFinished(DateTimeOffset lastKarma)
         {
-            var timeout = TimeSpan.FromMinutes(3);
-            return (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).Add(timeout).TotalSeconds;
+            return lastKarma.AddMinutes(3) > DateTimeOffset.Now;
         }
-
-        private int GetUnixTimestamp()
+        
+        private string GetTimeLeft(DateTimeOffset lastKarma)
         {
-            return (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-        }
-
-        private string GetTimeLeft(int time)
-        {
-            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(time).ToLocalTime();
-            var dt = dtDateTime.Subtract(DateTime.Now);
+            var dt = lastKarma.AddMinutes(3).Subtract(DateTimeOffset.Now);
             return $"{dt.Minutes} Minutes and {dt.Seconds} Seconds";
         }
     }

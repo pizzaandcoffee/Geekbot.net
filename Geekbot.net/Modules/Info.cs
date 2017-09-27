@@ -20,7 +20,7 @@ namespace Geekbot.net.Modules
         {
             var eb = new EmbedBuilder();
 
-            eb.WithTitle("Geekbot V3.1");
+            eb.WithTitle("Geekbot V3.2");
 
             var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
 

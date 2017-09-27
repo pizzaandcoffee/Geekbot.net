@@ -19,7 +19,7 @@ namespace Geekbot.net.Lib.Media
                 checkEmImageArray = rawCheckEmPics.Split("\n");
                 totalCheckEmImages = checkEmImageArray.Length;
                 this.rnd = rnd;
-                logger.Information($"[Geekbot] [CheckEm] Loaded {totalCheckEmImages} CheckEm Images");
+                logger.Verbose($"[Geekbot] [CheckEm] Loaded {totalCheckEmImages} CheckEm Images");
             }
             else
             {

@@ -27,15 +27,13 @@ namespace Geekbot.net.Modules
                 dbstring = $"{user1.Id}-{user2.Id}";
             else
                 dbstring = $"{user2.Id}-{user1.Id}";
-            dbstring = $"{Context.Guild.Id}-{dbstring}";
-            Console.WriteLine(dbstring);
 
-            var dbval = redis.StringGet(dbstring);
+            var dbval = redis.HashGet($"{Context.Guild.Id}:Ships", dbstring);
             var shippingRate = 0;
             if (dbval.IsNullOrEmpty)
             {
                 shippingRate = rnd.Next(1, 100);
-                redis.StringSet(dbstring, shippingRate);
+                redis.HashSet($"{Context.Guild.Id}:Ships", dbstring, shippingRate);
             }
             else
             {
