@@ -273,9 +273,8 @@ namespace Geekbot.net
                                 redis.HashSet($"{guildId}:Settings", new HashEntry[] { new HashEntry("WelcomeMsg", val) });
                                 break;
                         }
-                        //redis.KeyDelete(key);
-
                     }
+                    redis.KeyDelete(key);
                 }
             }
             return Task.CompletedTask;

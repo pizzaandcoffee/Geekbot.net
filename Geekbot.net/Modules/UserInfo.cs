@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -70,19 +73,33 @@ namespace Geekbot.net.Modules
             try
             {
                 var messageList = redis.HashGetAll($"{Context.Guild.Id}:Messages");
-                var sortedList = messageList.OrderByDescending(e => e.Value).ToList().Take(11).ToList();
+                var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
                 sortedList.RemoveAt(0);
-                var highScore = new StringBuilder();
-                highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
-                var counter = 1;
+
+                var highscoreUsers = new Dictionary<IGuildUser, int>();
+                var listLimiter = 1;
                 foreach (var user in sortedList)
                 {
+                    if (listLimiter > 10) break;
+                    
                     var guildUser = Context.Guild.GetUserAsync((ulong) user.Name).Result;
-                    var percent = Math.Round((double) (100 * (int) user.Value) / guildMessages, 2);
+                    if (guildUser != null)
+                    {
+                        highscoreUsers.Add(guildUser, (int)user.Value);
+                        listLimiter++;
+                    }
+                }
+                
+                var highScore = new StringBuilder();
+                highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
+                var highscorePlace = 1;
+                foreach (var user in highscoreUsers)
+                {
+                    var percent = Math.Round((double) (100 * user.Value) / guildMessages, 2);
                     highScore.AppendLine(
-                        $"{NumerToEmoji(counter)} **{guildUser.Username}#{guildUser.Discriminator}** - {percent}% of total - {user.Value} messages");
-                    counter++;
+                        $"{NumerToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
+                    highscorePlace++;
                 }
                 await ReplyAsync(highScore.ToString());
             }

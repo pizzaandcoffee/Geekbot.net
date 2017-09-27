@@ -18,7 +18,7 @@ namespace Geekbot.net.Lib
         public void HandleCommandException(Exception e, ICommandContext Context)
         {
             var errorMsg =
-                $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\"";
+                $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\", complete message was \"{Context.Message}\"";
             logger.Error(e, errorMsg);
 //            await botOwnerDmChannel.SendMessageAsync($"{errorMsg}```{e.StackTrace}```");
 //            await Context.Channel.SendMessageAsync("Something went wrong...");
