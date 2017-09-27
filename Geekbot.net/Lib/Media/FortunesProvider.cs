@@ -2,7 +2,7 @@
 using System.IO;
 using Serilog;
 
-namespace Geekbot.net.Lib
+namespace Geekbot.net.Lib.Media
 {
     internal class FortunesProvider : IFortunesProvider
     {

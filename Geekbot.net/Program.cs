@@ -6,6 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Media;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using StackExchange.Redis;
@@ -61,9 +62,9 @@ namespace Geekbot.net
                 redis = redisMultiplexer.GetDatabase(6);
                 logger.Information($"[Redis] Connected to db {redis.Database}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                logger.Information("Start Redis pls...");
+                logger.Fatal(e, "Redis Connection Failed");
                 Environment.Exit(102);
             }
 
@@ -90,7 +91,7 @@ namespace Geekbot.net
             var fortunes = new FortunesProvider(RandomClient, logger);
             var checkEmImages = new CheckEmImageProvider(RandomClient, logger);
             var pandaImages = new PandaProvider(RandomClient, logger);
-            IErrorHandler errorHandler = new ErrorHandler(logger);
+            var errorHandler = new ErrorHandler(logger);
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
             services.AddSingleton(RandomClient);

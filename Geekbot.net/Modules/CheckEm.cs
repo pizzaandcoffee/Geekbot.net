@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Media;
 using Serilog;
 
 namespace Geekbot.net.Modules

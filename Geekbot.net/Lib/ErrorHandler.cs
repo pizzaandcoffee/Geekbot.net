@@ -15,7 +15,7 @@ namespace Geekbot.net.Lib
 //            this.botOwnerDmChannel = botOwnerDmChannel;
         }
 
-        public async void HandleCommandException(Exception e, ICommandContext Context)
+        public void HandleCommandException(Exception e, ICommandContext Context)
         {
             var errorMsg =
                 $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\"";
