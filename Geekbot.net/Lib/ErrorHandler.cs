@@ -15,11 +15,15 @@ namespace Geekbot.net.Lib
 //            this.botOwnerDmChannel = botOwnerDmChannel;
         }
 
-        public void HandleCommandException(Exception e, ICommandContext Context)
+        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "")
         {
             var errorMsg =
                 $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\", complete message was \"{Context.Message}\"";
             logger.Error(e, errorMsg);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Context.Channel.SendMessageAsync(errorMessage);
+            }
 //            await botOwnerDmChannel.SendMessageAsync($"{errorMsg}```{e.StackTrace}```");
 //            await Context.Channel.SendMessageAsync("Something went wrong...");
         }
@@ -27,6 +31,6 @@ namespace Geekbot.net.Lib
 
     public interface IErrorHandler
     {
-        void HandleCommandException(Exception e, ICommandContext Context);
+        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "");
     }
 }

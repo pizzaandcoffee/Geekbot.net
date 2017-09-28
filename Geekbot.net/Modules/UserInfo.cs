@@ -111,7 +111,7 @@ namespace Geekbot.net.Modules
 
         private string NumerToEmoji(int number)
         {
-            var emojis = new string[] {":one:", ":two:", ":three:", ":four:", ":five:", ":six", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
+            var emojis = new string[] {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
             try
             {
                 return emojis[number - 1];

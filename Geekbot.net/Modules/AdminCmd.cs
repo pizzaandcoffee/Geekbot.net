@@ -36,10 +36,10 @@ namespace Geekbot.net.Modules
         [Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
-            var botOwner = redis.StringGet("botOwner");
-            if (!Context.User.Id.ToString().Equals(botOwner.ToString()))
+            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
+            if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
             {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner}");
+                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
                 return;
             }
 
@@ -51,10 +51,10 @@ namespace Geekbot.net.Modules
         [Summary("Set the game that the bot is playing")]
         public async Task SetGame([Remainder] [Summary("Game")] string key)
         {
-            var botOwner = redis.StringGet("botOwner");
-            if (!Context.User.Id.ToString().Equals(botOwner.ToString()))
+            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
+            if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
             {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner}");
+                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
                 return;
             }
 
