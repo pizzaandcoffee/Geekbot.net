@@ -50,12 +50,7 @@ namespace Geekbot.net.Modules
             try
             {
                 var lastMessage = await getLastMessageByUser(user);
-                var quote = new QuoteObject()
-                {
-                    userId = user.Id,
-                    time = DateTime.Now,
-                    quote = lastMessage.Content
-                };
+                var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
                 await ReplyAsync("Quote Added");
@@ -73,12 +68,7 @@ namespace Geekbot.net.Modules
             try
             {
                 var message = await Context.Channel.GetMessageAsync(messageId);
-                var quote = new QuoteObject()
-                {
-                    userId = message.Author.Id,
-                    time = DateTime.Now,
-                    quote = message.Content
-                };
+                var quote = createQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
                 await ReplyAsync("Quote Added");
@@ -96,12 +86,7 @@ namespace Geekbot.net.Modules
             try
             {
                 var lastMessage = await getLastMessageByUser(user);
-                var quote = new QuoteObject()
-                {
-                    userId = user.Id,
-                    time = DateTime.Now,
-                    quote = lastMessage.Content
-                };
+                var quote = createQuoteObject(lastMessage);
                 var embed = quoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
             }
@@ -118,12 +103,7 @@ namespace Geekbot.net.Modules
             try
             {
                 var message = await Context.Channel.GetMessageAsync(messageId);
-                var quote = new QuoteObject()
-                {
-                    userId = message.Author.Id,
-                    time = DateTime.Now,
-                    quote = message.Content
-                };
+                var quote = createQuoteObject(message);
                 var embed = quoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
             }
@@ -137,27 +117,53 @@ namespace Geekbot.net.Modules
         {
             Task<IEnumerable<IMessage>> list = Context.Channel.GetMessagesAsync().Flatten();
             await list;
-            return list.Result.Where(msg => 
-                    msg.Author.Id == user.Id 
+            return list.Result
+                .First(msg => msg.Author.Id == user.Id 
                     && msg.Embeds.Count == 0 
-                    && msg.Id != Context.Message.Id)
-                .First();
+                    && msg.Id != Context.Message.Id
+                    && !msg.Content.ToLower().StartsWith("!"));
         }
         
         private EmbedBuilder quoteBuilder(QuoteObject quote)
         {
             var user = Context.Client.GetUserAsync(quote.userId).Result;
             var eb = new EmbedBuilder();
-
+            eb.WithColor(new Color(143, 167, 232));
+            eb.Title = $"{user.Username} @ {quote.time.Day}.{quote.time.Month}.{quote.time.Year}";
+            eb.Description = quote.quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
-            eb.AddField(quote.quote, $"-- {user.Username} - {quote.time.Day}.{quote.time.Month}.{quote.time.Year}");
+            if (quote.image != null)
+            {
+                eb.ImageUrl = quote.image;
+            }
             return eb;
+        }
+
+        private QuoteObject createQuoteObject(IMessage message)
+        {
+            string image;
+            try
+            {
+                image = message.Attachments.First().Url;
+            }
+            catch (Exception)
+            {
+                image = null;
+            }
+            return new QuoteObject()
+            {
+                userId = message.Author.Id,
+                time = message.Timestamp.DateTime,
+                quote = message.Content,
+                image = image
+            };
         }
     }
     
     public class QuoteObject {
         public ulong userId { get; set; }
-        public DateTime time { get; set; }
         public string quote { get; set; }
+        public DateTime time { get; set; }
+        public string image { get; set; }
     }
 }

@@ -238,7 +238,7 @@ namespace Geekbot.net
             return Task.CompletedTask;
         }
         
-        // temporary db migration script
+        // db migration script
         private Task MigrateDatabaseToHash()
         {
             foreach (var key in redis.Multiplexer.GetServer("127.0.0.1", 6379).Keys(6))
