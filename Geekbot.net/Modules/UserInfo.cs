@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -35,18 +33,17 @@ namespace Geekbot.net.Modules
             var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
 
             var messages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
-            var level = LevelCalc.GetLevelAtExperience(messages);
-
-            var guildKey = Context.Guild.Id.ToString();
             var guildMessages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+            var level = LevelCalc.GetLevelAtExperience(messages);
 
             var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
             var eb = new EmbedBuilder();
-            eb.WithAuthor(new EmbedAuthorBuilder()
-                .WithIconUrl(userInfo.GetAvatarUrl())
-                .WithName(userInfo.Username));
-
+//            eb.WithAuthor(new EmbedAuthorBuilder()
+//                .WithIconUrl(userInfo.GetAvatarUrl())
+//                .WithName(userInfo.Username));
+            eb.Title = $":bar_chart: {userInfo.Username}#{userInfo.Discriminator}";
+            eb.ThumbnailUrl = userInfo.GetAvatarUrl();
             eb.WithColor(new Color(221, 255, 119));
 
             eb.AddField("Discordian Since",
@@ -77,28 +74,57 @@ namespace Geekbot.net.Modules
                 var guildMessages = (int) sortedList.First().Value;
                 sortedList.RemoveAt(0);
 
-                var highscoreUsers = new Dictionary<IGuildUser, int>();
+                var highscoreUsers = new Dictionary<RankUserPolyfill, int>();
                 var listLimiter = 1;
+                var failedToRetrieveUser = false;
                 foreach (var user in sortedList)
                 {
                     if (listLimiter > 10) break;
-                    
-                    var guildUser = Context.Guild.GetUserAsync((ulong) user.Name).Result;
-                    if (guildUser != null)
+                    try
                     {
-                        highscoreUsers.Add(guildUser, (int)user.Value);
+                        var guildUser = Context.Guild.GetUserAsync((ulong) user.Name).Result;
+                        if (guildUser != null)
+                        {
+                            highscoreUsers.Add(new RankUserPolyfill()
+                            {
+                                Username = guildUser.Username,
+                                Discriminator = guildUser.Discriminator
+                            }, (int) user.Value);
+                        }
+                        else
+                        {
+                            highscoreUsers.Add(new RankUserPolyfill()
+                            {
+                                Id = user.Name
+                            }, (int) user.Value);
+                            failedToRetrieveUser = true;
+                        }
                         listLimiter++;
                     }
+                    catch (Exception e)
+                    {
+                        logger.Warning(e, $"Could not retrieve user {user.Name}");
+                    }
+                    
                 }
                 
                 var highScore = new StringBuilder();
+                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, i mentioned the missing ones, sorry!\n");
                 highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
                 {
                     var percent = Math.Round((double) (100 * user.Value) / guildMessages, 2);
-                    highScore.AppendLine(
-                        $"{NumerToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
+                    if (user.Key.Username != null)
+                    {
+                        highScore.AppendLine(
+                            $"{NumerToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
+                    }
+                    else
+                    {
+                        highScore.AppendLine(
+                            $"{NumerToEmoji(highscorePlace)} **<@{user.Key.Id}>** - {percent}% of total - {user.Value} messages");
+                    }
                     highscorePlace++;
                 }
                 await ReplyAsync(highScore.ToString());
@@ -122,5 +148,12 @@ namespace Geekbot.net.Modules
                 return ":zero:";
             }
         }
+    }
+
+    class RankUserPolyfill
+    {
+        public string Username { get; set; }
+        public string Discriminator { get; set; }
+        public string Id { get; set; }
     }
 }
