@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +26,8 @@ namespace Geekbot.net
         private IServiceProvider servicesProvider;
         private RedisValue token;
         private ILogger logger;
-        private ulong botOwnerId;
+        private string[] args;
+        private bool firstStart = false;
 
         private static void Main(string[] args)
         {
@@ -44,6 +47,7 @@ namespace Geekbot.net
         private async Task MainAsync(string[] args, ILogger logger)
         {
             this.logger = logger;
+            this.args = args;
             logger.Information("[Geekbot] Initing Stuff");
 
             client = new DiscordSocketClient(new DiscordSocketConfig
@@ -91,16 +95,8 @@ namespace Geekbot.net
                 redis.StringSet("discordToken", newToken);
                 redis.StringSet("Game", "Ping Pong");
                 token = newToken;
+                firstStart = true;
             }
-
-            var botOwner = redis.StringGet("botOwner");
-            if (botOwner.IsNullOrEmpty)
-            {
-                Console.Write("Bot Owner User ID: ");
-                botOwner = Console.ReadLine();
-                redis.StringSet("botOwner", botOwner);
-            }
-            botOwnerId = (ulong) botOwner;
 
             services = new ServiceCollection();
             var RandomClient = new Random();
@@ -144,7 +140,15 @@ namespace Geekbot.net
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
                     services.AddSingleton<DiscordSocketClient>(client);
-                    this.servicesProvider = services.BuildServiceProvider();
+                    servicesProvider = services.BuildServiceProvider();
+
+                    if (firstStart || (args.Length != 0 && args.Contains("--reset")))
+                    {
+                        logger.Information("[Geekbot] Finishing setup");
+                        await FinishSetup();
+                        logger.Information("[Geekbot] Setup finished");
+                    }
+                    
                     logger.Information("[Geekbot] Done and ready for use\n");
                 }
             }
@@ -162,44 +166,46 @@ namespace Geekbot.net
             return true;
         }
 
-        private async Task HandleCommand(SocketMessage messageParam)
+        private Task HandleCommand(SocketMessage messageParam)
         {
             var message = messageParam as SocketUserMessage;
-            if (message == null) return;
-            if (message.Author.IsBot) return;
+            if (message == null) return Task.CompletedTask;
+            if (message.Author.IsBot) return Task.CompletedTask;
             var argPos = 0;
             var lowCaseMsg = message.ToString().ToLower();
             if (lowCaseMsg.StartsWith("ping"))
             {
-                await message.Channel.SendMessageAsync("pong");
-                return;
+                message.Channel.SendMessageAsync("pong");
+                return Task.CompletedTask;
             }
             if (lowCaseMsg.StartsWith("hui"))
             {
-                await message.Channel.SendMessageAsync("hui!!!");
-                return;
+                message.Channel.SendMessageAsync("hui!!!");
+                return Task.CompletedTask;
             }
             if (!(message.HasCharPrefix('!', ref argPos) ||
-                  message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
+                  message.HasMentionPrefix(client.CurrentUser, ref argPos))) return Task.CompletedTask;
             var context = new CommandContext(client, message);
             var commandExec = commands.ExecuteAsync(context, argPos, servicesProvider);
+            return Task.CompletedTask;
         }
 
-        private async Task HandleMessageReceived(SocketMessage messsageParam)
+        private Task HandleMessageReceived(SocketMessage messsageParam)
         {
             var message = messsageParam;
-            if (message == null) return;
+            if (message == null) return Task.CompletedTask;
             
             var channel = (SocketGuildChannel) message.Channel;
             
-            await redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-            await redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
+            redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
+            redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
-            if (message.Author.IsBot) return;
+            if (message.Author.IsBot) return Task.CompletedTask;
             logger.Information($"[Message] {channel.Guild.Name} - {message.Channel} - {message.Author.Username} - {message.Content}");
+            return Task.CompletedTask;
         }
 
-        private async Task HandleUserJoined(SocketGuildUser user)
+        private Task HandleUserJoined(SocketGuildUser user)
         {
             if (!user.IsBot)
             {
@@ -207,9 +213,23 @@ namespace Geekbot.net
                 if (!message.IsNullOrEmpty)
                 {
                     message = message.ToString().Replace("$user", user.Mention);
-                    await user.Guild.DefaultChannel.SendMessageAsync(message);
+                    user.Guild.DefaultChannel.SendMessageAsync(message);
                 }
             }
+            return Task.CompletedTask;
+        }
+
+        private async Task<Task> FinishSetup()
+        {
+            var appInfo = await client.GetApplicationInfoAsync();
+            redis.StringSet("botOwner", appInfo.Owner.Id);
+
+            var req = HttpWebRequest.Create(appInfo.IconUrl);
+            using (Stream stream = req.GetResponse().GetResponseStream() )
+            {
+                await client.CurrentUser.ModifyAsync(Avatar => new Image(stream));
+            }
+            return Task.CompletedTask;
         }
 
         private Task DiscordLogger(LogMessage message)

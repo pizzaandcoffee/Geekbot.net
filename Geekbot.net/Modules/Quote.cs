@@ -53,7 +53,8 @@ namespace Geekbot.net.Modules
                 var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
-                await ReplyAsync("Quote Added");
+                var embed = quoteBuilder(quote);
+                await ReplyAsync("**Quote Added**", false, embed.Build());
             }
             catch (Exception e)
             {
@@ -71,7 +72,9 @@ namespace Geekbot.net.Modules
                 var quote = createQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
-                await ReplyAsync("Quote Added");
+                var embed = quoteBuilder(quote);
+                await ReplyAsync("**Quote Added**", false, embed.Build());
+                
             }
             catch (Exception e)
             {

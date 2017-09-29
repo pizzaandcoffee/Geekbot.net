@@ -39,11 +39,9 @@ namespace Geekbot.net.Modules
             var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
             var eb = new EmbedBuilder();
-//            eb.WithAuthor(new EmbedAuthorBuilder()
-//                .WithIconUrl(userInfo.GetAvatarUrl())
-//                .WithName(userInfo.Username));
-            eb.Title = $":bar_chart: {userInfo.Username}#{userInfo.Discriminator}";
-            eb.ThumbnailUrl = userInfo.GetAvatarUrl();
+            eb.WithAuthor(new EmbedAuthorBuilder()
+                .WithIconUrl(userInfo.GetAvatarUrl())
+                .WithName(userInfo.Username));
             eb.WithColor(new Color(221, 255, 119));
 
             eb.AddField("Discordian Since",
@@ -109,7 +107,7 @@ namespace Geekbot.net.Modules
                 }
                 
                 var highScore = new StringBuilder();
-                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, i mentioned the missing ones, sorry!\n");
+                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, sorry! (bugfix coming soon:tm:)\n");
                 highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
@@ -123,7 +121,7 @@ namespace Geekbot.net.Modules
                     else
                     {
                         highScore.AppendLine(
-                            $"{NumerToEmoji(highscorePlace)} **<@{user.Key.Id}>** - {percent}% of total - {user.Value} messages");
+                            $"{NumerToEmoji(highscorePlace)} **{user.Key.Id}** - {percent}% of total - {user.Value} messages");
                     }
                     highscorePlace++;
                 }

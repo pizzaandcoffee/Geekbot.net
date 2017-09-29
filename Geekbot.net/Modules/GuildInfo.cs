@@ -22,12 +22,10 @@ namespace Geekbot.net.Modules
         public async Task getInfo()
         {
             var eb = new EmbedBuilder();
-//            eb.WithAuthor(new EmbedAuthorBuilder()
-//                .WithIconUrl(Context.Guild.IconUrl)
-//                .WithName(Context.Guild.Name));
+            eb.WithAuthor(new EmbedAuthorBuilder()
+                .WithIconUrl(Context.Guild.IconUrl)
+                .WithName(Context.Guild.Name));
             eb.WithColor(new Color(110, 204, 147));
-            eb.Title = $":bar_chart: {Context.Guild.Name}";
-            eb.ThumbnailUrl = Context.Guild.IconUrl;
 
             var created = Context.Guild.CreatedAt;
             var age = Math.Floor((DateTime.Now - created).TotalDays);
