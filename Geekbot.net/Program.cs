@@ -26,6 +26,7 @@ namespace Geekbot.net
         private IServiceProvider servicesProvider;
         private RedisValue token;
         private ILogger logger;
+        private IUserRepository userRepository;
         private string[] args;
         private bool firstStart = false;
 
@@ -99,16 +100,19 @@ namespace Geekbot.net
             }
 
             services = new ServiceCollection();
+            
+            userRepository = new UserRepository(redis, logger);
+            var errorHandler = new ErrorHandler(logger);
             var RandomClient = new Random();
             var fortunes = new FortunesProvider(RandomClient, logger);
             var checkEmImages = new CheckEmImageProvider(RandomClient, logger);
             var pandaImages = new PandaProvider(RandomClient, logger);
-            var errorHandler = new ErrorHandler(logger);
             
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
-            services.AddSingleton(RandomClient);
             services.AddSingleton<ILogger>(logger);
+            services.AddSingleton<IUserRepository>(userRepository);
+            services.AddSingleton(RandomClient);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<ICheckEmImageProvider>(checkEmImages);
             services.AddSingleton<IPandaProvider>(pandaImages);
@@ -133,14 +137,18 @@ namespace Geekbot.net
                     logger.Information($"[Geekbot] Now Connected to {client.Guilds.Count} Servers");
 
                     logger.Information("[Geekbot] Registering Stuff");
-
-                    client.MessageReceived += HandleCommand;
-                    client.MessageReceived += HandleMessageReceived;
-                    client.UserJoined += HandleUserJoined;
+                    
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
                     services.AddSingleton<DiscordSocketClient>(client);
                     servicesProvider = services.BuildServiceProvider();
+                    
+                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository);
+                    
+                    client.MessageReceived += handlers.RunCommand;
+                    client.MessageReceived += handlers.UpdateStats;
+                    client.UserJoined += handlers.UserJoined;
+                    client.UserUpdated += handlers.UserUpdated;
 
                     if (firstStart || (args.Length != 0 && args.Contains("--reset")))
                     {
@@ -164,59 +172,6 @@ namespace Geekbot.net
             while (!client.ConnectionState.Equals(ConnectionState.Connected))
                 await Task.Delay(25);
             return true;
-        }
-
-        private Task HandleCommand(SocketMessage messageParam)
-        {
-            var message = messageParam as SocketUserMessage;
-            if (message == null) return Task.CompletedTask;
-            if (message.Author.IsBot) return Task.CompletedTask;
-            var argPos = 0;
-            var lowCaseMsg = message.ToString().ToLower();
-            if (lowCaseMsg.StartsWith("ping"))
-            {
-                message.Channel.SendMessageAsync("pong");
-                return Task.CompletedTask;
-            }
-            if (lowCaseMsg.StartsWith("hui"))
-            {
-                message.Channel.SendMessageAsync("hui!!!");
-                return Task.CompletedTask;
-            }
-            if (!(message.HasCharPrefix('!', ref argPos) ||
-                  message.HasMentionPrefix(client.CurrentUser, ref argPos))) return Task.CompletedTask;
-            var context = new CommandContext(client, message);
-            var commandExec = commands.ExecuteAsync(context, argPos, servicesProvider);
-            return Task.CompletedTask;
-        }
-
-        private Task HandleMessageReceived(SocketMessage messsageParam)
-        {
-            var message = messsageParam;
-            if (message == null) return Task.CompletedTask;
-            
-            var channel = (SocketGuildChannel) message.Channel;
-            
-            redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-            redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
-
-            if (message.Author.IsBot) return Task.CompletedTask;
-            logger.Information($"[Message] {channel.Guild.Name} - {message.Channel} - {message.Author.Username} - {message.Content}");
-            return Task.CompletedTask;
-        }
-
-        private Task HandleUserJoined(SocketGuildUser user)
-        {
-            if (!user.IsBot)
-            {
-                var message = redis.HashGet($"{user.Guild.Id}:Settings", "WelcomeMsg");
-                if (!message.IsNullOrEmpty)
-                {
-                    message = message.ToString().Replace("$user", user.Mention);
-                    user.Guild.DefaultChannel.SendMessageAsync(message);
-                }
-            }
-            return Task.CompletedTask;
         }
 
         private async Task<Task> FinishSetup()
@@ -252,7 +207,7 @@ namespace Geekbot.net
                     logger.Error(message.Exception, logMessage);
                     break;
                 default:
-                    logger.Information($"{logMessage} --- {message.Severity.ToString()}");
+                    logger.Information($"{logMessage} --- {message.Severity}");
                     break;
             }
             return Task.CompletedTask;

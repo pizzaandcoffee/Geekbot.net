@@ -16,49 +16,60 @@ namespace Geekbot.net.Modules
         private readonly IDatabase redis;
         private readonly IErrorHandler errorHandler;
         private readonly ILogger logger;
+        private readonly IUserRepository userRepository;
         
-        public UserInfo(IDatabase redis, IErrorHandler errorHandler, ILogger logger)
+        public UserInfo(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository)
         {
             this.redis = redis;
             this.errorHandler = errorHandler;
             this.logger = logger;
+            this.userRepository = userRepository;
         }
 
         [Command("stats", RunMode = RunMode.Async)]
         [Summary("Get information about this user")]
         public async Task User([Summary("@someone")] IUser user = null)
         {
-            var userInfo = user ?? Context.Message.Author;
+            try
+            {
+                var userInfo = user ?? Context.Message.Author;
+                var userGuildInfo = (IGuildUser) userInfo;
+                var createdAt = userInfo.CreatedAt;
+                var joinedAt = userGuildInfo.JoinedAt.Value;
+                var age = Math.Floor((DateTime.Now - createdAt).TotalDays);
+                var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
-            var age = Math.Floor((DateTime.Now - userInfo.CreatedAt).TotalDays);
+                var messages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
+                var guildMessages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                var level = LevelCalc.GetLevelAtExperience(messages);
 
-            var messages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
-            var guildMessages = (int) redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
-            var level = LevelCalc.GetLevelAtExperience(messages);
+                var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
-            var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder()
+                    .WithIconUrl(userInfo.GetAvatarUrl())
+                    .WithName(userInfo.Username));
+                eb.WithColor(new Color(221, 255, 119));
+                
+                var karma = redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id);
+                var correctRolls = redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
 
-            var eb = new EmbedBuilder();
-            eb.WithAuthor(new EmbedAuthorBuilder()
-                .WithIconUrl(userInfo.GetAvatarUrl())
-                .WithName(userInfo.Username));
-            eb.WithColor(new Color(221, 255, 119));
+                eb.AddInlineField("Discordian Since", $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
+                    .AddInlineField("Joined Server", $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
+                    .AddInlineField("Karma", karma.ToString() ?? "0")
+                    .AddInlineField("Level", level)
+                    .AddInlineField("Messages Sent", messages)
+                    .AddInlineField("Server Total", $"{percent}%");
 
-            eb.AddField("Discordian Since",
-                $"{userInfo.CreatedAt.Day}/{userInfo.CreatedAt.Month}/{userInfo.CreatedAt.Year} ({age} days)");
-            eb.AddInlineField("Level", level)
-                .AddInlineField("Messages Sent", messages)
-                .AddInlineField("Server Total", $"{percent}%");
+                if (!correctRolls.IsNullOrEmpty)
+                    eb.AddInlineField("Guessed Rolls", correctRolls);
 
-            var karma = redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id.ToString());
-            if (!karma.IsNullOrEmpty)
-                eb.AddInlineField("Karma", karma);
-
-            var correctRolls = redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
-            if (!correctRolls.IsNullOrEmpty)
-                eb.AddInlineField("Guessed Rolls", correctRolls);
-
-            await ReplyAsync("", false, eb.Build());
+                await ReplyAsync("", false, eb.Build());
+            }
+            catch (Exception e)
+            {
+                errorHandler.HandleCommandException(e, Context);
+            }
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -80,8 +91,8 @@ namespace Geekbot.net.Modules
                     if (listLimiter > 10) break;
                     try
                     {
-                        var guildUser = Context.Guild.GetUserAsync((ulong) user.Name).Result;
-                        if (guildUser != null)
+                        var guildUser = userRepository.Get((ulong)user.Name);
+                        if (guildUser.Username != null)
                         {
                             highscoreUsers.Add(new RankUserPolyfill()
                             {
