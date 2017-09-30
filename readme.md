@@ -1,18 +1,25 @@
-# Geekbot.net
+# [Geekbot.net](https://geekbot.pizzaandcoffee.rocks/)
 
-A General Purpose Discord Bot written in DotNet Core
+A General Purpose Discord Bot written in DotNet Core.
 
 You can invite Geekbot to your server with [this link](https://discordapp.com/oauth2/authorize?client_id=171249478546882561&scope=bot&permissions=1416834054)
 
-### Building
+### Technologies
 
-Geekbot.net Requires dotnet core 2.0.0 and dotnet core cli 2.0.0
+* DotNet Core 2
+* Redis
+* Discord.net
 
-`dotnet restore`
+### Running
 
-`cd Geekbot.net`
+Make sure redis is running
 
-`dotnet run`
+Run these commands
+
+* `dotnet restore`
+* `dotnet run`
+
+On your first run geekbot will ask for your bot token, everything else is taken care of.
 
 ### Contributing
 
