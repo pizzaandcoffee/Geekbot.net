@@ -53,7 +53,9 @@ namespace Geekbot.net
 
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Verbose
+                LogLevel = LogSeverity.Verbose,
+                MessageCacheSize = 1000,
+                AlwaysDownloadUsers = true
             });
             client.Log += DiscordLogger;
             commands = new CommandService();
@@ -147,8 +149,10 @@ namespace Geekbot.net
                     
                     client.MessageReceived += handlers.RunCommand;
                     client.MessageReceived += handlers.UpdateStats;
+                    client.MessageDeleted += handlers.MessageDeleted;
                     client.UserJoined += handlers.UserJoined;
                     client.UserUpdated += handlers.UserUpdated;
+                    client.UserLeft += handlers.UserLeft;
 
                     if (firstStart || (args.Length != 0 && args.Contains("--reset")))
                     {

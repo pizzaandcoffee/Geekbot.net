@@ -40,9 +40,15 @@ namespace Geekbot.net.Lib
 
         public UserRepositoryUser Get(ulong userId)
         {
-            var user = _redis.HashGetAll($"Users:{userId}").ToDictionary();
+            var user = _redis.HashGetAll($"Users:{userId}");
+            for (int i = 1; i < 6; i++)
+            {
+                if (user.Length != 0) break;
+                user = _redis.HashGetAll($"Users:{userId + (ulong)i}");
+                
+            }
             var dto = new UserRepositoryUser();
-            foreach (var a in user)
+            foreach (var a in user.ToDictionary())
             {
                 switch (a.Key)
                 {

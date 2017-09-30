@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -95,6 +96,65 @@ namespace Geekbot.net
         {
             _userRepository.Update(newUser);
             return Task.CompletedTask;
+        }
+
+        public async Task UserLeft(SocketGuildUser user)
+        {
+            try
+            {
+                var sendLeftEnabled = _redis.HashGet($"{user.Guild.Id}:Settings", "ShowLeave");
+                if (sendLeftEnabled.ToString() == "1")
+                {
+                    var modChannel = _redis.HashGet($"{user.Guild.Id}:Settings", "ModChannel");
+                    if (!string.IsNullOrEmpty(modChannel))
+                    {
+                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync((ulong)modChannel);
+                        await modChannelSocket.SendMessageAsync($"{user.Username}#{user.Discriminator} left the server");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to send leave message...");
+            }
+            _logger.Information($"[Geekbot] {user.Id} ({user.Username}) left {user.Guild.Id} ({user.Guild.Name})");
+        }
+        
+        //
+        // Message Stuff
+        //
+        
+        public async Task MessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
+        {
+            try
+            {
+                var guild = ((IGuildChannel) channel).Guild;
+                var sendLeftEnabled = _redis.HashGet($"{guild.Id}:Settings", "ShowDelete");
+                if (sendLeftEnabled.ToString() == "1")
+                {
+                    var modChannel = _redis.HashGet($"{guild.Id}:Settings", "ModChannel");
+                    if (!string.IsNullOrEmpty(modChannel))
+                    {
+                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync((ulong)modChannel);
+                        var sb = new StringBuilder();
+                        if (message.Value != null)
+                        {
+                            sb.AppendLine(
+                                $"{message.Value.Author.Username}#{message.Value.Author.Discriminator} deleted the following message from <#{channel.Id}>");
+                            sb.AppendLine(message.Value.Content);
+                        }
+                        else
+                        {
+                            sb.AppendLine("Someone deleted a message, the message was not cached...");
+                        }
+                        await modChannelSocket.SendMessageAsync(sb.ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to send delete message...");
+            }
         }
     }
 }
