@@ -109,6 +109,7 @@ namespace Geekbot.net
             var fortunes = new FortunesProvider(RandomClient, logger);
             var checkEmImages = new CheckEmImageProvider(RandomClient, logger);
             var pandaImages = new PandaProvider(RandomClient, logger);
+            var malClient = new MalClient(redis, logger);
             
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
@@ -118,6 +119,7 @@ namespace Geekbot.net
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<ICheckEmImageProvider>(checkEmImages);
             services.AddSingleton<IPandaProvider>(pandaImages);
+            services.AddSingleton<IMalClient>(malClient);
 
             logger.Information("[Geekbot] Connecting to Discord");
 
