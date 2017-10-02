@@ -7,11 +7,11 @@ namespace Geekbot.net.Commands
 {
     public class Help : ModuleBase
     {
-        private readonly CommandService commands;
+        private readonly CommandService _commands;
 
         public Help(CommandService commands)
         {
-            this.commands = commands;
+            _commands = commands;
         }
 
         [Command("help", RunMode = RunMode.Async)]
@@ -23,7 +23,7 @@ namespace Geekbot.net.Commands
             sb.AppendLine("**Geekbot Command list**");
             sb.AppendLine("");
             sb.AppendLine(tp("Name", 15) + tp("Parameters", 19) + "Description");
-            foreach (var cmd in commands.Commands)
+            foreach (var cmd in _commands.Commands)
             {
                 var param = string.Join(", !", cmd.Aliases);
                 if (!param.Contains("admin"))

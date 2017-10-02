@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,7 +10,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
-using Geekbot.net.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using Serilog;
@@ -83,7 +81,7 @@ namespace Geekbot.net
                 if (migrateDbConfirm.Key == ConsoleKey.Y)
                 {
                     logger.Warning("[Geekbot] Starting Migration");
-                    await MigrateDatabaseToHash();
+                    await DbMigration.MigrateDatabaseToHash(redis, logger);
                     logger.Warning("[Geekbot] Finished Migration");
                 }
                 else
@@ -167,7 +165,9 @@ namespace Geekbot.net
                     if (!args.Contains("--disable-api"))
                     {
                         logger.Information("[API] Starting Webserver");
-                        new NancyHost(new Uri("http://localhost:4567")).Start();
+                        var webApiUrl = new Uri("http://localhost:12995");
+                        new NancyHost(webApiUrl).Start();
+                        logger.Information($"[API] Webserver now running on {webApiUrl}");
                     }
                     
                     logger.Information("[Geekbot] Done and ready for use\n");
@@ -222,48 +222,6 @@ namespace Geekbot.net
                 default:
                     logger.Information($"{logMessage} --- {message.Severity}");
                     break;
-            }
-            return Task.CompletedTask;
-        }
-        
-        // db migration script
-        private Task MigrateDatabaseToHash()
-        {
-            foreach (var key in redis.Multiplexer.GetServer("127.0.0.1", 6379).Keys(6))
-            {
-                var keyParts = key.ToString().Split("-");
-                if (keyParts.Length == 2 || keyParts.Length == 3)
-                {
-                    logger.Verbose($"Migrating key {key}");
-                    var stuff = new List<string>();
-                    stuff.Add("messages");
-                    stuff.Add("karma");
-                    stuff.Add("welcomeMsg");
-                    stuff.Add("correctRolls");
-                    if(stuff.Contains(keyParts[keyParts.Length - 1]))
-                    {
-                        var val = redis.StringGet(key);
-                        ulong.TryParse(keyParts[0], out ulong guildId);
-                        ulong.TryParse(keyParts[1], out ulong userId);
-
-                        switch (keyParts[keyParts.Length - 1])
-                        {
-                            case "messages":
-                                redis.HashSet($"{guildId}:Messages", new HashEntry[] { new HashEntry(userId.ToString(), val) });
-                                break;
-                            case "karma":
-                                redis.HashSet($"{guildId}:Karma", new HashEntry[] { new HashEntry(userId.ToString(), val) });
-                                break;
-                            case "correctRolls":
-                                redis.HashSet($"{guildId}:Rolls", new HashEntry[] { new HashEntry(userId.ToString(), val) });
-                                break;
-                            case "welcomeMsg":
-                                redis.HashSet($"{guildId}:Settings", new HashEntry[] { new HashEntry("WelcomeMsg", val) });
-                                break;
-                        }
-                    }
-                    redis.KeyDelete(key);
-                }
             }
             return Task.CompletedTask;
         }

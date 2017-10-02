@@ -1,17 +1,18 @@
 ﻿using Nancy;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net.WebApi
 {
-    public class Status : NancyModule
+    public class StatusController : NancyModule
     {
-        public Status()
+        public StatusController()
         {
             Get("/", args =>
             {
                 var responseBody = new ApiStatusDto()
                 {
-                    GeekbotVersion = "3.4",
-                    ApiVersion = "0.1",
+                    GeekbotVersion = Constants.BotVersion.ToString(),
+                    ApiVersion = Constants.ApiVersion.ToString(),
                     Status = "Online"
                 };
                 return Response.AsJson(responseBody);
