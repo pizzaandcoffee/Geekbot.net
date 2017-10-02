@@ -2,7 +2,7 @@
 using Discord;
 using Discord.Commands;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Say : ModuleBase
     {

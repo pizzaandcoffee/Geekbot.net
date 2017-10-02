@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Newtonsoft.Json;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Dog : ModuleBase
     {

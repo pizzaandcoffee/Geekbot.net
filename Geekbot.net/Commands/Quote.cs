@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Serilog;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     [Group("quote")]
     public class Quote : ModuleBase

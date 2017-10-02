@@ -7,7 +7,7 @@ using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
 using Serilog;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class CheckEm : ModuleBase
     {

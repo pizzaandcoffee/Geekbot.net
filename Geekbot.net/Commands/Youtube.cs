@@ -5,7 +5,7 @@ using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Youtube : ModuleBase
     {

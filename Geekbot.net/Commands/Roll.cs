@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Roll : ModuleBase
     {

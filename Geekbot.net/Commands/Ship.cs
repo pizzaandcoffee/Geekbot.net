@@ -4,7 +4,7 @@ using Discord;
 using Discord.Commands;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Ship : ModuleBase
     {

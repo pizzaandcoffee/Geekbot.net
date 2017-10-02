@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Ping : ModuleBase
     {

@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using StackExchange.Redis;
 using Serilog;
+using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Counters : ModuleBase
     {

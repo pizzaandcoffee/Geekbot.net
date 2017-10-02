@@ -11,7 +11,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
+using Geekbot.net.WebApi;
 using Microsoft.Extensions.DependencyInjection;
+using Nancy.Hosting.Self;
 using Serilog;
 using StackExchange.Redis;
 
@@ -72,7 +74,7 @@ namespace Geekbot.net
                 Environment.Exit(102);
             }
 
-            if (args.Length != 0 && args.Contains("--migrate"))
+            if (args.Contains("--migrate"))
             {
                 Console.WriteLine("\nYou are about to migrate the database, this will overwrite an already migrated database?");
                 Console.Write("Are you sure [y:N]: ");
@@ -156,11 +158,16 @@ namespace Geekbot.net
                     client.UserUpdated += handlers.UserUpdated;
                     client.UserLeft += handlers.UserLeft;
 
-                    if (firstStart || (args.Length != 0 && args.Contains("--reset")))
+                    if (firstStart || args.Contains("--reset"))
                     {
                         logger.Information("[Geekbot] Finishing setup");
                         await FinishSetup();
                         logger.Information("[Geekbot] Setup finished");
+                    }
+                    if (!args.Contains("--disable-api"))
+                    {
+                        logger.Information("[API] Starting Webserver");
+                        new NancyHost(new Uri("http://localhost:4567")).Start();
                     }
                     
                     logger.Information("[Geekbot] Done and ready for use\n");

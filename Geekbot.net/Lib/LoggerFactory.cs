@@ -10,7 +10,7 @@ namespace Geekbot.net.Lib
             var loggerCreation = new LoggerConfiguration()
                 .WriteTo.LiterateConsole()
                 .WriteTo.RollingFile("Logs/geekbot-{Date}.txt", shared: true);
-            if (args.Length != 0 && args.Contains("--verbose"))
+            if (args.Contains("--verbose"))
             {
                 loggerCreation.MinimumLevel.Verbose();
             }

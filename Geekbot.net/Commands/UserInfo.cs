@@ -9,7 +9,7 @@ using Geekbot.net.Lib;
 using Serilog;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class UserInfo : ModuleBase
     {

@@ -4,7 +4,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class mal : ModuleBase
     {

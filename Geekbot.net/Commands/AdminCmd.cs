@@ -8,7 +8,7 @@ using Geekbot.net.Lib;
 using Serilog;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     [Group("admin")]
     public class AdminCmd : ModuleBase
@@ -85,7 +85,7 @@ namespace Geekbot.net.Modules
                     return;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 await ReplyAsync(
                     $"Sorry, only the botowner can do this");

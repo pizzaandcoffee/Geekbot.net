@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Geekbot.net.Lib.Media;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Fortune : ModuleBase
     {

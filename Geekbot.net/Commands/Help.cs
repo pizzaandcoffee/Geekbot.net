@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace Geekbot.net.Modules
+namespace Geekbot.net.Commands
 {
     public class Help : ModuleBase
     {
