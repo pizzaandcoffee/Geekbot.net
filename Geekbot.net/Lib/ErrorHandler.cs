@@ -15,7 +15,7 @@ namespace Geekbot.net.Lib
 //            this.botOwnerDmChannel = botOwnerDmChannel;
         }
 
-        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "")
+        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "Something went wrong :confused:")
         {
             var errorMsg =
                 $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\", complete message was \"{Context.Message}\"";
@@ -31,6 +31,6 @@ namespace Geekbot.net.Lib
 
     public interface IErrorHandler
     {
-        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "");
+        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "Something went wrong :confused:");
     }
 }
