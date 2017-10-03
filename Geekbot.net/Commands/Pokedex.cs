@@ -12,12 +12,10 @@ namespace Geekbot.net.Commands
     public class Pokedex : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly ILogger _logger;
         
-        public Pokedex(IErrorHandler errorHandler, ILogger logger)
+        public Pokedex(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
-            _logger = logger;
         }
 
         [Command("pokedex", RunMode = RunMode.Async)]

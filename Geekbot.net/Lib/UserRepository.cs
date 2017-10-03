@@ -71,6 +71,20 @@ namespace Geekbot.net.Lib
             }
             return dto;
         }
+
+        public string getUserSetting(ulong userId, string setting)
+        {
+            return _redis.HashGet($"Users:{userId}", setting);
+        }
+
+        public bool saveUserSetting(ulong userId, string setting, string value)
+        {
+            _redis.HashSet($"Users:{userId}", new HashEntry[]
+            {
+                new HashEntry(setting, value)
+            });
+            return true;
+        }
     }
 
     public class UserRepositoryUser
@@ -86,5 +100,7 @@ namespace Geekbot.net.Lib
     {
         Task<bool> Update(SocketUser user);
         UserRepositoryUser Get(ulong userId);
+        string getUserSetting(ulong userId, string setting);
+        bool saveUserSetting(ulong userId, string setting, string value);
     }
 }
