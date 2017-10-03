@@ -48,6 +48,11 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                if (user.Id == Context.Message.Author.Id)
+                {
+                    await ReplyAsync("You can't save your own quotes...");
+                    return;
+                }
                 var lastMessage = await getLastMessageByUser(user);
                 var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
@@ -68,6 +73,11 @@ namespace Geekbot.net.Commands
             try
             {
                 var message = await Context.Channel.GetMessageAsync(messageId);
+                if (message.Author.Id == Context.Message.Author.Id)
+                {
+                    await ReplyAsync("You can't save your own quotes...");
+                    return;
+                }
                 var quote = createQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
