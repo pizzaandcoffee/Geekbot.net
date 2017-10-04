@@ -23,7 +23,7 @@ namespace Geekbot.net
         private CommandService commands;
         private IDatabase redis;
         private IServiceCollection services;
-        private IServiceProvider servicesProvider;
+        public static IServiceProvider servicesProvider;
         private RedisValue token;
         private ILogger logger;
         private IUserRepository userRepository;
