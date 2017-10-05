@@ -11,15 +11,15 @@ namespace Geekbot.net.Commands
 {
     public class CheckEm : ModuleBase
     {
-        private readonly ICheckEmImageProvider checkEmImages;
+        private readonly IMediaProvider checkEmImages;
         private readonly Random rnd;
         private readonly ILogger logger;
         private readonly IErrorHandler errorHandler;
 
-        public CheckEm(Random RandomClient, ICheckEmImageProvider checkEmImages, ILogger logger, IErrorHandler errorHandler)
+        public CheckEm(Random RandomClient, IMediaProvider mediaProvider, ILogger logger, IErrorHandler errorHandler)
         {
             this.rnd = RandomClient;
-            this.checkEmImages = checkEmImages;
+            this.checkEmImages = mediaProvider;
             this.logger = logger;
             this.errorHandler = errorHandler;
         }
@@ -50,7 +50,7 @@ namespace Geekbot.net.Commands
                 sb.AppendLine($"**{number}**");
                 if (!string.IsNullOrEmpty(dubtriqua))
                     sb.AppendLine($":tada: {dubtriqua} :tada:");
-                sb.AppendLine(checkEmImages.GetRandomCheckEmPic());
+                sb.AppendLine(checkEmImages.getCheckem());
 
                 await ReplyAsync(sb.ToString());
             }
