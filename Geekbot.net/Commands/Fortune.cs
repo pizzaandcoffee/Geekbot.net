@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
 
 namespace Geekbot.net.Commands
@@ -14,6 +15,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("fortune", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random fortune")]
         public async Task GetAFortune()
         {

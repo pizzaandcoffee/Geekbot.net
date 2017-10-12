@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -18,6 +19,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Fun)]
         [Summary("Ask the Shipping meter")]
         public async Task Command([Summary("@User1")] IUser user1, [Summary("@User2")] IUser user2)
         {

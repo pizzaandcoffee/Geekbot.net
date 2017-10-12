@@ -18,6 +18,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("serverstats", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Statistics)]
         [Summary("Show some info about the bot.")]
         public async Task getInfo()
         {

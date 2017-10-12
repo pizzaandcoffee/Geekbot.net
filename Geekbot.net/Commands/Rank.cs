@@ -27,6 +27,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("rank", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Statistics)]
         [Summary("get user top 10")]
         public async Task RankCmd()
         {

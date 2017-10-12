@@ -38,6 +38,7 @@ namespace Geekbot.net.WebApi
                     {
                         Name = cmd.Name,
                         Summary = cmd.Summary,
+                        Category = cmd.Remarks ?? CommandCategories.Uncategorized,
                         IsAdminCommand = (param.Contains("admin")),
                         Aliases = cmd.Aliases.ToArray(),
                         Params = cmdParamsObj
@@ -60,6 +61,7 @@ namespace Geekbot.net.WebApi
     public class CommandDto
     {
         public string Name { get; set; }
+        public string Category { get; set; }
         public string Summary { get; set; }
         public bool IsAdminCommand { get; set; }
         public Array Aliases { get; set; }

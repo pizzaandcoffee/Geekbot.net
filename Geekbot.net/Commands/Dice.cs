@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net.Commands
 {
@@ -17,6 +18,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("dice", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Roll a dice.")]
         public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d20")
         {

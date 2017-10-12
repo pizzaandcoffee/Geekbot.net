@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using System;
+using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
 
@@ -13,8 +14,9 @@ namespace Geekbot.net.WebApi
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
-                    .WithHeader("Access-Control-Allow-Methods", "POST,GET")
-                    .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");
+                    .WithHeader("Access-Control-Allow-Methods", "GET")
+                    .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type")
+                    .WithHeader("Last-Modified", DateTime.Now.ToString());
 
             });
         }

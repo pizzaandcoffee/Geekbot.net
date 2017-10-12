@@ -21,6 +21,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command(RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Games)]
         [Summary("Get your battletag")]
         public async Task BattleTagCmd()
         {
@@ -44,6 +45,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command(RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Games)]
         [Summary("Save your battletag")]
         public async Task BattleTagCmd([Summary("Battletag")] string tag)
         {

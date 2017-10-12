@@ -30,6 +30,7 @@ namespace Geekbot.net.Commands
 
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("welcome", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
         {
@@ -40,6 +41,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("youtubekey", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
         [Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
@@ -55,6 +57,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("game", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
         [Summary("Set the game that the bot is playing")]
         public async Task SetGame([Remainder] [Summary("Game")] string key)
         {
@@ -72,7 +75,8 @@ namespace Geekbot.net.Commands
         }
         
         [Command("popuserrepo", RunMode = RunMode.Async)]
-        [Summary("Set the game that the bot is playing")]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Populate user cache")]
         public async Task popUserRepoCommand()
         {
             try
@@ -117,7 +121,8 @@ namespace Geekbot.net.Commands
 
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("modchannel", RunMode = RunMode.Async)]
-        [Summary("Set the game that the bot is playing")]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Set a channel for moderation purposes")]
         public async Task selectModChannel([Summary("ChannelId")] ulong channelId)
         {
             try
@@ -143,6 +148,7 @@ namespace Geekbot.net.Commands
 
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("showleave", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone leaves")]
         public async Task showLeave([Summary("true/false")] bool enabled)
         {
@@ -169,7 +175,8 @@ namespace Geekbot.net.Commands
         
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("showdel", RunMode = RunMode.Async)]
-        [Summary("Notify modchannel when someone leaves")]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Notify modchannel when someone deletes a message")]
         public async Task showDelete([Summary("true/false")] bool enabled)
         {
             var modChannelId = (ulong)_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel");

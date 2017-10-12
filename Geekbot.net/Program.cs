@@ -105,16 +105,16 @@ namespace Geekbot.net
             
             userRepository = new UserRepository(redis, logger);
             var errorHandler = new ErrorHandler(logger);
-            var RandomClient = new Random();
-            var fortunes = new FortunesProvider(RandomClient, logger);
-            var mediaProvider = new MediaProvider(RandomClient, logger);
+            var randomClient = new Random();
+            var fortunes = new FortunesProvider(randomClient, logger);
+            var mediaProvider = new MediaProvider(randomClient, logger);
             var malClient = new MalClient(redis, logger);
             
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
             services.AddSingleton<ILogger>(logger);
             services.AddSingleton<IUserRepository>(userRepository);
-            services.AddSingleton(RandomClient);
+            services.AddSingleton(randomClient);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);
             services.AddSingleton<IMalClient>(malClient);
@@ -162,10 +162,7 @@ namespace Geekbot.net
                     }
                     if (!args.Contains("--disable-api"))
                     {
-                        logger.Information("[API] Starting Webserver");
-                        var webApiUrl = new Uri("http://localhost:12995");
-                        new NancyHost(webApiUrl).Start();
-                        logger.Information($"[API] Webserver now running on {webApiUrl}");
+                        startWebApi();
                     }
                     
                     logger.Information("[Geekbot] Done and ready for use\n");
@@ -183,6 +180,14 @@ namespace Geekbot.net
             while (!client.ConnectionState.Equals(ConnectionState.Connected))
                 await Task.Delay(25);
             return true;
+        }
+
+        private async Task startWebApi()
+        {
+            logger.Information("[API] Starting Webserver");
+            var webApiUrl = new Uri("http://localhost:12995");
+            new NancyHost(webApiUrl).Start();
+            logger.Information($"[API] Webserver now running on {webApiUrl}");
         }
 
         private async Task<Task> FinishSetup()

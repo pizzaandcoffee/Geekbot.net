@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -17,8 +18,9 @@ namespace Geekbot.net.Commands
         }
 
         [Command("roll", RunMode = RunMode.Async)]
-        [Summary("Roll a number between 1 and 100.")]
-        public async Task RollCommand([Remainder] [Summary("stuff...")] string stuff = "nothing")
+        [Remarks(CommandCategories.Fun)]
+        [Summary("Guess which number the bot will roll (1-100")]
+        public async Task RollCommand([Remainder] [Summary("guess")] string stuff = "noGuess")
         {
             var number = rnd.Next(1, 100);
             var guess = 1000;

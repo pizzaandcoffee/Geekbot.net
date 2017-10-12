@@ -19,6 +19,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("stats", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Statistics)]
         [Summary("Get information about this user")]
         public async Task User([Summary("@someone")] IUser user = null)
         {

@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands
@@ -9,6 +10,7 @@ namespace Geekbot.net.Commands
     public class Cat : ModuleBase
     {
         [Command("cat", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Return a random image of a cat.")]
         public async Task Say()
         {

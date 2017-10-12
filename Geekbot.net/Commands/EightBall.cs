@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 
 namespace Geekbot.net.Commands
 {
@@ -15,6 +16,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("8ball", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Ask 8Ball a Question.")]
         public async Task Ball([Remainder] [Summary("Question")] string echo)
         {

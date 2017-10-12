@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using StackExchange.Redis;
@@ -17,6 +18,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("yt", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Helpers)]
         [Summary("Search for something on youtube.")]
         public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
         {

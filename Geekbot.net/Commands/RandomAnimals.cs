@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
 
 namespace Geekbot.net.Commands
@@ -14,6 +15,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("panda", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random panda image")]
         public async Task panda()
         {
@@ -22,6 +24,7 @@ namespace Geekbot.net.Commands
         
         [Command("croissant", RunMode = RunMode.Async)]
         [Alias("gipfeli")]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random croissant image")]
         public async Task croissant()
         {
@@ -29,6 +32,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("pumpkin", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random pumpkin image")]
         public async Task pumpkin()
         {
@@ -36,6 +40,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("squirrel", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random squirrel image")]
         public async Task squirrel()
         {
@@ -43,6 +48,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("turtle", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]
         public async Task turtle()
         {

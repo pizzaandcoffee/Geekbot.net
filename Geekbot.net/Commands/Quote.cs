@@ -26,6 +26,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command()]
+        [Remarks(CommandCategories.Quotes)]
         [Summary("Return a random quoute from the database")]
         public async Task getRandomQuote()
         {
@@ -43,6 +44,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("save")]
+        [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from the last sent message by @user")]
         public async Task saveQuote([Summary("@user")] IUser user)
         {
@@ -67,6 +69,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("save")]
+        [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from a message id")]
         public async Task saveQuote([Summary("messageId")] ulong messageId)
         {
@@ -92,6 +95,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("make")]
+        [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from the last sent message by @user")]
         public async Task returnSpecifiedQuote([Summary("@user")] IUser user)
         {
@@ -109,6 +113,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("make")]
+        [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from a message id")]
         public async Task returnSpecifiedQuote([Summary("messageId")] ulong messageId)
         {
