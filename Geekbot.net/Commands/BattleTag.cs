@@ -67,7 +67,7 @@ namespace Geekbot.net.Commands
             }
         }
 
-        private bool isValidTag(string tag)
+        public static bool isValidTag(string tag)
         {
             var splited = tag.Split("#");
             if (splited.Length != 2) return false;
