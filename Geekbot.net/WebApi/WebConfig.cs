@@ -1,24 +1,34 @@
-﻿using System;
-using Nancy;
-using Nancy.Bootstrapper;
-using Nancy.TinyIoc;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Geekbot.net.WebApi
+namespace Geekbot.net
 {
-    public class WebConfig : DefaultNancyBootstrapper
+    public class WebConfig
     {
-        protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext context)
+        public WebConfig(IConfiguration configuration)
         {
+            Configuration = configuration;
+        }
 
-            //CORS Enable
-            pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc();
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
             {
-                ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
-                    .WithHeader("Access-Control-Allow-Methods", "GET")
-                    .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type")
-                    .WithHeader("Last-Modified", DateTime.Now.ToString());
+                app.UseDeveloperExceptionPage();
+            }
 
-            });
+            app.UseMvc();
         }
     }
 }

@@ -1,22 +1,22 @@
-﻿using Nancy;
+﻿using AngleSharp.Network.Default;
 using Geekbot.net.Lib;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Geekbot.net.WebApi
 {
-    public class StatusController : NancyModule
+    [Route("/")]
+    public class StatusController : Controller
     {
-        public StatusController()
+        [HttpGet()]
+        public ApiStatusDto getApiStatus()
         {
-            Get("/", args =>
+            var responseBody = new ApiStatusDto()
             {
-                var responseBody = new ApiStatusDto()
-                {
-                    GeekbotVersion = Constants.BotVersion.ToString(),
-                    ApiVersion = Constants.ApiVersion.ToString(),
-                    Status = "Online"
-                };
-                return Response.AsJson(responseBody);
-            });
+                GeekbotVersion = Constants.BotVersion.ToString(),
+                ApiVersion = Constants.ApiVersion.ToString(),
+                Status = "Online"
+            };
+            return responseBody;
         }
     }
     

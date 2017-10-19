@@ -3,53 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
-using Nancy;
 using Geekbot.net.Lib;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Geekbot.net.WebApi
 {
-    public class HelpController : NancyModule
+    [Route("v1/commands")]
+    public class HelpController : Controller
     {
-        public HelpController()
+        [HttpGet()]
+        public List<CommandDto> getHelp()
         {
-            Get("/v1/commands", args =>
+            var commands = getCommands().Result;
+
+            var commandList = new List<CommandDto>();
+            foreach (var cmd in commands.Commands)
             {
-                var commands = getCommands().Result;
-
-                var commandList = new List<CommandDto>();
-                foreach (var cmd in commands.Commands)
+                var cmdParamsObj = new List<CommandParamDto>();
+                foreach (var cmdParam in cmd.Parameters)
                 {
-                    var cmdParamsObj = new List<CommandParamDto>();
-                    foreach (var cmdParam in cmd.Parameters)
+                    var singleParamObj = new CommandParamDto()
                     {
-                        var singleParamObj = new CommandParamDto()
-                        {
-                            Summary = cmdParam.Summary,
-                            Default = cmdParam?.DefaultValue?.ToString() ?? null,
-                            Type = cmdParam?.Type?.ToString()
-                        };
-                        cmdParamsObj.Add(singleParamObj);
-                    }
-                    
-                    var param = string.Join(", !", cmd.Aliases);
-                    var cmdObj = new CommandDto()
-                    {
-                        Name = cmd.Name,
-                        Summary = cmd.Summary,
-                        Category = cmd.Remarks ?? CommandCategories.Uncategorized,
-                        IsAdminCommand = (param.Contains("admin")),
-                        Aliases = cmd.Aliases.ToArray(),
-                        Params = cmdParamsObj
+                        Summary = cmdParam.Summary,
+                        Default = cmdParam?.DefaultValue?.ToString() ?? null,
+                        Type = cmdParam?.Type?.ToString()
                     };
-                    commandList.Add(cmdObj);
+                    cmdParamsObj.Add(singleParamObj);
                 }
-                return Response.AsJson(commandList);
-                
-            });
+                    
+                var param = string.Join(", !", cmd.Aliases);
+                var cmdObj = new CommandDto()
+                {
+                    Name = cmd.Name,
+                    Summary = cmd.Summary,
+                    Category = cmd.Remarks ?? CommandCategories.Uncategorized,
+                    IsAdminCommand = (param.Contains("admin")),
+                    Aliases = cmd.Aliases.ToArray(),
+                    Params = cmdParamsObj
+                };
+                commandList.Add(cmdObj);
+            }
+            return commandList;
         }
-
+        
         private async Task<CommandService> getCommands()
         {
             var commands = new CommandService();

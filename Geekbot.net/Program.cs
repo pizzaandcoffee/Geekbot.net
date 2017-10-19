@@ -10,8 +10,8 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Nancy.Hosting.Self;
 using Serilog;
 using StackExchange.Redis;
 
@@ -19,16 +19,16 @@ namespace Geekbot.net
 {
     internal class Program
     {
-        private DiscordSocketClient client;
-        private CommandService commands;
-        private IDatabase redis;
-        private IServiceCollection services;
-        private IServiceProvider servicesProvider;
-        private RedisValue token;
-        private ILogger logger;
-        private IUserRepository userRepository;
-        private string[] args;
-        private bool firstStart = false;
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IDatabase _redis;
+        private IServiceCollection _services;
+        private IServiceProvider _servicesProvider;
+        private RedisValue _token;
+        private ILogger _logger;
+        private IUserRepository _userRepository;
+        private string[] _args;
+        private bool _firstStart = false;
 
         private static void Main(string[] args)
         {
@@ -47,24 +47,24 @@ namespace Geekbot.net
 
         private async Task MainAsync(string[] args, ILogger logger)
         {
-            this.logger = logger;
-            this.args = args;
+            _logger = logger;
+            _args = args;
             logger.Information("[Geekbot] Initing Stuff");
 
-            client = new DiscordSocketClient(new DiscordSocketConfig
+            _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000,
                 AlwaysDownloadUsers = true
             });
-            client.Log += DiscordLogger;
-            commands = new CommandService();
+            _client.Log += DiscordLogger;
+            _commands = new CommandService();
 
             try
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-                redis = redisMultiplexer.GetDatabase(6);
-                logger.Information($"[Redis] Connected to db {redis.Database}");
+                _redis = redisMultiplexer.GetDatabase(6);
+                logger.Information($"[Redis] Connected to db {_redis.Database}");
             }
             catch (Exception e)
             {
@@ -81,7 +81,7 @@ namespace Geekbot.net
                 if (migrateDbConfirm.Key == ConsoleKey.Y)
                 {
                     logger.Warning("[Geekbot] Starting Migration");
-                    await DbMigration.MigrateDatabaseToHash(redis, logger);
+                    await DbMigration.MigrateDatabaseToHash(_redis, logger);
                     logger.Warning("[Geekbot] Finished Migration");
                 }
                 else
@@ -90,34 +90,34 @@ namespace Geekbot.net
                 }
             }
             
-            token = redis.StringGet("discordToken");
-            if (token.IsNullOrEmpty)
+            _token = _redis.StringGet("discordToken");
+            if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
-                redis.StringSet("discordToken", newToken);
-                redis.StringSet("Game", "Ping Pong");
-                token = newToken;
-                firstStart = true;
+                _redis.StringSet("discordToken", newToken);
+                _redis.StringSet("Game", "Ping Pong");
+                _token = newToken;
+                _firstStart = true;
             }
 
-            services = new ServiceCollection();
+            _services = new ServiceCollection();
             
-            userRepository = new UserRepository(redis, logger);
+            _userRepository = new UserRepository(_redis, logger);
             var errorHandler = new ErrorHandler(logger);
             var randomClient = new Random();
             var fortunes = new FortunesProvider(randomClient, logger);
             var mediaProvider = new MediaProvider(randomClient, logger);
-            var malClient = new MalClient(redis, logger);
+            var malClient = new MalClient(_redis, logger);
             
-            services.AddSingleton<IErrorHandler>(errorHandler);
-            services.AddSingleton(redis);
-            services.AddSingleton<ILogger>(logger);
-            services.AddSingleton<IUserRepository>(userRepository);
-            services.AddSingleton(randomClient);
-            services.AddSingleton<IFortunesProvider>(fortunes);
-            services.AddSingleton<IMediaProvider>(mediaProvider);
-            services.AddSingleton<IMalClient>(malClient);
+            _services.AddSingleton<IErrorHandler>(errorHandler);
+            _services.AddSingleton(_redis);
+            _services.AddSingleton<ILogger>(logger);
+            _services.AddSingleton<IUserRepository>(_userRepository);
+            _services.AddSingleton(randomClient);
+            _services.AddSingleton<IFortunesProvider>(fortunes);
+            _services.AddSingleton<IMediaProvider>(mediaProvider);
+            _services.AddSingleton<IMalClient>(malClient);
 
             logger.Information("[Geekbot] Connecting to Discord");
 
@@ -130,75 +130,81 @@ namespace Geekbot.net
         {
             try
             {
-                await client.LoginAsync(TokenType.Bot, token);
-                await client.StartAsync();
+                await _client.LoginAsync(TokenType.Bot, _token);
+                await _client.StartAsync();
                 var isConneted = await isConnected();
                 if (isConneted)
                 {
-                    await client.SetGameAsync(redis.StringGet("Game"));
-                    logger.Information($"[Geekbot] Now Connected to {client.Guilds.Count} Servers");
+                    await _client.SetGameAsync(_redis.StringGet("Game"));
+                    _logger.Information($"[Geekbot] Now Connected to {_client.Guilds.Count} Servers");
 
-                    logger.Information("[Geekbot] Registering Stuff");
+                    _logger.Information("[Geekbot] Registering Stuff");
                     
-                    await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-                    services.AddSingleton(commands);
-                    services.AddSingleton<DiscordSocketClient>(client);
-                    servicesProvider = services.BuildServiceProvider();
+                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+                    _services.AddSingleton(_commands);
+                    _services.AddSingleton<DiscordSocketClient>(_client);
+                    _servicesProvider = _services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository);
+                    var handlers = new Handlers(_client, _logger, _redis, _servicesProvider, _commands, _userRepository);
                     
-                    client.MessageReceived += handlers.RunCommand;
-                    client.MessageReceived += handlers.UpdateStats;
-                    client.MessageDeleted += handlers.MessageDeleted;
-                    client.UserJoined += handlers.UserJoined;
-                    client.UserUpdated += handlers.UserUpdated;
-                    client.UserLeft += handlers.UserLeft;
+                    _client.MessageReceived += handlers.RunCommand;
+                    _client.MessageReceived += handlers.UpdateStats;
+                    _client.MessageDeleted += handlers.MessageDeleted;
+                    _client.UserJoined += handlers.UserJoined;
+                    _client.UserUpdated += handlers.UserUpdated;
+                    _client.UserLeft += handlers.UserLeft;
 
-                    if (firstStart || args.Contains("--reset"))
+                    if (_firstStart || _args.Contains("--reset"))
                     {
-                        logger.Information("[Geekbot] Finishing setup");
+                        _logger.Information("[Geekbot] Finishing setup");
                         await FinishSetup();
-                        logger.Information("[Geekbot] Setup finished");
+                        _logger.Information("[Geekbot] Setup finished");
                     }
-                    if (!args.Contains("--disable-api"))
+                    if (!_args.Contains("--disable-api"))
                     {
                         startWebApi();
                     }
                     
-                    logger.Information("[Geekbot] Done and ready for use\n");
+                    _logger.Information("[Geekbot] Done and ready for use\n");
                 }
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "Could not connect to discord...");
+                _logger.Fatal(e, "Could not connect to discord...");
                 Environment.Exit(103);
             }
         }
 
         private async Task<bool> isConnected()
         {
-            while (!client.ConnectionState.Equals(ConnectionState.Connected))
+            while (!_client.ConnectionState.Equals(ConnectionState.Connected))
                 await Task.Delay(25);
             return true;
         }
 
         private void startWebApi()
         {
-            logger.Information("[API] Starting Webserver");
+            _logger.Information("[API] Starting Webserver");
             var webApiUrl = new Uri("http://localhost:12995");
-            new NancyHost(webApiUrl).Start();
-            logger.Information($"[API] Webserver now running on {webApiUrl}");
+            new WebHostBuilder()
+                .UseSetting(WebHostDefaults.ApplicationKey, Constants.Name)
+                .UseUrls(webApiUrl.ToString())
+                .UseKestrel()
+                .UseStartup<WebConfig>()
+                .Build()
+                .Run();
+            _logger.Information($"[API] Webserver now running on {webApiUrl}");
         }
 
         private async Task<Task> FinishSetup()
         {
-            var appInfo = await client.GetApplicationInfoAsync();
-            redis.StringSet("botOwner", appInfo.Owner.Id);
+            var appInfo = await _client.GetApplicationInfoAsync();
+            _redis.StringSet("botOwner", appInfo.Owner.Id);
 
             var req = HttpWebRequest.Create(appInfo.IconUrl);
             using (Stream stream = req.GetResponse().GetResponseStream() )
             {
-                await client.CurrentUser.ModifyAsync(Avatar => new Image(stream));
+                await _client.CurrentUser.ModifyAsync(Avatar => new Image(stream));
             }
             return Task.CompletedTask;
         }
@@ -209,21 +215,21 @@ namespace Geekbot.net
             switch (message.Severity)
             {
                 case LogSeverity.Verbose:
-                    logger.Verbose(logMessage);
+                    _logger.Verbose(logMessage);
                     break;
                 case LogSeverity.Debug:
-                    logger.Debug(logMessage);
+                    _logger.Debug(logMessage);
                     break;
                 case LogSeverity.Info:
-                    logger.Information(logMessage);
+                    _logger.Information(logMessage);
                     break;
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
                 case LogSeverity.Warning:
-                    logger.Error(message.Exception, logMessage);
+                    _logger.Error(message.Exception, logMessage);
                     break;
                 default:
-                    logger.Information($"{logMessage} --- {message.Severity}");
+                    _logger.Information($"{logMessage} --- {message.Severity}");
                     break;
             }
             return Task.CompletedTask;
