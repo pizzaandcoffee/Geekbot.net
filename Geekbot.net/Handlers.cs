@@ -105,10 +105,10 @@ namespace Geekbot.net
                 var sendLeftEnabled = _redis.HashGet($"{user.Guild.Id}:Settings", "ShowLeave");
                 if (sendLeftEnabled.ToString() == "1")
                 {
-                    var modChannel = _redis.HashGet($"{user.Guild.Id}:Settings", "ModChannel");
-                    if (!string.IsNullOrEmpty(modChannel))
+                    var modChannel = ulong.Parse(_redis.HashGet($"{user.Guild.Id}:Settings", "ModChannel"));
+                    if (!string.IsNullOrEmpty(modChannel.ToString()))
                     {
-                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync((ulong)modChannel);
+                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(modChannel);
                         await modChannelSocket.SendMessageAsync($"{user.Username}#{user.Discriminator} left the server");
                     }
                 }
@@ -132,15 +132,15 @@ namespace Geekbot.net
                 var sendLeftEnabled = _redis.HashGet($"{guild.Id}:Settings", "ShowDelete");
                 if (sendLeftEnabled.ToString() == "1")
                 {
-                    var modChannel = _redis.HashGet($"{guild.Id}:Settings", "ModChannel");
-                    if (!string.IsNullOrEmpty(modChannel))
+                    var modChannel = ulong.Parse(_redis.HashGet($"{guild.Id}:Settings", "ModChannel"));
+                    if (!string.IsNullOrEmpty(modChannel.ToString()) && modChannel != channel.Id)
                     {
-                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync((ulong)modChannel);
+                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(modChannel);
                         var sb = new StringBuilder();
                         if (message.Value != null)
                         {
                             sb.AppendLine(
-                                $"{message.Value.Author.Username}#{message.Value.Author.Discriminator} deleted the following message from <#{channel.Id}>");
+                                $"The following message from {message.Value.Author.Username}#{message.Value.Author.Discriminator} was deleted in <#{channel.Id}>");
                             sb.AppendLine(message.Value.Content);
                         }
                         else

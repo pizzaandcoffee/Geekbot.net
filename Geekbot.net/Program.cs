@@ -182,7 +182,7 @@ namespace Geekbot.net
             return true;
         }
 
-        private async Task startWebApi()
+        private void startWebApi()
         {
             logger.Information("[API] Starting Webserver");
             var webApiUrl = new Uri("http://localhost:12995");

@@ -123,16 +123,10 @@ namespace Geekbot.net.Commands
         [Command("modchannel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set a channel for moderation purposes")]
-        public async Task selectModChannel([Summary("ChannelId")] ulong channelId)
+        public async Task selectModChannel([Summary("#Channel")] ISocketMessageChannel channel)
         {
             try
             {
-                var channel = (ISocketMessageChannel)_client.GetChannel(channelId);
-                if (string.IsNullOrEmpty(channel.Name))
-                {
-                    await ReplyAsync("I couldn't find that channel...");
-                    return;
-                }
                 var sb = new StringBuilder();
                 sb.AppendLine("Successfully saved mod channel, you can now do the following");
                 sb.AppendLine("- `!admin showleave true` - send message to mod channel when someone leaves");
@@ -152,7 +146,7 @@ namespace Geekbot.net.Commands
         [Summary("Notify modchannel when someone leaves")]
         public async Task showLeave([Summary("true/false")] bool enabled)
         {
-            var modChannelId = (ulong)_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel");
+            var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
             {
                 var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
@@ -179,7 +173,7 @@ namespace Geekbot.net.Commands
         [Summary("Notify modchannel when someone deletes a message")]
         public async Task showDelete([Summary("true/false")] bool enabled)
         {
-            var modChannelId = (ulong)_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel");
+            var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
             {
                 var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);

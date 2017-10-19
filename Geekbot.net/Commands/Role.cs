@@ -69,7 +69,7 @@ namespace Geekbot.net.Commands
                     }
                     if (guildUser.RoleIds.Contains(roleId))
                     {
-                        guildUser.RemoveRoleAsync(role);
+                        await guildUser.RemoveRoleAsync(role);
                         await ReplyAsync($"Removed you from {role.Name}");
                         return;
                     }
