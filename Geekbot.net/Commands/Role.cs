@@ -93,6 +93,20 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                if (role.IsManaged)
+                {
+                    await ReplyAsync("You can't add a role that is managed by discord");
+                    return;
+                }
+                if (role.Permissions.ManageRoles
+                    || role.Permissions.Administrator
+                    || role.Permissions.ManageGuild
+                    || role.Permissions.BanMembers
+                    || role.Permissions.KickMembers)
+                {
+                    await ReplyAsync("Woah, i don't think you want to add that role to self service as it contains some dangerous permissions");
+                    return;
+                }
                 _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist", new HashEntry[] { new HashEntry(roleName, role.Id.ToString()) });
                 await ReplyAsync($"Added {role.Name} to the whitelist");
             }
