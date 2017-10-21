@@ -8,9 +8,9 @@ namespace Geekbot.net.WebApi
         // Add Guild Info here
 
         [HttpGet("{id}")]
-        public string getGuildInfo(ulong id)
+        public IActionResult getGuildInfo(ulong id)
         {
-            return id.ToString();
+            return Ok(id.ToString());
         }
     }
 }

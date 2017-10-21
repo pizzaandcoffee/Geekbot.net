@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Geekbot.net.WebApi
@@ -12,13 +13,18 @@ namespace Geekbot.net.WebApi
     [Route("v1/commands")]
     public class HelpController : Controller
     {
-        [HttpGet()]
-        public List<CommandDto> getHelp()
+        private readonly CommandService _commands;
+        
+        public HelpController()
         {
-            var commands = getCommands().Result;
-
+            _commands = Program._servicesProvider.GetService(typeof(CommandService)) as CommandService;
+        }
+        
+        [HttpGet()]
+        public IActionResult getHelp()
+        {
             var commandList = new List<CommandDto>();
-            foreach (var cmd in commands.Commands)
+            foreach (var cmd in _commands.Commands)
             {
                 var cmdParamsObj = new List<CommandParamDto>();
                 foreach (var cmdParam in cmd.Parameters)
@@ -44,14 +50,7 @@ namespace Geekbot.net.WebApi
                 };
                 commandList.Add(cmdObj);
             }
-            return commandList;
-        }
-        
-        private async Task<CommandService> getCommands()
-        {
-            var commands = new CommandService();
-            await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-            return commands;
+            return Ok(commandList);
         }
     }
 

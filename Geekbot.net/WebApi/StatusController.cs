@@ -8,7 +8,7 @@ namespace Geekbot.net.WebApi
     public class StatusController : Controller
     {
         [HttpGet()]
-        public ApiStatusDto getApiStatus()
+        public IActionResult getApiStatus()
         {
             var responseBody = new ApiStatusDto()
             {
@@ -16,7 +16,7 @@ namespace Geekbot.net.WebApi
                 ApiVersion = Constants.ApiVersion.ToString(),
                 Status = "Online"
             };
-            return responseBody;
+            return Ok(responseBody);
         }
     }
     
