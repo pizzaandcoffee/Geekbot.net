@@ -1,27 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Geekbot.net.Lib
 {
-    internal class LevelCalc
+    internal class LevelCalc : ILevelCalc
     {
-        private static int GetExperienceAtLevel(int level)
-        {
-            double total = 0;
-            for (var i = 1; i < level; i++)
-                total += Math.Floor(i + 300 * Math.Pow(2, i / 7.0));
+        private int[] _levels;
 
-            return (int) Math.Floor(total / 16);
+        public LevelCalc()
+        {
+            var levels = new List<int>();
+            double total = 0;
+            for (var i = 1; i < 120; i++)
+            {
+                total += Math.Floor(i + 300 * Math.Pow(2, i / 7.0));
+                levels.Add((int) Math.Floor(total / 16));
+            }
+            _levels = levels.ToArray();
         }
 
-        public static int GetLevelAtExperience(int experience)
+        public int GetLevelAtExperience(int experience)
         {
-            int index;
-
-            for (index = 0; index < 120; index++)
-                if (GetExperienceAtLevel(index + 1) > experience)
-                    break;
-
-            return index;
+            var returnVal = 1;
+            foreach (var level in _levels)
+            {
+                if (level > experience) break;
+                returnVal++;
+            }
+            return returnVal;
         }
     }
+
+    public interface ILevelCalc
+    {
+        int GetLevelAtExperience(int experience);
+    } 
 }

@@ -11,11 +11,13 @@ namespace Geekbot.net.Commands
     {
         private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
+        private readonly ILevelCalc _levelCalc;
         
-        public Stats(IDatabase redis, IErrorHandler errorHandler)
+        public Stats(IDatabase redis, IErrorHandler errorHandler, ILevelCalc levelCalc)
         {
             _redis = redis;
             _errorHandler = errorHandler;
+            _levelCalc = levelCalc;
         }
 
         [Command("stats", RunMode = RunMode.Async)]
@@ -34,7 +36,7 @@ namespace Geekbot.net.Commands
 
                 var messages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
                 var guildMessages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
-                var level = LevelCalc.GetLevelAtExperience(messages);
+                var level = _levelCalc.GetLevelAtExperience(messages);
 
                 var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
