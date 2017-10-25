@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AngleSharp.Dom.Css;
 using Discord.WebSocket;
 using Serilog;
 using StackExchange.Redis;
@@ -20,13 +21,14 @@ namespace Geekbot.net.Lib
         {
             try
             {
-                _redis.HashSetAsync($"Users:{user.Id}", new HashEntry[]
+                _redis.HashSetAsync($"Users:{user.Id.ToString()}", new HashEntry[]
                 {
                     new HashEntry("Id", user.Id.ToString()),
                     new HashEntry("Username", user.Username),
                     new HashEntry("Discriminator", user.Discriminator),
                     new HashEntry("AvatarUrl", user.GetAvatarUrl() ?? "0"),
                     new HashEntry("IsBot", user.IsBot), 
+                    new HashEntry("Joined", user.CreatedAt.ToString()), 
                 });
                 _logger.Information($"[UserRepository] Updated User {user.Id}");
                 return Task.FromResult(true);
@@ -40,11 +42,11 @@ namespace Geekbot.net.Lib
 
         public UserRepositoryUser Get(ulong userId)
         {
-            var user = _redis.HashGetAll($"Users:{userId}");
-            for (int i = 1; i < 6; i++)
+            var user = _redis.HashGetAll($"Users:{userId.ToString()}");
+            for (int i = 1; i < 11; i++)
             {
                 if (user.Length != 0) break;
-                user = _redis.HashGetAll($"Users:{userId + (ulong)i}");
+                user = _redis.HashGetAll($"Users:{(userId + (ulong)i).ToString()}");
                 
             }
             var dto = new UserRepositoryUser();
@@ -66,6 +68,9 @@ namespace Geekbot.net.Lib
                         break;
                     case "IsBot":
                         dto.IsBot = a.Value == 1;
+                        break;
+                    case "Joined":
+                        dto.Joined = DateTimeOffset.Parse(a.Value);
                         break;
                 }
             }
@@ -94,6 +99,7 @@ namespace Geekbot.net.Lib
         public string Discriminator { get; set; }
         public string AvatarUrl { get; set; }
         public bool IsBot { get; set; }
+        public DateTimeOffset Joined { get; set; }
     }
 
     public interface IUserRepository
