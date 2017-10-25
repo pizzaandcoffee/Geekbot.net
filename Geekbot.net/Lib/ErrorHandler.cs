@@ -16,7 +16,7 @@ namespace Geekbot.net.Lib
         public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "Something went wrong :confused:")
         {
             var errorMsg =
-                $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\"";
+                $"Error Occured while executing \"{Context.Message.Content}\", executed by \"{Context.User.Username}\" in \"{Context.Guild.Name}/{Context.Channel.Name}\"";
             _logger.Error(e, errorMsg);
             if (!string.IsNullOrEmpty(errorMessage))
             {

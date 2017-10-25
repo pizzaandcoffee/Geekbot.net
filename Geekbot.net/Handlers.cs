@@ -78,17 +78,25 @@ namespace Geekbot.net
         
         public Task UserJoined(SocketGuildUser user)
         {
-            if (!user.IsBot)
+            try
             {
-                var message = _redis.HashGet($"{user.Guild.Id}:Settings", "WelcomeMsg");
-                if (!message.IsNullOrEmpty)
+                if (!user.IsBot)
                 {
-                    message = message.ToString().Replace("$user", user.Mention);
-                    user.Guild.DefaultChannel.SendMessageAsync(message);
+                    var message = _redis.HashGet($"{user.Guild.Id}:Settings", "WelcomeMsg");
+                    if (!message.IsNullOrEmpty)
+                    {
+                        message = message.ToString().Replace("$user", user.Mention);
+                        user.Guild.DefaultChannel.SendMessageAsync(message);
+                    }
                 }
+                _userRepository.Update(user);
+                _logger.Information(
+                    $"[Geekbot] {user.Id} ({user.Username}) joined {user.Guild.Id} ({user.Guild.Name})");
             }
-            _userRepository.Update(user);
-            _logger.Information($"[Geekbot] {user.Id} ({user.Username}) joined {user.Guild.Id} ({user.Guild.Name})");
+            catch (Exception e)
+            {
+                _logger.Error(e, "[Geekbot] Failed to send welcome message");
+            }
             return Task.CompletedTask;
         }
 

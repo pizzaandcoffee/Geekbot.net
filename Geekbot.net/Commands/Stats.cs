@@ -36,7 +36,7 @@ namespace Geekbot.net.Commands
 
                 var messages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
                 var guildMessages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
-                var level = _levelCalc.GetLevelAtExperience(messages);
+                var level = _levelCalc.GetLevel(messages);
 
                 var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 

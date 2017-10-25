@@ -10,11 +10,13 @@ namespace Geekbot.net.Commands
 {
     public class Youtube : ModuleBase
     {
-        private readonly IDatabase redis;
+        private readonly IDatabase _redis;
+        private readonly IErrorHandler _errorHandler;
 
-        public Youtube(IDatabase redis)
+        public Youtube(IDatabase redis, IErrorHandler errorHandler)
         {
-            this.redis = redis;
+            _redis = redis;
+            _errorHandler = errorHandler;
         }
 
         [Command("yt", RunMode = RunMode.Async)]
@@ -22,7 +24,7 @@ namespace Geekbot.net.Commands
         [Summary("Search for something on youtube.")]
         public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
         {
-            var key = redis.StringGet("youtubeKey");
+            var key = _redis.StringGet("youtubeKey");
             if (key.IsNullOrEmpty)
             {
                 await ReplyAsync("No youtube key set, please tell my senpai to set one");
@@ -50,11 +52,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync("Something went wrong... informing my senpai...");
-                var botOwner = Context.Guild.GetUserAsync(ulong.Parse(redis.StringGet("botOwner"))).Result;
-                var dm = await botOwner.GetOrCreateDMChannelAsync();
-                await dm.SendMessageAsync(
-                    $"Something went wrong while getting a video from youtube:\r\n```\r\n{e.Message}\r\n```");
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,7 +33,6 @@ namespace Geekbot.net
 
         private static void Main(string[] args)
         {
-            var logger = LoggerFactory.createLogger(args);
             var logo = new StringBuilder();
             logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
             logo.AppendLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
@@ -41,8 +41,16 @@ namespace Geekbot.net
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
+            var logger = LoggerFactory.createLogger(args);
             logger.Information("[Geekbot] Starting...");
-            new Program().MainAsync(args, logger).GetAwaiter().GetResult();
+            try
+            {
+                new Program().MainAsync(args, logger).GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                logger.Fatal(e, "[Geekbot] RIP");
+            }
         }
 
         private async Task MainAsync(string[] args, ILogger logger)

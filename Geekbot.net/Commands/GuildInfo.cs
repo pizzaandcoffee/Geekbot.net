@@ -38,7 +38,7 @@ namespace Geekbot.net.Commands
                 var age = Math.Floor((DateTime.Now - created).TotalDays);
 
                 var messages = _redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
-                var level = _levelCalc.GetLevelAtExperience((int) messages);
+                var level = _levelCalc.GetLevel((int) messages);
 
                 eb.AddField("Server Age", $"{created.Day}/{created.Month}/{created.Year} ({age} days)");
                 eb.AddInlineField("Level", level)

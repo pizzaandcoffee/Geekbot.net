@@ -9,27 +9,41 @@ namespace Geekbot.net.Commands
 {
     public class Dog : ModuleBase
     {
+        private readonly IErrorHandler _errorHandler;
+        
+        public Dog(IErrorHandler errorHandler)
+        {
+            _errorHandler = errorHandler;
+        }
+        
         [Command("dog", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Return a random image of a dog.")]
         public async Task Say()
         {
-            using (var client = new HttpClient())
+            try
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("http://random.dog");
-                    var response = await client.GetAsync("/woof.json");
-                    response.EnsureSuccessStatusCode();
+                    try
+                    {
+                        client.BaseAddress = new Uri("http://random.dog");
+                        var response = await client.GetAsync("/woof.json");
+                        response.EnsureSuccessStatusCode();
 
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var dogFile = JsonConvert.DeserializeObject<DogResponse>(stringResponse);
-                    await ReplyAsync(dogFile.url);
+                        var stringResponse = await response.Content.ReadAsStringAsync();
+                        var dogFile = JsonConvert.DeserializeObject<DogResponse>(stringResponse);
+                        await ReplyAsync(dogFile.url);
+                    }
+                    catch (HttpRequestException e)
+                    {
+                        await ReplyAsync($"Seems like the dog got lost (error occured)\r\n{e.Message}");
+                    }
                 }
-                catch (HttpRequestException e)
-                {
-                    await ReplyAsync($"Seems like the dog got lost (error occured)\r\n{e.Message}");
-                }
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

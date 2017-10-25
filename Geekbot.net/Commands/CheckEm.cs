@@ -5,23 +5,20 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
-using Serilog;
 
 namespace Geekbot.net.Commands
 {
     public class CheckEm : ModuleBase
     {
-        private readonly IMediaProvider checkEmImages;
-        private readonly Random rnd;
-        private readonly ILogger logger;
-        private readonly IErrorHandler errorHandler;
+        private readonly IMediaProvider _checkEmImages;
+        private readonly Random _rnd;
+        private readonly IErrorHandler _errorHandler;
 
-        public CheckEm(Random RandomClient, IMediaProvider mediaProvider, ILogger logger, IErrorHandler errorHandler)
+        public CheckEm(Random RandomClient, IMediaProvider mediaProvider, IErrorHandler errorHandler)
         {
-            this.rnd = RandomClient;
-            this.checkEmImages = mediaProvider;
-            this.logger = logger;
-            this.errorHandler = errorHandler;
+            _rnd = RandomClient;
+            _checkEmImages = mediaProvider;
+            _errorHandler = errorHandler;
         }
 
         [Command("checkem", RunMode = RunMode.Async)]
@@ -31,7 +28,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var number = rnd.Next(10000000, 99999999);
+                var number = _rnd.Next(10000000, 99999999);
                 var dubtriqua = "";
 
                 var ns = GetIntArray(number);
@@ -51,13 +48,13 @@ namespace Geekbot.net.Commands
                 sb.AppendLine($"**{number}**");
                 if (!string.IsNullOrEmpty(dubtriqua))
                     sb.AppendLine($":tada: {dubtriqua} :tada:");
-                sb.AppendLine(checkEmImages.getCheckem());
+                sb.AppendLine(_checkEmImages.getCheckem());
 
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context);
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
 

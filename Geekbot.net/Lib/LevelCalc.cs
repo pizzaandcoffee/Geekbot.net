@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Geekbot.net.Lib
 {
@@ -19,12 +20,12 @@ namespace Geekbot.net.Lib
             _levels = levels.ToArray();
         }
 
-        public int GetLevelAtExperience(int experience)
+        public int GetLevel(int messages)
         {
             var returnVal = 1;
             foreach (var level in _levels)
             {
-                if (level > experience) break;
+                if (level > messages) break;
                 returnVal++;
             }
             return returnVal;
@@ -33,6 +34,6 @@ namespace Geekbot.net.Lib
 
     public interface ILevelCalc
     {
-        int GetLevelAtExperience(int experience);
+        int GetLevel(int experience);
     } 
 }

@@ -10,15 +10,13 @@ namespace Geekbot.net.Commands
 {
     public class Counters : ModuleBase
     {
-        private readonly IDatabase redis;
-        private readonly ILogger logger;
-        private readonly IErrorHandler errorHandler;
+        private readonly IDatabase _redis;
+        private readonly IErrorHandler _errorHandler;
 
-        public Counters(IDatabase redis, ILogger logger, IErrorHandler errorHandler)
+        public Counters(IDatabase redis, IErrorHandler errorHandler)
         {
-            this.redis = redis;
-            this.logger = logger;
-            this.errorHandler = errorHandler;
+            _redis = redis;
+            _errorHandler = errorHandler;
         }
 
         [Command("good", RunMode = RunMode.Async)]
@@ -28,7 +26,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var lastKarmaFromRedis = redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
+                var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
                 var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
                 if (user.Id == Context.User.Id)
                 {
@@ -41,8 +39,8 @@ namespace Geekbot.net.Commands
                 }
                 else
                 {
-                    var newKarma = redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
-                    redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
+                    var newKarma = _redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
+                    _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
                         new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
 
                     var eb = new EmbedBuilder();
@@ -60,7 +58,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context);
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -71,7 +69,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var lastKarmaFromRedis = redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
+                var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
                 var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
                 if (user.Id == Context.User.Id)
                 {
@@ -84,8 +82,8 @@ namespace Geekbot.net.Commands
                 }
                 else
                 {
-                    var newKarma = redis.HashDecrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
-                    redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
+                    var newKarma = _redis.HashDecrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
+                    _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
                         new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
 
                     var eb = new EmbedBuilder();
@@ -103,7 +101,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context);
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
 

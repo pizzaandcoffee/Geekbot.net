@@ -9,13 +9,15 @@ namespace Geekbot.net.Commands
 {
     public class Ship : ModuleBase
     {
-        private readonly IDatabase redis;
-        private readonly Random rnd;
+        private readonly IDatabase _redis;
+        private readonly Random _rnd;
+        private readonly IErrorHandler _errorHandler;
 
-        public Ship(IDatabase redis, Random RandomClient)
+        public Ship(IDatabase redis, Random randomClient, IErrorHandler errorHandler)
         {
-            this.redis = redis;
-            rnd = RandomClient;
+            _redis = redis;
+            _rnd = randomClient;
+            _errorHandler = errorHandler;
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
@@ -23,29 +25,35 @@ namespace Geekbot.net.Commands
         [Summary("Ask the Shipping meter")]
         public async Task Command([Summary("@User1")] IUser user1, [Summary("@User2")] IUser user2)
         {
-            // Create a String
-            var dbstring = "";
-            if (user1.Id > user2.Id)
-                dbstring = $"{user1.Id}-{user2.Id}";
-            else
-                dbstring = $"{user2.Id}-{user1.Id}";
-
-            var dbval = redis.HashGet($"{Context.Guild.Id}:Ships", dbstring);
-            var shippingRate = 0;
-            if (dbval.IsNullOrEmpty)
+            try
             {
-                shippingRate = rnd.Next(1, 100);
-                redis.HashSet($"{Context.Guild.Id}:Ships", dbstring, shippingRate);
-            }
-            else
-            {
-                shippingRate = int.Parse(dbval.ToString());
-            }
+                var dbstring = "";
+                if (user1.Id > user2.Id)
+                    dbstring = $"{user1.Id}-{user2.Id}";
+                else
+                    dbstring = $"{user2.Id}-{user1.Id}";
 
-            var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";
-            reply = reply + $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
-            reply = reply + $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
-            await ReplyAsync(reply);
+                var dbval = _redis.HashGet($"{Context.Guild.Id}:Ships", dbstring);
+                var shippingRate = 0;
+                if (dbval.IsNullOrEmpty)
+                {
+                    shippingRate = _rnd.Next(1, 100);
+                    _redis.HashSet($"{Context.Guild.Id}:Ships", dbstring, shippingRate);
+                }
+                else
+                {
+                    shippingRate = int.Parse(dbval.ToString());
+                }
+
+                var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";
+                reply = reply + $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
+                reply = reply + $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
+                await ReplyAsync(reply);
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
         }
 
         private string DeterminateSuccess(int rate)

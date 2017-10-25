@@ -26,22 +26,7 @@ namespace Geekbot.net.Commands
             try
             {
                 var sb = new StringBuilder();
-//                sb.AppendLine("```");
-//                sb.AppendLine("**Geekbot Command list**");
-//                sb.AppendLine("");
-//                sb.AppendLine(tp("Name", 15) + tp("Parameters", 19) + "Description");
-//                foreach (var cmd in _commands.Commands)
-//                {
-//                    var param = string.Join(", !", cmd.Aliases);
-//                    if (!param.Contains("admin"))
-//                        if (cmd.Parameters.Any())
-//                            sb.AppendLine(tp(param, 15) +
-//                                          tp(string.Join(" ", cmd.Parameters.Select(e => e.Summary)), 19) +
-//                                          cmd.Summary);
-//                        else
-//                            sb.AppendLine(tp(param, 34) + cmd.Summary);
-//                }
-//                sb.AppendLine("```");
+
                 sb.AppendLine("For a list of all commands, please visit the following page");
                 sb.AppendLine("https://geekbot.pizzaandcoffee.rocks/commands");
                 var dm = await Context.User.GetOrCreateDMChannelAsync();
@@ -51,12 +36,6 @@ namespace Geekbot.net.Commands
             {
                 _errorHandler.HandleCommandException(e, Context);
             }
-        }
-
-        // Table Padding, short function name because of many usages
-        private string tp(string text, int shouldHave)
-        {
-            return text.PadRight(shouldHave);
         }
     }
 }
