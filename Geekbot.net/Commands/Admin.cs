@@ -11,24 +11,20 @@ using StackExchange.Redis;
 namespace Geekbot.net.Commands
 {
     [Group("admin")]
-    public class AdminCmd : ModuleBase
+    [RequireUserPermission(GuildPermission.Administrator)]
+    public class Admin : ModuleBase
     {
         private readonly IDatabase _redis;
         private readonly DiscordSocketClient _client;
-        private readonly ILogger _logger;
-        private readonly IUserRepository _userRepository;
         private readonly IErrorHandler _errorHandler;
         
-        public AdminCmd(IDatabase redis, DiscordSocketClient client, ILogger logger, IUserRepository userRepositry, IErrorHandler errorHandler)
+        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler)
         {
             _redis = redis;
             _client = client;
-            _logger = logger;
-            _userRepository = userRepositry;
             _errorHandler = errorHandler;
         }
 
-        [RequireUserPermission(GuildPermission.Administrator)]
         [Command("welcome", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
@@ -40,86 +36,6 @@ namespace Geekbot.net.Commands
                              formatedMessage);
         }
 
-        [Command("youtubekey", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
-        [Summary("Set the youtube api key")]
-        public async Task SetYoutubeKey([Summary("API Key")] string key)
-        {
-            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner"))).Result;
-            if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
-            {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
-                return;
-            }
-
-            _redis.StringSet("youtubeKey", key);
-            await ReplyAsync("Apikey has been set");
-        }
-        
-        [Command("game", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
-        [Summary("Set the game that the bot is playing")]
-        public async Task SetGame([Remainder] [Summary("Game")] string key)
-        {
-            var botOwner = Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner"))).Result;
-            if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
-            {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
-                return;
-            }
-
-            _redis.StringSet("Game", key);
-            await _client.SetGameAsync(key);
-            _logger.Information($"[Geekbot] Changed game to {key}");
-            await ReplyAsync($"Now Playing {key}");
-        }
-        
-        [Command("popuserrepo", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
-        [Summary("Populate user cache")]
-        public async Task popUserRepoCommand()
-        {
-            try
-            {
-                var botOwner = Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner"))).Result;
-                if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
-                {
-                    await ReplyAsync(
-                        $"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
-                    return;
-                }
-            }
-            catch (Exception)
-            {
-                await ReplyAsync(
-                    $"Sorry, only the botowner can do this");
-                return;
-            }
-            var success = 0;
-            var failed = 0;
-            try
-            {
-                _logger.Warning("[UserRepository] Populating User Repositry");
-                await ReplyAsync("Starting Population of User Repository");
-                foreach (var guild in _client.Guilds)
-                {
-                    _logger.Information($"[UserRepository] Populating users from {guild.Name}");
-                    foreach (var user in guild.Users)
-                    {
-                        var succeded = await _userRepository.Update(user);
-                        var inc = succeded ? success++ : failed++;
-                    }
-                }
-                _logger.Warning("[UserRepository] Finished Updating User Repositry");
-                await ReplyAsync($"Successfully Populated User Repository with {success} Users in {_client.Guilds.Count} Guilds (Failed: {failed})");
-            }
-            catch (Exception e)
-            {
-                _errorHandler.HandleCommandException(e, Context, "Couldn't complete User Repository, see console for more info");
-            }
-        }
-
-        [RequireUserPermission(GuildPermission.Administrator)]
         [Command("modchannel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set a channel for moderation purposes")]
@@ -140,7 +56,6 @@ namespace Geekbot.net.Commands
             }
         }
 
-        [RequireUserPermission(GuildPermission.Administrator)]
         [Command("showleave", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone leaves")]
@@ -167,7 +82,6 @@ namespace Geekbot.net.Commands
             }
         }
         
-        [RequireUserPermission(GuildPermission.Administrator)]
         [Command("showdel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone deletes a message")]
