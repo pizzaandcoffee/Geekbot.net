@@ -107,7 +107,7 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("Woah, i don't think you want to add that role to self service as it contains some dangerous permissions");
                     return;
                 }
-                _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist", new HashEntry[] { new HashEntry(roleName, role.Id.ToString()) });
+                _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist", new HashEntry[] { new HashEntry(roleName.ToLower(), role.Id.ToString()) });
                 await ReplyAsync($"Added {role.Name} to the whitelist");
             }
             catch (Exception e)

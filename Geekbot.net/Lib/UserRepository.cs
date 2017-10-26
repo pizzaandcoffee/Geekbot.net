@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
-using AngleSharp.Dom.Css;
 using Discord.WebSocket;
 using Serilog;
 using StackExchange.Redis;
+using Utf8Json;
 
 namespace Geekbot.net.Lib
 {
@@ -21,60 +24,90 @@ namespace Geekbot.net.Lib
         {
             try
             {
-                _redis.HashSetAsync($"Users:{user.Id.ToString()}", new HashEntry[]
+                var savedUser = Get(user.Id);
+                savedUser.Id = user.Id;
+                savedUser.Username = user.Username;
+                savedUser.Discriminator = user.Discriminator;
+                savedUser.AvatarUrl = user.GetAvatarUrl() ?? "0";
+                savedUser.IsBot = user.IsBot;
+                savedUser.Joined = user.CreatedAt;
+                if(savedUser.UsedNames == null) savedUser.UsedNames = new List<string>();
+                if (!savedUser.UsedNames.Contains(user.Username))
                 {
-                    new HashEntry("Id", user.Id.ToString()),
-                    new HashEntry("Username", user.Username),
-                    new HashEntry("Discriminator", user.Discriminator),
-                    new HashEntry("AvatarUrl", user.GetAvatarUrl() ?? "0"),
-                    new HashEntry("IsBot", user.IsBot), 
-                    new HashEntry("Joined", user.CreatedAt.ToString()), 
-                });
-                _logger.Information($"[UserRepository] Updated User {user.Id}");
+                    savedUser.UsedNames.Add(user.Username);
+                }
+                Store(savedUser);
+                
+                _logger.Information($"[UserRepository] Updated User {user.Username}#{user.Discriminator} ({user.Id})");
                 return Task.FromResult(true);
             }
             catch (Exception e)
             {
-                _logger.Warning(e, $"[UserRepository] Failed to update {user.Id}");
+                _logger.Warning(e, $"[UserRepository] Failed to update {user.Username}#{user.Discriminator} ({user.Id})");
                 return Task.FromResult(false);
             }
         }
 
+        private void Store(UserRepositoryUser user)
+        {
+            _redis.HashSetAsync($"Users:{user.Id.ToString()}", new HashEntry[]
+            {
+                new HashEntry("Id", user.Id.ToString()),
+                new HashEntry("Username", user.Username),
+                new HashEntry("Discriminator", user.Discriminator),
+                new HashEntry("AvatarUrl", user.AvatarUrl),
+                new HashEntry("IsBot", user.IsBot), 
+                new HashEntry("Joined", user.Joined.ToString()), 
+                new HashEntry("UsedNames", JsonSerializer.Serialize(user.UsedNames)), 
+            });
+        }
+
         public UserRepositoryUser Get(ulong userId)
         {
-            var user = _redis.HashGetAll($"Users:{userId.ToString()}");
-            for (int i = 1; i < 11; i++)
+            try
             {
-                if (user.Length != 0) break;
-                user = _redis.HashGetAll($"Users:{(userId + (ulong)i).ToString()}");
-                
-            }
-            var dto = new UserRepositoryUser();
-            foreach (var a in user.ToDictionary())
-            {
-                switch (a.Key)
+                var user = _redis.HashGetAll($"Users:{userId.ToString()}");
+                for (int i = 1; i < 11; i++)
                 {
-                    case "Id":
-                        dto.Id = ulong.Parse(a.Value);
-                        break;
-                    case "Username":
-                        dto.Username = a.Value.ToString();
-                        break;
-                    case "Discriminator":
-                        dto.Discriminator = a.Value.ToString();
-                        break;
-                    case "AvatarUrl":
-                        dto.AvatarUrl = (a.Value != "0") ? a.Value.ToString() : null;
-                        break;
-                    case "IsBot":
-                        dto.IsBot = a.Value == 1;
-                        break;
-                    case "Joined":
-                        dto.Joined = DateTimeOffset.Parse(a.Value);
-                        break;
+                    if (user.Length != 0) break;
+                    user = _redis.HashGetAll($"Users:{(userId + (ulong) i).ToString()}");
+
                 }
+                var dto = new UserRepositoryUser();
+                foreach (var a in user.ToDictionary())
+                {
+                    switch (a.Key)
+                    {
+                        case "Id":
+                            dto.Id = ulong.Parse(a.Value);
+                            break;
+                        case "Username":
+                            dto.Username = a.Value.ToString();
+                            break;
+                        case "Discriminator":
+                            dto.Discriminator = a.Value.ToString();
+                            break;
+                        case "AvatarUrl":
+                            dto.AvatarUrl = (a.Value != "0") ? a.Value.ToString() : null;
+                            break;
+                        case "IsBot":
+                            dto.IsBot = a.Value == 1;
+                            break;
+                        case "Joined":
+                            dto.Joined = DateTimeOffset.Parse(a.Value.ToString());
+                            break;
+                        case "UsedNames":
+                            dto.UsedNames = JsonSerializer.Deserialize<List<string>>(a.Value.ToString()) ?? new List<string>();
+                            break;
+                    }
+                }
+                return dto;
             }
-            return dto;
+            catch (Exception e)
+            {
+                _logger.Warning(e, $"[UserRepository] Failed to get {userId} from repository");
+                return new UserRepositoryUser();
+            }
         }
 
         public string getUserSetting(ulong userId, string setting)
@@ -100,6 +133,7 @@ namespace Geekbot.net.Lib
         public string AvatarUrl { get; set; }
         public bool IsBot { get; set; }
         public DateTimeOffset Joined { get; set; }
+        public List<string> UsedNames { get; set; }
     }
 
     public interface IUserRepository
