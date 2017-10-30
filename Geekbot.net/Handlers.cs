@@ -52,11 +52,6 @@ namespace Geekbot.net
                     message.Channel.SendMessageAsync("hui!!!");
                     return Task.CompletedTask;
                 }
-                if (message.Author.Id == 148542729658302464)
-                {
-                    var avocado = new Emoji("🥑");
-                    var avocadoAdder = message.AddReactionAsync(avocado);
-                }
                 if (!(message.HasCharPrefix('!', ref argPos) ||
                       message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
                 var context = new CommandContext(_client, message);
