@@ -3,7 +3,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Geekbot.net.Lib;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
 {
@@ -15,11 +17,15 @@ namespace Geekbot.net.Commands
     {
         private readonly IUserRepository _userRepository;
         private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
+        private readonly DiscordSocketClient _client;
         
-        public Mod(IUserRepository userRepositry, IErrorHandler errorHandler)
+        public Mod(IUserRepository userRepositry, IErrorHandler errorHandler, IDatabase redis, DiscordSocketClient client)
         {
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
+            _redis = redis;
+            _client = client;
         }
         
         [Command("namehistory", RunMode = RunMode.Async)]
@@ -40,7 +46,45 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                _errorHandler.HandleCommandException(e, Context, $"I don't have enough permissions to give {user.Username} that role");
+            }
+        }
+        
+        [Command("kick", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Ban a user")]
+        public async Task kick([Summary("@user")] IUser userNormal, [Summary("reason"), Remainder] string reason)
+        {
+            try
+            {
+                var user = (IGuildUser)userNormal;
+                if (string.IsNullOrEmpty(reason))
+                {
+                    reason = "No reason provided";
+                }
+
+                await user.KickAsync();
+                await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
+                    $"You have been kicked from {Context.Guild.Name} for the following reason: \"{reason}\"");
+                try
+                {
+                    var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
+                    var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
+                    var eb = new EmbedBuilder();
+                    eb.Title = "Kicked";
+                    eb.AddInlineField("User", user.Username);
+                    eb.AddInlineField("By Mod", Context.User.Username);
+                    eb.AddField("Reason", reason);
+                    await modChannel.SendMessageAsync("", false, eb.Build());
+                }
+                catch
+                {
+                    await ReplyAsync($"{user.Username} was kicked for the following reason: \"{reason}\"");
+                }
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context, "I don't have enough permissions to kick someone");
             }
         }
     }

@@ -53,10 +53,11 @@ namespace Geekbot.net.Commands
         [Command(RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get a role by mentioning it.")]
-        public async Task giveRole([Summary("roleNickname")] string roleName)
+        public async Task giveRole([Summary("roleNickname")] string roleNameRaw)
         {
             try
             {
+                var roleName = roleNameRaw.ToLower();
                 if (_redis.HashExists($"{Context.Guild.Id}:RoleWhitelist", roleName))
                 {
                     var guildUser = (IGuildUser) Context.User;
