@@ -35,26 +35,39 @@ namespace Geekbot.net
         
         public Task RunCommand(SocketMessage messageParam)
         {
-            var message = messageParam as SocketUserMessage;
-            if (message == null) return Task.CompletedTask;
-            if (message.Author.IsBot) return Task.CompletedTask;
-            var argPos = 0;
-            var lowCaseMsg = message.ToString().ToLower();
-            if (lowCaseMsg.Equals("ping") || lowCaseMsg.StartsWith("ping "))
+            try
             {
-                message.Channel.SendMessageAsync("pong");
+                var message = messageParam as SocketUserMessage;
+                if (message == null) return Task.CompletedTask;
+                if (message.Author.IsBot) return Task.CompletedTask;
+                var argPos = 0;
+                var lowCaseMsg = message.ToString().ToLower();
+                if (lowCaseMsg.Equals("ping") || lowCaseMsg.StartsWith("ping "))
+                {
+                    message.Channel.SendMessageAsync("pong");
+                    return Task.CompletedTask;
+                }
+                if (lowCaseMsg.StartsWith("hui"))
+                {
+                    message.Channel.SendMessageAsync("hui!!!");
+                    return Task.CompletedTask;
+                }
+                if (message.Author.Id == 148542729658302464)
+                {
+                    var avocado = new Emoji("🥑");
+                    var avocadoAdder = message.AddReactionAsync(avocado);
+                }
+                if (!(message.HasCharPrefix('!', ref argPos) ||
+                      message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
+                var context = new CommandContext(_client, message);
+                var commandExec = _commands.ExecuteAsync(context, argPos, _servicesProvider);
                 return Task.CompletedTask;
             }
-            if (lowCaseMsg.StartsWith("hui"))
+            catch (Exception e)
             {
-                message.Channel.SendMessageAsync("hui!!!");
+                _logger.Error(e, "[Geekbot] Failed to run commands");
                 return Task.CompletedTask;
             }
-            if (!(message.HasCharPrefix('!', ref argPos) ||
-                  message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
-            var context = new CommandContext(_client, message);
-            var commandExec = _commands.ExecuteAsync(context, argPos, _servicesProvider);
-            return Task.CompletedTask;
         }
 
         public Task UpdateStats(SocketMessage messsageParam)
