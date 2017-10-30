@@ -53,25 +53,24 @@ namespace Geekbot.net.Commands
         [Command("kick", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Ban a user")]
-        public async Task kick([Summary("@user")] IUser userNormal, [Summary("reason"), Remainder] string reason)
+        public async Task kick([Summary("@user")] IUser userNormal, [Summary("reason"), Remainder] string reason = "none")
         {
             try
             {
                 var user = (IGuildUser)userNormal;
-                if (string.IsNullOrEmpty(reason))
+                if (reason == "none")
                 {
                     reason = "No reason provided";
                 }
-
-                await user.KickAsync();
                 await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
                     $"You have been kicked from {Context.Guild.Name} for the following reason: \"{reason}\"");
+                await user.KickAsync();
                 try
                 {
                     var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
                     var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
                     var eb = new EmbedBuilder();
-                    eb.Title = "Kicked";
+                    eb.Title = ":x: User Kicked";
                     eb.AddInlineField("User", user.Username);
                     eb.AddInlineField("By Mod", Context.User.Username);
                     eb.AddField("Reason", reason);
