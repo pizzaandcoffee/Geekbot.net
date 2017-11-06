@@ -17,13 +17,15 @@ namespace Geekbot.net.Commands
         private readonly IErrorHandler _errorHandler;
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IEmojiConverter _emojiConverter;
         
-        public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository)
+        public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository, IEmojiConverter emojiConverter)
         {
             _redis = redis;
             _errorHandler = errorHandler;
             _logger = logger;
             _userRepository = userRepository;
+            _emojiConverter = emojiConverter;
         }
         
         [Command("rank", RunMode = RunMode.Async)]
@@ -73,7 +75,7 @@ namespace Geekbot.net.Commands
                 }
                 
                 var highScore = new StringBuilder();
-                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, sorry! (bugfix coming soon:tm:)\n");
+                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, sorry!\n");
                 highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
@@ -82,12 +84,12 @@ namespace Geekbot.net.Commands
                     if (user.Key.Username != null)
                     {
                         highScore.AppendLine(
-                            $"{NumerToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
+                            $"{_emojiConverter.numberToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
                     }
                     else
                     {
                         highScore.AppendLine(
-                            $"{NumerToEmoji(highscorePlace)} **{user.Key.Id}** - {percent}% of total - {user.Value} messages");
+                            $"{_emojiConverter.numberToEmoji(highscorePlace)} **{user.Key.Id}** - {percent}% of total - {user.Value} messages");
                     }
                     highscorePlace++;
                 }
@@ -96,20 +98,6 @@ namespace Geekbot.net.Commands
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
-            }
-        }
-
-        private string NumerToEmoji(int number)
-        {
-            var emojis = new string[] {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
-            try
-            {
-                return emojis[number - 1];
-            }
-            catch (Exception e)
-            {
-                _logger.Warning(e, $"Can't provide emoji number {number}");
-                return ":zero:";
             }
         }
     }

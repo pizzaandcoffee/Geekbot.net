@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -118,12 +119,14 @@ namespace Geekbot.net
             var mediaProvider = new MediaProvider(randomClient, logger);
             var malClient = new MalClient(redis, logger);
             var levelCalc = new LevelCalc();
+            var emojiConverter = new EmojiConverter();
             
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
             services.AddSingleton<ILogger>(logger);
             services.AddSingleton<IUserRepository>(userRepository);
             services.AddSingleton<ILevelCalc>(levelCalc);
+            services.AddSingleton<IEmojiConverter>(emojiConverter);
             services.AddSingleton(randomClient);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);

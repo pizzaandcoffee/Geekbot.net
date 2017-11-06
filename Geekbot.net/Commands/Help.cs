@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -9,12 +8,10 @@ namespace Geekbot.net.Commands
 {
     public class Help : ModuleBase
     {
-        private readonly CommandService _commands;
         private readonly IErrorHandler _errorHandler;
 
-        public Help(CommandService commands, IErrorHandler errorHandler)
+        public Help(IErrorHandler errorHandler)
         {
-            _commands = commands;
             _errorHandler = errorHandler;
         }
 
