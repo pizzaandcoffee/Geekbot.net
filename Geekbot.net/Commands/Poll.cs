@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -34,14 +35,13 @@ namespace Geekbot.net.Commands
             try
             {
                 var currentPoll = GetCurrentPoll();
-                if (currentPoll.Question == null)
+                if (currentPoll.Question == null || currentPoll.IsFinshed)
                 {
                     await ReplyAsync(
                         "There is no poll in this channel ongoing at the moment\r\nYou can create one with `!poll create question;option1;option2;option3`");
                     return;
                 }
-                var results = await getPollResults(currentPoll);
-
+                await ReplyAsync("There is a poll running at the moment");
             }
             catch (Exception e)
             {
@@ -65,7 +65,7 @@ namespace Geekbot.net.Commands
                 }
 
                 var eb = new EmbedBuilder();
-                eb.Title = $":bar_chart: Poll by {Context.User.Username}";
+                eb.Title = $"Poll by {Context.User.Username}";
                 var question = pollList[0];
                 eb.Description = question;
                 pollList.RemoveAt(0);
@@ -106,15 +106,21 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var hasPoll = _redis.HashGet($"{Context.Guild.Id}:Polls", Context.Channel.Id);
-                if (hasPoll.IsNullOrEmpty)
+                var currentPoll = GetCurrentPoll();
+                if (currentPoll.Question == null || currentPoll.IsFinshed)
                 {
-                    await ReplyAsync(
-                        "There is no poll in this channel ongoing at the moment\r\nYou can create one with `!poll create question;answer1;answer2;answer3`");
+                    await ReplyAsync("There is no ongoing poll at the moment");
                     return;
                 }
-                
-                
+                var results = await getPollResults(currentPoll);
+                var sb = new StringBuilder();
+                sb.AppendLine("**Poll Results**");
+                sb.AppendLine(currentPoll.Question);
+                foreach (var result in results)
+                {
+                    sb.AppendLine($"{result.VoteCount} - {result.Option}");
+                }
+                await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
             {
@@ -138,11 +144,19 @@ namespace Geekbot.net.Commands
         private async Task<List<PollResult>> getPollResults(PollData poll)
         {
             var message = (IUserMessage)(await Context.Channel.GetMessageAsync(poll.MessageId));
+            var results = new List<PollResult>();
             foreach (var r in message.Reactions)
             {
-                Console.WriteLine($"{r.Key.Name}: {r.Value.ReactionCount}");
+                var option = int.Parse(r.Key.Name.ToCharArray()[0].ToString());
+                var result = new PollResult()
+                {
+                    Option = poll.Options[option - 1],
+                    VoteCount = r.Value.ReactionCount
+                };
+                results.Add(result);
             }
-            return new List<PollResult>();
+            results.Sort((x,y) => y.VoteCount.CompareTo(x.VoteCount));
+            return results;
         }
 
         private class PollData
@@ -157,7 +171,7 @@ namespace Geekbot.net.Commands
         private class PollResult
         {
             public string Option { get; set; }
-            public string VoteCount { get; set; }
+            public int VoteCount { get; set; }
         }
     }
 }
