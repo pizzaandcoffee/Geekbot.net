@@ -25,8 +25,14 @@ namespace Geekbot.net.Commands
             try
             {
                 var sb = new StringBuilder();
+                var emojis = _emojiConverter.textToEmoji(text);
+                if (emojis.Length > 1999)
+                {
+                    await ReplyAsync("I can't take that much at once!");
+                    return;
+                } 
                 await ReplyAsync($"*{Context.User.Username}#{Context.User.Discriminator} said:*");
-                await ReplyAsync(_emojiConverter.textToEmoji(text));
+                await ReplyAsync(emojis);
             }
             catch (Exception e)
             {

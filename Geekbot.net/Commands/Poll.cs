@@ -56,6 +56,12 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                var currentPoll = GetCurrentPoll();
+                if (currentPoll.Question != null && !currentPoll.IsFinshed)
+                {
+                    await ReplyAsync("You have not finished you last poll yet. To finish it use `!poll end`");
+                    return;
+                }
                 var pollList = rawPollString.Split(';').ToList();
                 if (pollList.Count <= 2)
                 {
@@ -121,6 +127,9 @@ namespace Geekbot.net.Commands
                     sb.AppendLine($"{result.VoteCount} - {result.Option}");
                 }
                 await ReplyAsync(sb.ToString());
+                currentPoll.IsFinshed = true;
+                var pollJson = JsonConvert.SerializeObject(currentPoll);
+                _redis.HashSet($"{Context.Guild.Id}:Polls", new HashEntry[] {new HashEntry(Context.Channel.Id, pollJson)});
             }
             catch (Exception e)
             {
@@ -147,13 +156,17 @@ namespace Geekbot.net.Commands
             var results = new List<PollResult>();
             foreach (var r in message.Reactions)
             {
-                var option = int.Parse(r.Key.Name.ToCharArray()[0].ToString());
-                var result = new PollResult()
+                try
                 {
-                    Option = poll.Options[option - 1],
-                    VoteCount = r.Value.ReactionCount
-                };
-                results.Add(result);
+                    var option = int.Parse(r.Key.Name.ToCharArray()[0].ToString());
+                    var result = new PollResult()
+                    {
+                        Option = poll.Options[option - 1],
+                        VoteCount = r.Value.ReactionCount
+                    };
+                    results.Add(result);
+                }
+                catch {}
             }
             results.Sort((x,y) => y.VoteCount.CompareTo(x.VoteCount));
             return results;

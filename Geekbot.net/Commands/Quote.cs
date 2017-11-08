@@ -55,6 +55,11 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("You can't save your own quotes...");
                     return;
                 }
+                if (user.IsBot)
+                {
+                    await ReplyAsync("You can't save quotes by a bot...");
+                    return;
+                }
                 var lastMessage = await getLastMessageByUser(user);
                 var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
@@ -79,6 +84,11 @@ namespace Geekbot.net.Commands
                 if (message.Author.Id == Context.Message.Author.Id)
                 {
                     await ReplyAsync("You can't save your own quotes...");
+                    return;
+                }
+                if (message.Author.IsBot)
+                {
+                    await ReplyAsync("You can't save quotes by a bot...");
                     return;
                 }
                 var quote = createQuoteObject(message);
