@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -40,7 +41,7 @@ namespace Geekbot.net.Commands
 
                 var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
-                var eb = new EmbedBuilder();
+                var eb = new GeekbotEmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(userInfo.GetAvatarUrl())
                     .WithName(userInfo.Username));
@@ -49,12 +50,12 @@ namespace Geekbot.net.Commands
                 var karma = _redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id);
                 var correctRolls = _redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
 
-                eb.AddInlineField("Discordian Since", $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
-                    .AddInlineField("Joined Server", $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
-                    .AddInlineField("Karma", karma.ToString() ?? "0")
-                    .AddInlineField("Level", level)
-                    .AddInlineField("Messages Sent", messages)
-                    .AddInlineField("Server Total", $"{percent}%");
+                eb.AddInlineField("Discordian Since", $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)");
+                eb.AddInlineField("Joined Server", $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)");
+                eb.AddInlineField("Karma", karma.ToString() ?? "0");
+                eb.AddInlineField("Level", level);
+                eb.AddInlineField("Messages Sent", messages);
+                eb.AddInlineField("Server Total", $"{percent}%");
 
                 if (!correctRolls.IsNullOrEmpty)
                     eb.AddInlineField("Guessed Rolls", correctRolls);

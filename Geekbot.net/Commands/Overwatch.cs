@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using Google.Apis.Util;
 using OverwatchAPI;
 using OverwatchAPI.Config;
@@ -117,7 +118,7 @@ namespace Geekbot.net.Commands
                     return null;
                 }
                 _logger.Debug($"[OW] Username = {player.Username}");
-                var eb = new EmbedBuilder();
+                var eb = new GeekbotEmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(player.ProfilePortraitUrl)
                     .WithName(player.Username));

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using PokeAPI;
 using Serilog;
 
@@ -47,7 +48,7 @@ namespace Geekbot.net.Commands
 
         private async Task<EmbedBuilder> pokemonEmbedBuilder(Pokemon pokemon)
         {
-            var eb = new EmbedBuilder();
+            var eb = new GeekbotEmbedBuilder();
             var species = await DataFetcher.GetApiObject<PokemonSpecies>(pokemon.ID);
             eb.Title = $"#{pokemon.ID} {toUpper(pokemon.Name)}";
             eb.Description = species.FlavorTexts[1].FlavorText;

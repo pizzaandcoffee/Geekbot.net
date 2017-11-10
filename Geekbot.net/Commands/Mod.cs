@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -69,7 +70,7 @@ namespace Geekbot.net.Commands
                 {
                     var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
                     var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
-                    var eb = new EmbedBuilder();
+                    var eb = new GeekbotEmbedBuilder();
                     eb.Title = ":x: User Kicked";
                     eb.AddInlineField("User", user.Username);
                     eb.AddInlineField("By Mod", Context.User.Username);

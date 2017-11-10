@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -70,7 +71,7 @@ namespace Geekbot.net.Commands
                     return;
                 }
 
-                var eb = new EmbedBuilder();
+                var eb = new GeekbotEmbedBuilder();
                 eb.Title = $"Poll by {Context.User.Username}";
                 var question = pollList[0];
                 eb.Description = question;

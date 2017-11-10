@@ -10,7 +10,8 @@ using StackExchange.Redis;
 namespace Geekbot.net.Commands
 {
     [Group("owner")]
-    [RequireUserPermission(GuildPermission.Administrator)]
+    [RequireOwnerAttribute] 
+//    [RequireUserPermission(GuildPermission.Administrator)]
     public class Owner : ModuleBase
     {
         private readonly IDatabase _redis;

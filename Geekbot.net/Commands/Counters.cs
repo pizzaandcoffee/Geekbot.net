@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using Serilog;
 using StackExchange.Redis;
 
@@ -43,7 +44,7 @@ namespace Geekbot.net.Commands
                     _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
                         new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
 
-                    var eb = new EmbedBuilder();
+                    var eb = new GeekbotEmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
                         .WithIconUrl(user.GetAvatarUrl())
                         .WithName(user.Username));
@@ -86,7 +87,7 @@ namespace Geekbot.net.Commands
                     _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
                         new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
 
-                    var eb = new EmbedBuilder();
+                    var eb = new GeekbotEmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
                         .WithIconUrl(user.GetAvatarUrl())
                         .WithName(user.Username));

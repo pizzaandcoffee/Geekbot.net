@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -28,7 +28,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var eb = new EmbedBuilder();
+                var eb = new GeekbotEmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(Context.Guild.IconUrl)
                     .WithName(Context.Guild.Name));
@@ -41,8 +41,8 @@ namespace Geekbot.net.Commands
                 var level = _levelCalc.GetLevel((int) messages);
 
                 eb.AddField("Server Age", $"{created.Day}/{created.Month}/{created.Year} ({age} days)");
-                eb.AddInlineField("Level", level)
-                    .AddInlineField("Messages", messages);
+                eb.AddInlineField("Level", level);
+                eb.AddInlineField("Messages", messages);
 
                 await ReplyAsync("", false, eb.Build());
             }
@@ -50,13 +50,6 @@ namespace Geekbot.net.Commands
             {
                 _errorHandler.HandleCommandException(e, Context);
             }
-        }
-
-        public static string FirstCharToUpper(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                throw new ArgumentException("ARGH!");
-            return input.First().ToString().ToUpper() + input.Substring(1);
         }
     }
 }

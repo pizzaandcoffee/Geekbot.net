@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Commands
 {
@@ -29,7 +30,7 @@ namespace Geekbot.net.Commands
                     var anime = await _malClient.getAnime(animeName);
                     if (anime != null)
                     {
-                        var eb = new EmbedBuilder();
+                        var eb = new GeekbotEmbedBuilder();
 
                         var description = System.Web.HttpUtility.HtmlDecode(anime.Synopsis)
                             .Replace("<br />", "")
@@ -78,7 +79,7 @@ namespace Geekbot.net.Commands
                     var manga = await _malClient.getManga(mangaName);
                     if (manga != null)
                     {
-                        var eb = new EmbedBuilder();
+                        var eb = new GeekbotEmbedBuilder();
 
                         var description = System.Web.HttpUtility.HtmlDecode(manga.Synopsis)
                             .Replace("<br />", "")

@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Extensions;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -29,7 +30,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var eb = new EmbedBuilder();
+                var eb = new GeekbotEmbedBuilder();
                 
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(_client.CurrentUser.GetAvatarUrl())
