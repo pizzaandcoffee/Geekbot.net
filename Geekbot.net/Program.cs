@@ -206,12 +206,25 @@ namespace Geekbot.net
         private async Task<Task> FinishSetup()
         {
             var appInfo = await client.GetApplicationInfoAsync();
-            redis.StringSet("botOwner", appInfo.Owner.Id);
-
-            var req = HttpWebRequest.Create(appInfo.IconUrl);
-            using (Stream stream = req.GetResponse().GetResponseStream() )
+            logger.Information($"[Setup] Just a moment while i setup everything {appInfo.Owner.Username}");
+            try
             {
-                await client.CurrentUser.ModifyAsync(Avatar => new Image(stream));
+                redis.StringSet("botOwner", appInfo.Owner.Id);
+                var req = HttpWebRequest.Create(appInfo.IconUrl);
+                using (Stream stream = req.GetResponse().GetResponseStream())
+                {
+                    await client.CurrentUser.ModifyAsync(User =>
+                    {
+                        User.Avatar = new Image(stream);
+                        User.Username = appInfo.Name.ToString();
+                    });
+                }
+                logger.Information($"[Setup] Everything done, enjoy!");
+            }
+            catch (Exception e)
+            {
+                logger.Warning(e, $"[Setup] Oha, it seems like something went wrong while running the setup");
+                logger.Warning(e, $"[Setup] Geekbot will work never the less, some features might be disabled though");
             }
             return Task.CompletedTask;
         }
