@@ -36,7 +36,7 @@ namespace Geekbot.net.Commands
                     var definitions = JsonConvert.DeserializeObject<UrbanResponse>(stringResponse);
                     if (definitions.list.Count == 0)
                     {
-                        await ReplyAsync("That word is not defined...");
+                        await ReplyAsync("That word hasn't been defined...");
                         return;
                     }
                     var definition = definitions.list.First();
@@ -49,7 +49,7 @@ namespace Geekbot.net.Commands
                     });
                     eb.WithColor(new Color(239,255,0));
                     eb.Description = definition.definition;
-                    eb.AddField("Example", definition.example);
+                    eb.AddField("Example", definition.example ?? "(no example given...)");
                     eb.AddInlineField("Upvotes", definition.thumbs_up);
                     eb.AddInlineField("Downvotes", definition.thumbs_down);
                     eb.AddField("Tags", string.Join(", ", definitions.tags));

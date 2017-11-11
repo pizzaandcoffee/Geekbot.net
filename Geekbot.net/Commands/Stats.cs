@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands
                     .WithName(userInfo.Username));
                 eb.WithColor(new Color(221, 255, 119));
                 
-                var karma = _redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id);
+                var karma = _redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id.ToString());
                 var correctRolls = _redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
 
                 eb.AddInlineField("Discordian Since", $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
