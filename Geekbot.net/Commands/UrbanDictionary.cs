@@ -39,7 +39,7 @@ namespace Geekbot.net.Commands
                         await ReplyAsync("That word is not defined...");
                         return;
                     }
-                    var definition = definitions.list.OrderBy(e => e.thumbs_up).First();
+                    var definition = definitions.list.First();
                     
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
