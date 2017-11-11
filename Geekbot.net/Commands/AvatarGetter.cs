@@ -16,7 +16,7 @@ namespace Geekbot.net.Commands
         }
 
         [Command("avatar", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
+        [Remarks(CommandCategories.Helpers)]
         [Summary("Get someones avatar")]
         public async Task getAvatar([Remainder, Summary("user")] IUser user = null)
         {
@@ -26,7 +26,8 @@ namespace Geekbot.net.Commands
                 {
                     user = Context.User;
                 }
-                await ReplyAsync(user.GetAvatarUrl());
+                var url = user.GetAvatarUrl().Replace("128", "1024");
+                await ReplyAsync(url);
             }
             catch (Exception e)
             {

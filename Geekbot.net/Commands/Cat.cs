@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Newtonsoft.Json;
@@ -33,7 +34,9 @@ namespace Geekbot.net.Commands
 
                         var stringResponse = await response.Content.ReadAsStringAsync();
                         var catFile = JsonConvert.DeserializeObject<CatResponse>(stringResponse);
-                        await ReplyAsync(catFile.file);
+                        var eb = new EmbedBuilder();
+                        eb.ImageUrl = catFile.file;
+                        await ReplyAsync("", false, eb.Build());
                     }
                     catch (HttpRequestException e)
                     {

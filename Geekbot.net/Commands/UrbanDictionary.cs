@@ -20,7 +20,7 @@ namespace Geekbot.net.Commands
         }
         
         [Command("urban", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
+        [Remarks(CommandCategories.Helpers)]
         [Summary("Lookup something on urban dictionary")]
         public async Task urbanDefine([Remainder, Summary("word")] string word)
         {
@@ -42,16 +42,17 @@ namespace Geekbot.net.Commands
                     var definition = definitions.list.OrderBy(e => e.thumbs_up).First();
                     
                     var eb = new EmbedBuilder();
-                    eb.Title = definition.word;
+                    eb.WithAuthor(new EmbedAuthorBuilder()
+                    {
+                        Name = definition.word,
+                        Url = definition.permalink
+                    });
                     eb.WithColor(new Color(239,255,0));
                     eb.Description = definition.definition;
                     eb.AddField("Example", definition.example);
                     eb.AddInlineField("Upvotes", definition.thumbs_up);
                     eb.AddInlineField("Downvotes", definition.thumbs_down);
-                    eb.WithFooter(new EmbedFooterBuilder()
-                    {
-                        Text = definition.permalink
-                    });
+                    eb.AddField("Tags", string.Join(", ", definitions.tags));
                     
                     await ReplyAsync("", false, eb.Build());
                 }
