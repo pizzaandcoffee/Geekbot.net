@@ -46,10 +46,10 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-    }
-
-    public class DogResponse
-    {
-        public string url { get; set; }
+        
+        private class DogResponse
+        {
+            public string url { get; set; }
+        }
     }
 }

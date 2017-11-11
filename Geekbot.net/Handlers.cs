@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -37,8 +38,7 @@ namespace Geekbot.net
         {
             try
             {
-                var message = messageParam as SocketUserMessage;
-                if (message == null) return Task.CompletedTask;
+                if (!(messageParam is SocketUserMessage message)) return Task.CompletedTask;
                 if (message.Author.IsBot) return Task.CompletedTask;
                 var argPos = 0;
                 var lowCaseMsg = message.ToString().ToLower();
@@ -65,18 +65,30 @@ namespace Geekbot.net
             }
         }
 
-        public Task UpdateStats(SocketMessage messsageParam)
+        public Task UpdateStats(SocketMessage message)
         {
-            var message = messsageParam;
-            if (message == null) return Task.CompletedTask;
-            
-            var channel = (SocketGuildChannel) message.Channel;
-            
-            _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-            _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
+            try
+            {
+                if (message == null) return Task.CompletedTask;
+                if (message.Channel.Name.StartsWith('@'))
+                {
+                    _logger.Information(
+                        $"[Message] DM-Channel - {message.Channel.Name} - {message.Content}");
+                    return Task.CompletedTask;
+                }
+                var channel = (SocketGuildChannel) message.Channel;
 
-            if (message.Author.IsBot) return Task.CompletedTask;
-            _logger.Information($"[Message] {channel.Guild.Name} - {message.Channel} - {message.Author.Username} - {message.Content}");
+                _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
+                _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
+
+                if (message.Author.IsBot) return Task.CompletedTask;
+                _logger.Information(
+                    $"[Message] {channel.Guild.Name} ({channel.Guild.Id}) - {message.Channel} ({message.Channel.Id}) - {message.Author.Username}#{message.Author.Discriminator} ({message.Author.Id}) - {message.Content}");
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Could not process message stats");
+            }
             return Task.CompletedTask;
         }
         

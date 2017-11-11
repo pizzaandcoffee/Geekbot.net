@@ -46,10 +46,10 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-    }
-
-    public class CatResponse
-    {
-        public string file { get; set; }
+        
+        private class CatResponse
+        {
+            public string file { get; set; }
+        }
     }
 }

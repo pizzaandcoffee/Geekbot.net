@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 
@@ -30,9 +31,16 @@ namespace Geekbot.net.Commands
                 {
                     await ReplyAsync("I can't take that much at once!");
                     return;
-                } 
-                await ReplyAsync($"*{Context.User.Username}#{Context.User.Discriminator} said:*");
-                await ReplyAsync(emojis);
+                }
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder()
+                {
+                    IconUrl = Context.User.GetAvatarUrl(),
+                    Name = $"{Context.User.Username}#{Context.User.Discriminator}"
+                });
+                eb.WithColor(new Color(59, 136, 195));
+                eb.Description = emojis;
+                await ReplyAsync("", false, eb.Build());
             }
             catch (Exception e)
             {

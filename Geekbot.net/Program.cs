@@ -64,7 +64,6 @@ namespace Geekbot.net
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000
-//                AlwaysDownloadUsers = true
             });
             client.Log += DiscordLogger;
             commands = new CommandService();
@@ -149,7 +148,7 @@ namespace Geekbot.net
                 if (isConneted)
                 {
                     await client.SetGameAsync(redis.StringGet("Game"));
-                    logger.Information($"[Geekbot] Now Connected to {client.Guilds.Count} Servers");
+                    logger.Information($"[Geekbot] Now Connected as {client.CurrentUser.Username} to {client.Guilds.Count} Servers");
 
                     logger.Information("[Geekbot] Registering Stuff");
                     
