@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -14,12 +15,14 @@ namespace Geekbot.net.Commands
         private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
         private readonly DiscordSocketClient _client;
+        private readonly CommandService _commands;
 
-        public Info(IDatabase redis, IErrorHandler errorHandler, DiscordSocketClient client)
+        public Info(IDatabase redis, IErrorHandler errorHandler, DiscordSocketClient client, CommandService commands)
         {
             _redis = redis;
             _errorHandler = errorHandler;
             _client = client;
+            _commands = commands;
         }
 
         [Command("info", RunMode = RunMode.Async)]
@@ -38,10 +41,13 @@ namespace Geekbot.net.Commands
                 var uptime = (DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime));
                 
                 eb.AddInlineField("Bot Name", _client.CurrentUser.Username);
-                eb.AddInlineField("Servers", Context.Client.GetGuildsAsync().Result.Count);
-                eb.AddInlineField("Uptime", $"{uptime.Days}D {uptime.Hours}H {uptime.Minutes}M {uptime.Seconds}S");
                 eb.AddInlineField("Bot Owner", $"{botOwner.Username}#{botOwner.Discriminator}");
-                eb.AddInlineField("Website", "https://geekbot.pizzaandcoffee.rocks/");
+                eb.AddInlineField("Library", "Discord.NET V1.0.2");
+                eb.AddInlineField("Uptime", $"{uptime.Days}D {uptime.Hours}H {uptime.Minutes}M {uptime.Seconds}S");
+                eb.AddInlineField("Servers", Context.Client.GetGuildsAsync().Result.Count);
+                eb.AddInlineField("Total Commands", _commands.Commands.Count());
+                
+                eb.AddField("Website", "https://geekbot.pizzaandcoffee.rocks/");
 
                 await ReplyAsync("", false, eb.Build());
             }

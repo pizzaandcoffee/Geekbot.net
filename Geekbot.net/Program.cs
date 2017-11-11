@@ -119,6 +119,7 @@ namespace Geekbot.net
             var malClient = new MalClient(redis, logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
+            var audioUtils = new AudioUtils();
             
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
@@ -126,6 +127,7 @@ namespace Geekbot.net
             services.AddSingleton<IUserRepository>(userRepository);
             services.AddSingleton<ILevelCalc>(levelCalc);
             services.AddSingleton<IEmojiConverter>(emojiConverter);
+            services.AddSingleton<IAudioUtils>(audioUtils);
             services.AddSingleton(randomClient);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);
