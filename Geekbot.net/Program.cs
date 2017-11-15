@@ -153,9 +153,10 @@ namespace Geekbot.net
                     logger.Information($"[Geekbot] Now Connected as {client.CurrentUser.Username} to {client.Guilds.Count} Servers");
 
                     logger.Information("[Geekbot] Registering Stuff");
-                    
+                    var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
+                    services.AddSingleton<ITranslationHandler>(translationHandler);
                     services.AddSingleton<DiscordSocketClient>(client);
                     servicesProvider = services.BuildServiceProvider();
                     

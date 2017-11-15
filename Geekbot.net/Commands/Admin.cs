@@ -17,12 +17,14 @@ namespace Geekbot.net.Commands
         private readonly IDatabase _redis;
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
+        private readonly ITranslationHandler _translation;
         
-        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler)
+        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler, ITranslationHandler translationHandler)
         {
             _redis = redis;
             _client = client;
             _errorHandler = errorHandler;
+            _translation = translationHandler;
         }
 
         [Command("welcome", RunMode = RunMode.Async)]
@@ -105,6 +107,29 @@ namespace Geekbot.net.Commands
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context, "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+            }
+        }
+        
+        [Command("setlang", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Change the bots language")]
+        public async Task setLanguage([Summary("language")] string languageRaw)
+        {
+            try
+            {
+                var language = languageRaw.ToUpper();
+                var success = _translation.SetLanguage(Context.Guild.Id, language);
+                if (success)
+                {
+                    await ReplyAsync(_translation.GetString(Context.Guild.Id, "LanguageChanger", "Confirm"));
+                    return;
+                }
+                await ReplyAsync(
+                    $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.GetSupportedLanguages())}");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
     }
