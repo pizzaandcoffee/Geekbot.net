@@ -248,6 +248,7 @@ namespace Geekbot.net
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
                 case LogSeverity.Warning:
+                    if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
                     logger.Error(message.Exception, logMessage);
                     break;
                 default:

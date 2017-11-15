@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Discord.Commands;
 using Discord.WebSocket;
 using Serilog;
 using StackExchange.Redis;
@@ -14,7 +15,7 @@ namespace Geekbot.net.Lib
         private readonly IDatabase _redis;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
         private Dictionary<ulong, string> _serverLanguages;
-        public List<string> _supportedLanguages;
+        private List<string> _supportedLanguages;
         
         public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, IDatabase redis, ILogger logger)
         {
@@ -22,7 +23,6 @@ namespace Geekbot.net.Lib
             _redis = redis;
             _logger.Information("[Geekbot] Loading Translations");
             LoadTranslations();
-            CheckSupportedLanguages();
             LoadServerLanguages(clientGuilds);
         }
 
@@ -30,24 +30,40 @@ namespace Geekbot.net.Lib
         {
             try
             {
-                var translations = File.ReadAllText(Path.GetFullPath("./Storage/Translations.json"));
-                _translations =
-                    Utf8Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(
-                        translations);
-            }
-            catch (Exception e)
-            {
-                _logger.Fatal(e, "Failed to load Translations");
-                Environment.Exit(110);
-            }
-        }
-        
-        private void CheckSupportedLanguages()
-        {
-            try
-            {
+                var translationFile = File.ReadAllText(Path.GetFullPath("./Storage/Translations.json"));
+                var rawTranslations = Utf8Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(translationFile);
+                var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+                foreach (var command in rawTranslations)
+                {
+                    foreach (var str in command.Value)
+                    {
+                        foreach (var lang in str.Value)
+                        {
+                            if (!sortedPerLanguage.ContainsKey(lang.Key))
+                            {
+                                var commandDict = new Dictionary<string, Dictionary<string, string>>();
+                                var strDict = new Dictionary<string, string>();
+                                strDict.Add(str.Key, lang.Value);
+                                commandDict.Add(command.Key, strDict);
+                                sortedPerLanguage.Add(lang.Key, commandDict);
+                            }
+                            if (!sortedPerLanguage[lang.Key].ContainsKey(command.Key))
+                            {
+                                var strDict = new Dictionary<string, string>();
+                                strDict.Add(str.Key, lang.Value);
+                                sortedPerLanguage[lang.Key].Add(command.Key, strDict);
+                            }
+                            if (!sortedPerLanguage[lang.Key][command.Key].ContainsKey(str.Key))
+                            {
+                                sortedPerLanguage[lang.Key][command.Key].Add(str.Key, lang.Value);
+                            }
+                        }
+                    }
+                }
+                _translations = sortedPerLanguage;
+
                 _supportedLanguages = new List<string>();
-                foreach (var lang in _translations.First().Value.First().Value)
+                foreach (var lang in sortedPerLanguage)
                 {
                     _supportedLanguages.Add(lang.Key);
                 }
@@ -58,7 +74,7 @@ namespace Geekbot.net.Lib
                 Environment.Exit(110);
             }
         }
-
+        
         private void LoadServerLanguages(IReadOnlyCollection<SocketGuild> clientGuilds)
         {
             _serverLanguages = new Dictionary<ulong, string>();
@@ -78,7 +94,7 @@ namespace Geekbot.net.Lib
 
         public string GetString(ulong guildId, string command, string stringName)
         {
-            var translation = _translations[command][stringName][_serverLanguages[guildId]];
+            var translation = _translations[_serverLanguages[guildId]][command][stringName];
             if (!string.IsNullOrWhiteSpace(translation)) return translation;
             translation = _translations[command][stringName]["EN"];
             if (string.IsNullOrWhiteSpace(translation))
@@ -86,6 +102,20 @@ namespace Geekbot.net.Lib
                 _logger.Warning($"No translation found for {command} - {stringName}");
             }
             return translation;
+        }
+
+        public Dictionary<string, string> GetDict(ICommandContext context)
+        {
+            try
+            {
+                var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
+                return _translations[_serverLanguages[context.Guild.Id]][command];
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "lol nope");
+                return new Dictionary<string, string>();    
+            }
         }
 
         public bool SetLanguage(ulong guildId, string language)
@@ -113,6 +143,7 @@ namespace Geekbot.net.Lib
     public interface ITranslationHandler
     {
         string GetString(ulong guildId, string command, string stringName);
+        Dictionary<string, string> GetDict(ICommandContext context);
         bool SetLanguage(ulong guildId, string language);
         List<string> GetSupportedLanguages();
     }

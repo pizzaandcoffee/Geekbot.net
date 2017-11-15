@@ -5,7 +5,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -121,11 +120,28 @@ namespace Geekbot.net.Commands
                 var success = _translation.SetLanguage(Context.Guild.Id, language);
                 if (success)
                 {
-                    await ReplyAsync(_translation.GetString(Context.Guild.Id, "LanguageChanger", "Confirm"));
+                    var trans = _translation.GetDict(Context);
+                    await ReplyAsync(trans["Confirm"]);
                     return;
                 }
                 await ReplyAsync(
                     $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.GetSupportedLanguages())}");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
+        [Command("lang", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Change the bots language")]
+        public async Task getLanguage()
+        {
+            try
+            {
+                var trans = _translation.GetDict(Context);
+                await ReplyAsync(trans["GetLanguage"]);
             }
             catch (Exception e)
             {

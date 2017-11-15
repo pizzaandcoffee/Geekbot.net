@@ -1,8 +1,12 @@
 ﻿{
-    "LanguageChanger": {
-        "Confirm": {
+    "admin": {
+        "NewLanguageSet": {
             "EN": "I will in english from now on",
-            "CHDE": "I werd ab jetzt in schwiizerdüütsch antworte, äuuä"
+            "CHDE": "I werd ab jetzt uf schwiizerdüütsch antworte, äuuä"
+        },
+        "GetLanguage": {
+            "EN": "I'm talking english",
+            "CHDE": "I red schwiizerdüütsch"
         }
     }
 }
