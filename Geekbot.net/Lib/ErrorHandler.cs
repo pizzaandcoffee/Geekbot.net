@@ -8,16 +8,19 @@ namespace Geekbot.net.Lib
     public class ErrorHandler : IErrorHandler
     {
         private readonly ILogger _logger;
+        private readonly ITranslationHandler _translation;
 
-        public ErrorHandler(ILogger logger)
+        public ErrorHandler(ILogger logger, ITranslationHandler translation)
         {
             _logger = logger;
+            _translation = translation;
         }
 
-        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "Something went wrong :confused:")
+        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def")
         {
             try
             {
+                var errorString = errorMessage == "def" ? _translation.GetString(Context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
                 var errorObj = new ErrorObject()
                 {
                     Message = new ErrorMessage()
@@ -50,7 +53,7 @@ namespace Geekbot.net.Lib
                 _logger.Error(e, errorJson);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    Context.Channel.SendMessageAsync(errorMessage);
+                    Context.Channel.SendMessageAsync(errorString);
                 }
             }
             catch (Exception ex)
@@ -87,6 +90,6 @@ namespace Geekbot.net.Lib
 
     public interface IErrorHandler
     {
-        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "Something went wrong :confused:");
+        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def");
     }
 }

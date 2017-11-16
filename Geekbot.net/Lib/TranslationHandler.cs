@@ -117,6 +117,19 @@ namespace Geekbot.net.Lib
                 return new Dictionary<string, string>();    
             }
         }
+        
+        public Dictionary<string, string> GetDict(ICommandContext context, string command)
+        {
+            try
+            {
+                return _translations[_serverLanguages[context.Guild.Id]][command];
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "lol nope");
+                return new Dictionary<string, string>();    
+            }
+        }
 
         public bool SetLanguage(ulong guildId, string language)
         {
@@ -144,6 +157,7 @@ namespace Geekbot.net.Lib
     {
         string GetString(ulong guildId, string command, string stringName);
         Dictionary<string, string> GetDict(ICommandContext context);
+        Dictionary<string, string> GetDict(ICommandContext context, string command);
         bool SetLanguage(ulong guildId, string language);
         List<string> GetSupportedLanguages();
     }

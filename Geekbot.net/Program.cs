@@ -94,7 +94,6 @@ namespace Geekbot.net
             services = new ServiceCollection();
             
             userRepository = new UserRepository(redis, logger);
-            var errorHandler = new ErrorHandler(logger);
             var randomClient = new Random();
             var fortunes = new FortunesProvider(randomClient, logger);
             var mediaProvider = new MediaProvider(randomClient, logger);
@@ -103,7 +102,6 @@ namespace Geekbot.net
             var emojiConverter = new EmojiConverter();
             var audioUtils = new AudioUtils();
             
-            services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton(redis);
             services.AddSingleton<ILogger>(logger);
             services.AddSingleton<IUserRepository>(userRepository);
@@ -136,8 +134,10 @@ namespace Geekbot.net
 
                     logger.Information("[Geekbot] Registering Stuff");
                     var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
+                    var errorHandler = new ErrorHandler(logger, translationHandler);
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
+                    services.AddSingleton<IErrorHandler>(errorHandler);
                     services.AddSingleton<ITranslationHandler>(translationHandler);
                     services.AddSingleton<DiscordSocketClient>(client);
                     servicesProvider = services.BuildServiceProvider();

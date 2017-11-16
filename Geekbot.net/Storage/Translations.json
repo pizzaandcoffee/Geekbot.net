@@ -1,12 +1,90 @@
 ﻿{
     "admin": {
         "NewLanguageSet": {
-            "EN": "I will in english from now on",
+            "EN": "I will reply in english from now on",
             "CHDE": "I werd ab jetzt uf schwiizerdüütsch antworte, äuuä"
         },
         "GetLanguage": {
             "EN": "I'm talking english",
             "CHDE": "I red schwiizerdüütsch"
+        }
+    },
+    "errorHandler": {
+        "SomethingWentWrong": {
+            "EN": "Something went wrong :confused:",
+            "CHDE": "Öppis isch schief gange :confused:"
+        }
+    },
+    "choose": {
+        "Choice": {
+            "EN": "I Choose **{0}**",
+            "CHDE": "I nimme **{0}**"
+        }
+    },
+    "good": {
+        "CannotChangeOwn": {
+            "EN": "Sorry {0}, but you can't give yourself karma",
+            "CHDE": "Sorry {0}, aber du chasch dr selber kei karma geh"
+        },
+        "WaitUntill": {
+            "EN": "Sorry {0}, but you have to wait {1} before you can give karma again...",
+            "CHDE": "Sorry {0}, aber du musch no {1} warte bisch d wieder karma chasch geh..."
+        },
+        "Increased": {
+            "EN": "Karma gained",
+            "CHDE": "Karma becho"
+        },
+        "By": {
+            "EN": "By",
+            "CHDE": "Vo"
+        },
+        "Amount": {
+            "EN": "Amount",
+            "CHDE": "Mengi"
+        },
+        "Current": {
+            "EN": "Current",
+            "CHDE": "Jetzt"
+        }
+    },
+    "bad": {
+        "CannotChangeOwn": {
+            "EN": "Sorry {0}, but you can't lower your own karma",
+            "CHDE": "Sorry {0}, aber du chasch dr din eigete karma nid weg neh"
+        },
+        "WaitUntill": {
+            "EN": "Sorry {0}, but you have to wait {1} before you can lower karma again...",
+            "CHDE": "Sorry {0}, aber du musch no {1} warte bisch d wieder karma chasch senke..."
+        },
+        "Decreased": {
+            "EN": "Karma lowered",
+            "CHDE": "Karma gsenkt"
+        },
+        "By": {
+            "EN": "By",
+            "CHDE": "Vo"
+        },
+        "Amount": {
+            "EN": "Amount",
+            "CHDE": "Mengi"
+        },
+        "Current": {
+            "EN": "Current",
+            "CHDE": "Jetzt"
+        }
+    },
+    "roll": {
+        "Rolled": {
+            "EN": "{0}, you rolled {1}, your guess was {2}",
+            "CHDE": "{0}, du hesch {1} grollt und hesch {2} grate"
+        },
+        "Gratz": {
+            "EN": "Congratulations {0}, your guess was correct!",
+            "CHDE": "Gratuliere {0}, du hesch richtig grate!"
+        },
+        "RolledNoGuess": {
+            "EN": "{0}, you rolled {1}",
+            "CHDE": "{0}, du hesch {1} grollt"
         }
     }
 }

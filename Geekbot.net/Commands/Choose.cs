@@ -9,11 +9,13 @@ namespace Geekbot.net.Commands
     {
         private readonly Random _rnd;
         private readonly IErrorHandler _errorHandler;
+        private readonly ITranslationHandler _translation;
 
-        public Choose(Random RandomClient, IErrorHandler errorHandler)
+        public Choose(Random RandomClient, IErrorHandler errorHandler, ITranslationHandler translation)
         {
             _rnd = RandomClient;
             _errorHandler = errorHandler;
+            _translation = translation;
         }
 
         [Command("choose", RunMode = RunMode.Async)]
@@ -23,9 +25,10 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                var transDict = _translation.GetDict(Context);
                 var choicesArray = choices.Split(';');
                 var choice = _rnd.Next(choicesArray.Length);
-                await ReplyAsync($"I choose **{choicesArray[choice]}**");
+                await ReplyAsync(string.Format(transDict["Choice"], choicesArray[choice]));
             }
             catch (Exception e)
             {

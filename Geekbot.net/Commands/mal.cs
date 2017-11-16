@@ -62,7 +62,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Something went wrong...");
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -111,7 +111,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Something went wrong...");
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

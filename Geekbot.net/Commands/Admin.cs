@@ -121,7 +121,7 @@ namespace Geekbot.net.Commands
                 if (success)
                 {
                     var trans = _translation.GetDict(Context);
-                    await ReplyAsync(trans["Confirm"]);
+                    await ReplyAsync(trans["NewLanguageSet"]);
                     return;
                 }
                 await ReplyAsync(

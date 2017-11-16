@@ -12,11 +12,13 @@ namespace Geekbot.net.Commands
     {
         private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
+        private readonly ITranslationHandler _translation;
 
-        public Counters(IDatabase redis, IErrorHandler errorHandler)
+        public Counters(IDatabase redis, IErrorHandler errorHandler, ITranslationHandler translation)
         {
             _redis = redis;
             _errorHandler = errorHandler;
+            _translation = translation;
         }
 
         [Command("good", RunMode = RunMode.Async)]
@@ -26,18 +28,18 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                var transDict = _translation.GetDict(Context);
                 var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
                 var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync($"Sorry {Context.User.Username}, but you can't lower your own karma");
+                    await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
                 }
                 else if (TimeoutFinished(lastKarma))
                 {
-                    await ReplyAsync(
-                        $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can give karma again...");
+                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username, GetTimeLeft(lastKarma)));
                 }
-                else
+                else 
                 {
                     var newKarma = _redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
                     _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
@@ -49,10 +51,10 @@ namespace Geekbot.net.Commands
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = "Karma Increased";
-                    eb.AddInlineField("By", Context.User.Username);
-                    eb.AddInlineField("amount", "+1");
-                    eb.AddInlineField("Current Karma", newKarma);
+                    eb.Title = transDict["Increased"];
+                    eb.AddInlineField(transDict["By"], Context.User.Username);
+                    eb.AddInlineField(transDict["Amount"], "+1");
+                    eb.AddInlineField(transDict["Current"], newKarma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
@@ -69,16 +71,16 @@ namespace Geekbot.net.Commands
         {
             try
             {
+                var transDict = _translation.GetDict(Context);
                 var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
                 var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync($"Sorry {Context.User.Username}, but you can't lower your own karma");
+                    await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
                 }
                 else if (TimeoutFinished(lastKarma))
                 {
-                    await ReplyAsync(
-                        $"Sorry {Context.User.Username}, but you have to wait {GetTimeLeft(lastKarma)} before you can take karma again...");
+                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username, GetTimeLeft(lastKarma)));
                 }
                 else
                 {
@@ -92,10 +94,10 @@ namespace Geekbot.net.Commands
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = "Karma Decreased";
-                    eb.AddInlineField("By", Context.User.Username);
-                    eb.AddInlineField("amount", "-1");
-                    eb.AddInlineField("Current Karma", newKarma);
+                    eb.Title = transDict["Decreased"];
+                    eb.AddInlineField(transDict["By"], Context.User.Username);
+                    eb.AddInlineField(transDict["Amount"], "-1");
+                    eb.AddInlineField(transDict["Current"], newKarma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
