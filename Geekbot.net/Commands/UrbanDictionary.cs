@@ -52,8 +52,11 @@ namespace Geekbot.net.Commands
                     eb.AddField("Example", definition.example ?? "(no example given...)");
                     eb.AddInlineField("Upvotes", definition.thumbs_up);
                     eb.AddInlineField("Downvotes", definition.thumbs_down);
-                    eb.AddField("Tags", string.Join(", ", definitions.tags));
-                    
+                    if (definitions.tags.Length > 0)
+                    {
+                        eb.AddField("Tags", string.Join(", ", definitions.tags));
+                    }
+
                     await ReplyAsync("", false, eb.Build());
                 }
             }
