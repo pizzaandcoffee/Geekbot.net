@@ -79,24 +79,6 @@ namespace Geekbot.net
                 logger.Fatal(e, "[Redis] Redis Connection Failed");
                 Environment.Exit(102);
             }
-
-            if (args.Contains("--migrate"))
-            {
-                Console.WriteLine("\nYou are about to migrate the database, this will overwrite an already migrated database?");
-                Console.Write("Are you sure [y:N]: ");
-                var migrateDbConfirm = Console.ReadKey();
-                Console.WriteLine();
-                if (migrateDbConfirm.Key == ConsoleKey.Y)
-                {
-                    logger.Warning("[Geekbot] Starting Migration");
-                    await DbMigration.MigrateDatabaseToHash(redis, logger);
-                    logger.Warning("[Geekbot] Finished Migration");
-                }
-                else
-                {
-                    logger.Information("[Geekbot] Not Migrating db");
-                }
-            }
             
             token = redis.StringGet("discordToken");
             if (token.IsNullOrEmpty)
