@@ -83,7 +83,7 @@ namespace Geekbot.net.Commands
             }
             catch (HttpException e)
             {
-                await Context.Channel.SendMessageAsync("Seems like i don't have enough permission to give roles...");
+                _errorHandler.HandleHttpException(e, Context);
             }
             catch (Exception e)
             {

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Principal;
 using Discord.Commands;
+using Discord.Net;
 using Nancy.Extensions;
 using Serilog;
 using SharpRaven;
@@ -26,7 +28,7 @@ namespace Geekbot.net.Lib
             if (!string.IsNullOrEmpty(sentryDsn))
             {
                 _raven = new RavenClient(sentryDsn);
-                _logger.Information($"Command Errors will be logged to Sentry: {sentryDsn}");
+                _logger.Information($"[Geekbot] Command Errors will be logged to Sentry: {sentryDsn}");
             }
             else
             {
@@ -93,7 +95,19 @@ namespace Geekbot.net.Lib
                 _logger.Error(ex, "Errorception");
             }
         }
-        
+
+        public async void HandleHttpException(HttpException e, ICommandContext Context)
+        {
+            var errorStrings = _translation.GetDict(Context, "httpErrors");
+            switch(e.HttpCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    await Context.Channel.SendMessageAsync(errorStrings["403"]);
+                    break;
+            }
+        }
+
+
         public class ErrorObject
         {
             public ErrorMessage Message { get; set; }
@@ -123,5 +137,6 @@ namespace Geekbot.net.Lib
     public interface IErrorHandler
     {
         void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def");
+        void HandleHttpException(HttpException e, ICommandContext Context);
     }
 }

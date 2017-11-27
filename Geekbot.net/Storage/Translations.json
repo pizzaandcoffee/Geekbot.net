@@ -15,6 +15,12 @@
             "CHDE": "Öppis isch schief gange :confused:"
         }
     },
+    "httpErrors": {
+        "403": {
+            "EN": "Seems like i don't have enough permission to that :confused:",
+            "CHDE": "Gseht danach us das ich nid gnueg recht han zum das mache :confused:"
+        }
+    },
     "choose": {
         "Choice": {
             "EN": "I Choose **{0}**",
