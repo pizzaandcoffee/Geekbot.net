@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AngleSharp;
 using Discord;
 using Discord.Commands;
+using Discord.Net;
 using Geekbot.net.Lib;
 using StackExchange.Redis;
 
@@ -79,6 +80,10 @@ namespace Geekbot.net.Commands
                     return;
                 }
                 await ReplyAsync("That role doesn't seem to exist");
+            }
+            catch (HttpException e)
+            {
+                await Context.Channel.SendMessageAsync("Seems like i don't have enough permission to give roles...");
             }
             catch (Exception e)
             {

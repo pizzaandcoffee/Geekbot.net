@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Principal;
 using Discord.Commands;
+using Nancy.Extensions;
 using Serilog;
+using SharpRaven;
+using SharpRaven.Data;
+using SharpRaven.Utilities;
 using Utf8Json;
 
 namespace Geekbot.net.Lib
@@ -9,11 +15,23 @@ namespace Geekbot.net.Lib
     {
         private readonly ILogger _logger;
         private readonly ITranslationHandler _translation;
+        private readonly IRavenClient _raven;
 
         public ErrorHandler(ILogger logger, ITranslationHandler translation)
         {
             _logger = logger;
             _translation = translation;
+            
+            var sentryDsn = Environment.GetEnvironmentVariable("SENTRY");
+            if (!string.IsNullOrEmpty(sentryDsn))
+            {
+                _raven = new RavenClient(sentryDsn);
+                _logger.Information($"Command Errors will be logged to Sentry: {sentryDsn}");
+            }
+            else
+            {
+                _raven = null;
+            }
         }
 
         public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def")
@@ -55,6 +73,20 @@ namespace Geekbot.net.Lib
                 {
                     Context.Channel.SendMessageAsync(errorString);
                 }
+                
+                if (_raven == null) return;
+
+                var sentryEvent = new SentryEvent(e)
+                {
+                    Tags =
+                    {
+                        ["discord_server"] = errorObj.Guild.Name,
+                        ["discord_user"] = errorObj.User.Name
+                    },
+                    Message = errorObj.Message.Content,
+                    Extra = errorObj
+                };
+                _raven.Capture(sentryEvent);
             }
             catch (Exception ex)
             {

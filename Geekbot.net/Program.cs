@@ -195,7 +195,7 @@ namespace Geekbot.net
             {
                 redis.StringSet("botOwner", appInfo.Owner.Id);
                 var req = HttpWebRequest.Create(appInfo.IconUrl);
-                using (Stream stream = req.GetResponse().GetResponseStream())
+                using (var stream = req.GetResponse().GetResponseStream())
                 {
                     await client.CurrentUser.ModifyAsync(User =>
                     {
@@ -207,8 +207,8 @@ namespace Geekbot.net
             }
             catch (Exception e)
             {
-                logger.Warning(e, $"[Setup] Oha, it seems like something went wrong while running the setup");
-                logger.Warning(e, $"[Setup] Geekbot will work never the less, some features might be disabled though");
+                logger.Warning(e, "[Setup] Oha, it seems like something went wrong while running the setup");
+                logger.Warning("[Setup] Geekbot will work never the less, some features might be disabled though");
             }
             return Task.CompletedTask;
         }
