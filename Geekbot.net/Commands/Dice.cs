@@ -50,6 +50,18 @@ namespace Geekbot.net.Commands
                 return;
             }
 
+
+            if (dices.Any(d => d.times > 20))
+            {
+                await ReplyAsync("You can't throw more than 20 dices");
+                return;
+            }
+            if (dices.Any(d => d.sides > 120))
+            {
+                await ReplyAsync("A dice can't have more than 120 sides");
+                return;
+            }
+
             var rep = new StringBuilder();
             rep.AppendLine($":game_die: {Context.User.Mention}");
             rep.Append("**Result:** ");
