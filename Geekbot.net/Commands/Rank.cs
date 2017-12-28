@@ -55,7 +55,7 @@ namespace Geekbot.net.Commands
                 var messageList = _redis.HashGetAll($"{Context.Guild.Id}:{type}");
                 var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
-                sortedList.RemoveAt(0);
+                if (type == "Messages") sortedList.RemoveAt(0);
 
                 var highscoreUsers = new Dictionary<RankUserPolyfill, int>();
                 var listLimiter = 1;
