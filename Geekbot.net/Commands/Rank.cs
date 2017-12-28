@@ -30,12 +30,29 @@ namespace Geekbot.net.Commands
         
         [Command("rank", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Statistics)]
-        [Summary("get user top 10")]
-        public async Task RankCmd()
+        [Summary("get user top 10 in messages or karma")]
+        public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
         {
             try
             {
-                var messageList = _redis.HashGetAll($"{Context.Guild.Id}:Messages");
+                var type = typeUnformated.ToCharArray().First().ToString().ToUpper() + typeUnformated.Substring(1);
+
+                if (!type.Equals("Messages") && !type.Equals("Karma"))
+                {
+                    await ReplyAsync("Valid types are '`messages`' and '`karma`'");
+                    return;
+                }
+                
+                
+                var replyBuilder = new StringBuilder();
+
+                if (amount > 20)
+                {
+                    replyBuilder.AppendLine(":warning: Limiting to 20");
+                    amount = 20;
+                }
+                
+                var messageList = _redis.HashGetAll($"{Context.Guild.Id}:{type}");
                 var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
                 sortedList.RemoveAt(0);
@@ -45,7 +62,7 @@ namespace Geekbot.net.Commands
                 var failedToRetrieveUser = false;
                 foreach (var user in sortedList)
                 {
-                    if (listLimiter > 10) break;
+                    if (listLimiter > amount) break;
                     try
                     {
                         var guildUser = _userRepository.Get((ulong)user.Name);
@@ -74,26 +91,35 @@ namespace Geekbot.net.Commands
                     
                 }
                 
-                var highScore = new StringBuilder();
-                if (failedToRetrieveUser) highScore.AppendLine(":warning: I couldn't get all userdata, sorry!\n");
-                highScore.AppendLine($":bar_chart: **Highscore for {Context.Guild.Name}**");
+                if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: Couldn't get all userdata\n");
+                replyBuilder.AppendLine($":bar_chart: **{type} Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
                 {
-                    var percent = Math.Round((double) (100 * user.Value) / guildMessages, 2);
-                    if (user.Key.Username != null)
+                    replyBuilder.Append(highscorePlace < 11
+                        ? $"{_emojiConverter.numberToEmoji(highscorePlace)} "
+                        : $"`{highscorePlace}.` ");
+
+                    replyBuilder.Append(user.Key.Username != null
+                        ? $"**{user.Key.Username}#{user.Key.Discriminator}**"
+                        : $"**{user.Key.Id}**");
+
+                    switch (type)
                     {
-                        highScore.AppendLine(
-                            $"{_emojiConverter.numberToEmoji(highscorePlace)} **{user.Key.Username}#{user.Key.Discriminator}** - {percent}% of total - {user.Value} messages");
+                        case "Messages":
+                            var percent = Math.Round((double) (100 * user.Value) / guildMessages, 2);
+                            replyBuilder.Append($" - {percent}% of total - {user.Value} messages");
+                            break;
+                        case "Karma":
+                            replyBuilder.Append($" - {user.Value} Karma");
+                            break;
                     }
-                    else
-                    {
-                        highScore.AppendLine(
-                            $"{_emojiConverter.numberToEmoji(highscorePlace)} **{user.Key.Id}** - {percent}% of total - {user.Value} messages");
-                    }
+
+                    replyBuilder.Append("\n");
+                    
                     highscorePlace++;
                 }
-                await ReplyAsync(highScore.ToString());
+                await ReplyAsync(replyBuilder.ToString());
             }
             catch (Exception e)
             {
