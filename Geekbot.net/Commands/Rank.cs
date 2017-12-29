@@ -37,12 +37,11 @@ namespace Geekbot.net.Commands
             {
                 var type = typeUnformated.ToCharArray().First().ToString().ToUpper() + typeUnformated.Substring(1);
 
-                if (!type.Equals("Messages") && !type.Equals("Karma"))
+                if (!type.Equals("Messages") && !type.Equals("Karma") && !type.Equals("Rolls"))
                 {
-                    await ReplyAsync("Valid types are '`messages`' and '`karma`'");
+                    await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`'");
                     return;
                 }
-                
                 
                 var replyBuilder = new StringBuilder();
 
@@ -113,6 +112,9 @@ namespace Geekbot.net.Commands
                         case "Karma":
                             replyBuilder.Append($" - {user.Value} Karma");
                             break;
+                        case "Rolls":
+                            replyBuilder.Append($" - {user.Value} Guessed");
+                            break;    
                     }
 
                     replyBuilder.Append("\n");
