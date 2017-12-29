@@ -1,0 +1,69 @@
+﻿using System;
+using System.Threading.Tasks;
+using Utf8Json;
+using Utf8Json.Resolvers;
+
+namespace Geekbot.net.Lib
+{
+    public class GeekbotLogger : IGeekbotLogger
+    {
+        public GeekbotLogger()
+        {
+            JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
+            Info("Geekbot", "Using GeekbotLogger");
+        }
+        
+        public void Debug(string source, string message, object extra = null)
+        {
+            HandleLogObject("Debug", source, message, null, extra);
+        }
+        
+        public void Info(string source, string message, object extra = null)
+        {
+            HandleLogObject("Information", source, message, null, extra);
+        }
+        
+        public void Error(string source, string message, Exception stackTrace, object extra = null)
+        {
+            HandleLogObject("Debug", source, message, stackTrace, extra);
+        }
+
+        private Task HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
+        {
+            var logJson = CreateLogObject(type, source, message, null, extra);
+            Console.WriteLine(logJson);
+            return Task.CompletedTask;
+        }
+
+        private string CreateLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
+        {
+            var logObject = new GeekbotLoggerObject()
+            {
+                Timestamp = DateTime.Now,
+                Type = type,
+                Source = source,
+                Message = message,
+                StackTrace = stackTrace,
+                Extra = extra
+            };
+            return Utf8Json.JsonSerializer.ToJsonString(logObject);
+        }
+    }
+
+    public class GeekbotLoggerObject
+    {
+        public DateTime Timestamp { get; set; }
+        public string Type { get; set; }
+        public string Source { get; set; }
+        public string Message { get; set; }
+        public Exception StackTrace { get; set; }
+        public object Extra { get; set; }
+    }
+
+    public interface IGeekbotLogger
+    {
+        void Debug(string source, string message, object extra = null);
+        void Info(string source, string message, object extra = null);
+        void Error(string source, string message, Exception stackTrace, object extra = null);
+    }
+}

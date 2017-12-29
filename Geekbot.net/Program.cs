@@ -28,6 +28,7 @@ namespace Geekbot.net
         private IServiceProvider servicesProvider;
         private RedisValue token;
         private ILogger logger;
+        private IGeekbotLogger gLogger;
         private IUserRepository userRepository;
         private string[] args;
         private bool firstStart = false;
@@ -43,10 +44,11 @@ namespace Geekbot.net
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
             var logger = LoggerFactory.createLogger(args);
+            var gLogger = new GeekbotLogger();
             logger.Information("[Geekbot] Starting...");
             try
             {
-                new Program().MainAsync(args, logger).GetAwaiter().GetResult();
+                new Program().MainAsync(args, logger, gLogger).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -54,11 +56,13 @@ namespace Geekbot.net
             }
         }
 
-        private async Task MainAsync(string[] args, ILogger logger)
+        private async Task MainAsync(string[] args, ILogger logger, IGeekbotLogger gLogger)
         {
             this.logger = logger;
+            this.gLogger = gLogger;
             this.args = args;
             logger.Information("[Geekbot] Initing Stuff");
+            gLogger.Info("Geekbot", "Initing Stuff");
 
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -142,7 +146,7 @@ namespace Geekbot.net
                     services.AddSingleton<DiscordSocketClient>(client);
                     servicesProvider = services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository);
+                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository, gLogger);
                     
                     client.MessageReceived += handlers.RunCommand;
                     client.MessageReceived += handlers.UpdateStats;
