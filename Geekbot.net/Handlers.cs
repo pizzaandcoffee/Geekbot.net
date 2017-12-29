@@ -15,15 +15,17 @@ namespace Geekbot.net
     {
         private readonly IDiscordClient _client;
         private readonly ILogger _logger;
+        private readonly IGeekbotLogger _gLogger;
         private readonly IDatabase _redis;
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
         
-        public Handlers(IDiscordClient client,  ILogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository)
+        public Handlers(IDiscordClient client,  ILogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository, IGeekbotLogger gLogger)
         {
             _client = client;
             _logger = logger;
+            _gLogger = gLogger;
             _redis = redis;
             _servicesProvider = servicesProvider;
             _commands = commands;
@@ -82,8 +84,8 @@ namespace Geekbot.net
                 _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
                 if (message.Author.IsBot) return Task.CompletedTask;
-                _logger.Information(
-                    $"[Message] {channel.Guild.Name} ({channel.Guild.Id}) - {message.Channel} ({message.Channel.Id}) - {message.Author.Username}#{message.Author.Discriminator} ({message.Author.Id}) - {message.Content}");
+                _gLogger.Info("Message", message.Content, SimpleConextConverter.ConvertSocketMessage(message));
+//                _logger.Information($"[Message] {channel.Guild.Name} ({channel.Guild.Id}) - {message.Channel} ({message.Channel.Id}) - {message.Author.Username}#{message.Author.Discriminator} ({message.Author.Id}) - {message.Content}");
             }
             catch (Exception e)
             {
