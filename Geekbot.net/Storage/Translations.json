@@ -91,6 +91,10 @@
         "RolledNoGuess": {
             "EN": "{0}, you rolled {1}",
             "CHDE": "{0}, du hesch {1} grollt"
+        },
+        "NoPrevGuess": {
+            "EN": ":red_circle: {0}, you can't guess the same number again",
+            "CHDE": ":red_circle: {0}, du chasch nid nomol es gliche rate"
         }
     }
 }

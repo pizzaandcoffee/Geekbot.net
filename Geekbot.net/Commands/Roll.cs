@@ -34,6 +34,13 @@ namespace Geekbot.net.Commands
                 var transDict = _translation.GetDict(Context);
                 if (guess <= 100 && guess > 0)
                 {
+                    var prevRoll = _redis.HashGet($"{Context.Guild.Id}:RollsPrevious", Context.Message.Author.Id);
+                    if (!prevRoll.IsNullOrEmpty && prevRoll.ToString() == guess.ToString())
+                    {
+                        await ReplyAsync(string.Format(transDict["NoPrevGuess"], Context.Message.Author.Mention));
+                        return;
+                    }
+                    _redis.HashSet($"{Context.Guild.Id}:RollsPrevious", new HashEntry[]{ new HashEntry(Context.Message.Author.Id, guess), });
                     await ReplyAsync(string.Format(transDict["Rolled"], Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
