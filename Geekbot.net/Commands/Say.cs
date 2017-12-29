@@ -14,7 +14,7 @@ namespace Geekbot.net.Commands
         {
             _errorHandler = errorHandler;
         }
-        
+
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("say", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]

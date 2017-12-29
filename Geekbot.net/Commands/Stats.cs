@@ -9,10 +9,10 @@ namespace Geekbot.net.Commands
 {
     public class Stats : ModuleBase
     {
-        private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
         private readonly ILevelCalc _levelCalc;
-        
+        private readonly IDatabase _redis;
+
         public Stats(IDatabase redis, IErrorHandler errorHandler, ILevelCalc levelCalc)
         {
             _redis = redis;
@@ -45,12 +45,14 @@ namespace Geekbot.net.Commands
                     .WithIconUrl(userInfo.GetAvatarUrl())
                     .WithName(userInfo.Username));
                 eb.WithColor(new Color(221, 255, 119));
-                
+
                 var karma = _redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id.ToString());
                 var correctRolls = _redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
 
-                eb.AddInlineField("Discordian Since", $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
-                    .AddInlineField("Joined Server", $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
+                eb.AddInlineField("Discordian Since",
+                        $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
+                    .AddInlineField("Joined Server",
+                        $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
                     .AddInlineField("Karma", karma.ToString() ?? "0")
                     .AddInlineField("Level", level)
                     .AddInlineField("Messages Sent", messages)

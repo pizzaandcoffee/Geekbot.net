@@ -8,12 +8,12 @@ namespace Geekbot.net.Commands
     public class RandomAnimals : ModuleBase
     {
         private readonly IMediaProvider _mediaProvider;
-        
+
         public RandomAnimals(IMediaProvider mediaProvider)
         {
             _mediaProvider = mediaProvider;
         }
-        
+
         [Command("panda", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random panda image")]
@@ -21,7 +21,7 @@ namespace Geekbot.net.Commands
         {
             await ReplyAsync(_mediaProvider.getPanda());
         }
-        
+
         [Command("croissant", RunMode = RunMode.Async)]
         [Alias("gipfeli")]
         [Remarks(CommandCategories.Randomness)]
@@ -30,7 +30,7 @@ namespace Geekbot.net.Commands
         {
             await ReplyAsync(_mediaProvider.getCrossant());
         }
-        
+
         [Command("pumpkin", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random pumpkin image")]
@@ -38,7 +38,7 @@ namespace Geekbot.net.Commands
         {
             await ReplyAsync(_mediaProvider.getPumpkin());
         }
-        
+
         [Command("squirrel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random squirrel image")]
@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands
         {
             await ReplyAsync(_mediaProvider.getSquirrel());
         }
-        
+
         [Command("turtle", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]

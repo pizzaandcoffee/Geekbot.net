@@ -11,12 +11,12 @@ namespace Geekbot.net.Commands
     public class Dog : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        
+
         public Dog(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
         }
-        
+
         [Command("dog", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Return a random image of a dog.")]
@@ -49,7 +49,7 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         private class DogResponse
         {
             public string url { get; set; }

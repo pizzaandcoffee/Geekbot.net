@@ -7,11 +7,11 @@ namespace Geekbot.net.Commands
 {
     public class Fortune : ModuleBase
     {
-        private readonly IFortunesProvider fortunes;
+        private readonly IFortunesProvider _fortunes;
 
         public Fortune(IFortunesProvider fortunes)
         {
-            this.fortunes = fortunes;
+            _fortunes = fortunes;
         }
 
         [Command("fortune", RunMode = RunMode.Async)]
@@ -19,7 +19,7 @@ namespace Geekbot.net.Commands
         [Summary("Get a random fortune")]
         public async Task GetAFortune()
         {
-            await ReplyAsync(fortunes.GetRandomFortune());
+            await ReplyAsync(_fortunes.GetRandomFortune());
         }
     }
 }

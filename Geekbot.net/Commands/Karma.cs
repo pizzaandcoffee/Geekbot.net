@@ -3,18 +3,17 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
 {
-    public class Counters : ModuleBase
+    public class Karma : ModuleBase
     {
-        private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
         private readonly ITranslationHandler _translation;
 
-        public Counters(IDatabase redis, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Karma(IDatabase redis, IErrorHandler errorHandler, ITranslationHandler translation)
         {
             _redis = redis;
             _errorHandler = errorHandler;
@@ -37,13 +36,14 @@ namespace Geekbot.net.Commands
                 }
                 else if (TimeoutFinished(lastKarma))
                 {
-                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username, GetTimeLeft(lastKarma)));
+                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
+                        GetTimeLeft(lastKarma)));
                 }
-                else 
+                else
                 {
                     var newKarma = _redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
                     _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
-                        new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
+                        new[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
@@ -80,13 +80,14 @@ namespace Geekbot.net.Commands
                 }
                 else if (TimeoutFinished(lastKarma))
                 {
-                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username, GetTimeLeft(lastKarma)));
+                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
+                        GetTimeLeft(lastKarma)));
                 }
                 else
                 {
                     var newKarma = _redis.HashDecrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
                     _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
-                        new HashEntry[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
+                        new[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
@@ -109,15 +110,16 @@ namespace Geekbot.net.Commands
 
         private DateTimeOffset ConvertToDateTimeOffset(string dateTimeOffsetString)
         {
-            if(string.IsNullOrEmpty(dateTimeOffsetString)) return DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0));
+            if (string.IsNullOrEmpty(dateTimeOffsetString))
+                return DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0));
             return DateTimeOffset.Parse(dateTimeOffsetString);
         }
-        
+
         private bool TimeoutFinished(DateTimeOffset lastKarma)
         {
             return lastKarma.AddMinutes(3) > DateTimeOffset.Now;
         }
-        
+
         private string GetTimeLeft(DateTimeOffset lastKarma)
         {
             var dt = lastKarma.AddMinutes(3).Subtract(DateTimeOffset.Now);

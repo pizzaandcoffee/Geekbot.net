@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
-using Google.Apis.Util;
 using OverwatchAPI;
 using OverwatchAPI.Config;
 using Serilog;
@@ -17,7 +16,7 @@ namespace Geekbot.net.Commands
         private readonly IErrorHandler _errorHandler;
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
-        
+
         public Overwatch(IErrorHandler errorHandler, ILogger logger, IDatabase redis, IUserRepository userRepository)
         {
             _errorHandler = errorHandler;
@@ -38,21 +37,22 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("You have no battle Tag saved, use `!battletag`");
                     return;
                 }
+
                 var profile = await createProfile(tag);
                 if (profile == null)
                 {
                     await ReplyAsync("That player doesn't seem to exist");
                     return;
                 }
-                await ReplyAsync("", false, profile.Build());
 
+                await ReplyAsync("", false, profile.Build());
             }
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("profile", RunMode = RunMode.Async)]
         [Summary("Get someones overwatch profile. EU on PC only. Default battletag is your own (if set).")]
         [Remarks(CommandCategories.Games)]
@@ -65,12 +65,14 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("That doesn't seem to be a valid battletag...");
                     return;
                 }
+
                 var profile = await createProfile(tag);
                 if (profile == null)
                 {
                     await ReplyAsync("That player doesn't seem to exist");
                     return;
                 }
+
                 await ReplyAsync("", false, profile.Build());
             }
             catch (Exception e)
@@ -92,12 +94,14 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("This user didn't set a battletag");
                     return;
                 }
+
                 var profile = await createProfile(tag);
                 if (profile == null)
                 {
                     await ReplyAsync("That player doesn't seem to exist");
                     return;
                 }
+
                 await ReplyAsync("", false, profile.Build());
             }
             catch (Exception e)
@@ -112,10 +116,7 @@ namespace Geekbot.net.Commands
             using (var owClient = new OverwatchClient(owConfig))
             {
                 var player = await owClient.GetPlayerAsync(battletag);
-                if (player.Username == null)
-                {
-                    return null;
-                }
+                if (player.Username == null) return null;
                 _logger.Debug($"[OW] Username = {player.Username}");
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
@@ -123,7 +124,8 @@ namespace Geekbot.net.Commands
                     .WithName(player.Username));
                 eb.Url = player.ProfileUrl;
                 eb.AddInlineField("Level", player.PlayerLevel);
-                eb.AddInlineField("Current Rank", player.CompetitiveRank > 0 ? player.CompetitiveRank.ToString() : "Unranked");
+                eb.AddInlineField("Current Rank",
+                    player.CompetitiveRank > 0 ? player.CompetitiveRank.ToString() : "Unranked");
 
                 return eb;
             }

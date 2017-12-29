@@ -13,16 +13,16 @@ namespace Geekbot.net.Commands
     public class UrbanDictionary : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        
+
         public UrbanDictionary(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
         }
-        
+
         [Command("urban", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Lookup something on urban dictionary")]
-        public async Task urbanDefine([Remainder, Summary("word")] string word)
+        public async Task urbanDefine([Remainder] [Summary("word")] string word)
         {
             try
             {
@@ -39,23 +39,21 @@ namespace Geekbot.net.Commands
                         await ReplyAsync("That word hasn't been defined...");
                         return;
                     }
+
                     var definition = definitions.list.First(e => !string.IsNullOrWhiteSpace(e.example));
-                    
+
                     var eb = new EmbedBuilder();
-                    eb.WithAuthor(new EmbedAuthorBuilder()
+                    eb.WithAuthor(new EmbedAuthorBuilder
                     {
                         Name = definition.word,
                         Url = definition.permalink
                     });
-                    eb.WithColor(new Color(239,255,0));
+                    eb.WithColor(new Color(239, 255, 0));
                     eb.Description = definition.definition;
                     eb.AddField("Example", definition.example ?? "(no example given...)");
                     eb.AddInlineField("Upvotes", definition.thumbs_up);
                     eb.AddInlineField("Downvotes", definition.thumbs_down);
-                    if (definitions.tags.Length > 0)
-                    {
-                        eb.AddField("Tags", string.Join(", ", definitions.tags));
-                    }
+                    if (definitions.tags.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.tags));
 
                     await ReplyAsync("", false, eb.Build());
                 }
@@ -65,14 +63,14 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         private class UrbanResponse
         {
             public string[] tags { get; set; }
             public string result_type { get; set; }
             public List<UrbanListItem> list { get; set; }
         }
-        
+
         private class UrbanListItem
         {
             public string definition { get; set; }

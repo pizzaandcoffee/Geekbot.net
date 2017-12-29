@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -15,15 +14,15 @@ namespace Geekbot.net.Commands
 {
     public class Changelog : ModuleBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly DiscordSocketClient _client;
-        
+        private readonly IErrorHandler _errorHandler;
+
         public Changelog(IErrorHandler errorHandler, DiscordSocketClient client)
         {
             _errorHandler = errorHandler;
             _client = client;
         }
-        
+
         [Command("changelog", RunMode = RunMode.Async)]
         [Alias("updates")]
         [Remarks(CommandCategories.Helpers)]
@@ -35,7 +34,8 @@ namespace Geekbot.net.Commands
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("https://api.github.com");
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                        "http://developer.github.com/v3/#user-agent-required");
                     var response = await client.GetAsync("/repos/pizzaandcoffee/geekbot.net/commits");
                     response.EnsureSuccessStatusCode();
 
@@ -43,7 +43,7 @@ namespace Geekbot.net.Commands
                     var commits = JsonConvert.DeserializeObject<List<Commit>>(stringResponse);
                     var eb = new EmbedBuilder();
                     eb.WithColor(new Color(143, 165, 102));
-                    eb.WithAuthor(new EmbedAuthorBuilder()
+                    eb.WithAuthor(new EmbedAuthorBuilder
                     {
                         IconUrl = _client.CurrentUser.GetAvatarUrl(),
                         Name = "Latest Updates",
@@ -51,11 +51,9 @@ namespace Geekbot.net.Commands
                     });
                     var sb = new StringBuilder();
                     foreach (var commit in commits.Take(10))
-                    {
                         sb.AppendLine($"- {commit.commit.message} ({commit.commit.author.date:yyyy-MM-dd})");
-                    }
                     eb.Description = sb.ToString();
-                    eb.WithFooter(new EmbedFooterBuilder()
+                    eb.WithFooter(new EmbedFooterBuilder
                     {
                         Text = $"List generated from github commits on {DateTime.Now:yyyy-MM-dd}"
                     });
@@ -67,14 +65,14 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         private class Commit
         {
             public string sha { get; set; }
             public CommitInfo commit { get; set; }
             public Uri html_url { get; set; }
         }
-        
+
         private class CommitInfo
         {
             public commitAuthor author { get; set; }

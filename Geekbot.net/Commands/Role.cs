@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AngleSharp;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
@@ -16,13 +15,13 @@ namespace Geekbot.net.Commands
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
-        
+
         public Role(IErrorHandler errorHandler, IDatabase redis)
         {
             _errorHandler = errorHandler;
             _redis = redis;
         }
-        
+
         [Command(RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get a list of all available roles.")]
@@ -36,13 +35,11 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("There are no roles configured for this server");
                     return;
                 }
+
                 var sb = new StringBuilder();
                 sb.AppendLine($"**Self Service Roles on {Context.Guild.Name}**");
                 sb.AppendLine("To get a role, use `!role name`");
-                foreach (var role in roles)
-                {
-                    sb.AppendLine($"- {role.Name}");
-                }
+                foreach (var role in roles) sb.AppendLine($"- {role.Name}");
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
@@ -69,16 +66,19 @@ namespace Geekbot.net.Commands
                         await ReplyAsync("That role doesn't seem to exist");
                         return;
                     }
+
                     if (guildUser.RoleIds.Contains(roleId))
                     {
                         await guildUser.RemoveRoleAsync(role);
                         await ReplyAsync($"Removed you from {role.Name}");
                         return;
                     }
+
                     await guildUser.AddRoleAsync(role);
                     await ReplyAsync($"Added you to {role.Name}");
                     return;
                 }
+
                 await ReplyAsync("That role doesn't seem to exist");
             }
             catch (HttpException e)
@@ -104,16 +104,20 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("You can't add a role that is managed by discord");
                     return;
                 }
+
                 if (role.Permissions.ManageRoles
                     || role.Permissions.Administrator
                     || role.Permissions.ManageGuild
                     || role.Permissions.BanMembers
                     || role.Permissions.KickMembers)
                 {
-                    await ReplyAsync("Woah, i don't think you want to add that role to self service as it contains some dangerous permissions");
+                    await ReplyAsync(
+                        "Woah, i don't think you want to add that role to self service as it contains some dangerous permissions");
                     return;
                 }
-                _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist", new HashEntry[] { new HashEntry(roleName.ToLower(), role.Id.ToString()) });
+
+                _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist",
+                    new[] {new HashEntry(roleName.ToLower(), role.Id.ToString())});
                 await ReplyAsync($"Added {role.Name} to the whitelist");
             }
             catch (Exception e)

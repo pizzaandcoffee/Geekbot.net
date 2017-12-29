@@ -10,8 +10,8 @@ namespace Geekbot.net.Commands
 {
     public class Youtube : ModuleBase
     {
-        private readonly IDatabase _redis;
         private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
 
         public Youtube(IDatabase redis, IErrorHandler errorHandler)
         {

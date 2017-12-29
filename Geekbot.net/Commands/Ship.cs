@@ -9,9 +9,9 @@ namespace Geekbot.net.Commands
 {
     public class Ship : ModuleBase
     {
+        private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
         private readonly Random _rnd;
-        private readonly IErrorHandler _errorHandler;
 
         public Ship(IDatabase redis, Random randomClient, IErrorHandler errorHandler)
         {
@@ -87,6 +87,7 @@ namespace Geekbot.net.Commands
                 {
                     blocks = blocks + ":black_medium_small_square:";
                 }
+
             return blocks;
         }
     }

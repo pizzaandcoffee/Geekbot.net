@@ -9,7 +9,7 @@ namespace Geekbot.net.Commands
     public class AvatarGetter : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        
+
         public AvatarGetter(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
@@ -18,14 +18,11 @@ namespace Geekbot.net.Commands
         [Command("avatar", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get someones avatar")]
-        public async Task getAvatar([Remainder, Summary("user")] IUser user = null)
+        public async Task getAvatar([Remainder] [Summary("user")] IUser user = null)
         {
             try
             {
-                if (user == null)
-                {
-                    user = Context.User;
-                }
+                if (user == null) user = Context.User;
                 var url = user.GetAvatarUrl().Replace("128", "1024");
                 await ReplyAsync(url);
             }

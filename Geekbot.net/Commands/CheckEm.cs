@@ -11,8 +11,8 @@ namespace Geekbot.net.Commands
     public class CheckEm : ModuleBase
     {
         private readonly IMediaProvider _checkEmImages;
-        private readonly Random _rnd;
         private readonly IErrorHandler _errorHandler;
+        private readonly Random _rnd;
 
         public CheckEm(Random RandomClient, IMediaProvider mediaProvider, IErrorHandler errorHandler)
         {
@@ -66,6 +66,7 @@ namespace Geekbot.net.Commands
                 listOfInts.Add(num % 10);
                 num = num / 10;
             }
+
             listOfInts.Reverse();
             return listOfInts.ToArray();
         }

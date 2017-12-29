@@ -11,12 +11,12 @@ namespace Geekbot.net.Commands
     public class Cat : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        
+
         public Cat(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
         }
-        
+
         [Command("cat", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Return a random image of a cat.")]
@@ -49,7 +49,7 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         private class CatResponse
         {
             public string file { get; set; }

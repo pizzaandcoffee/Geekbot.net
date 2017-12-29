@@ -7,8 +7,8 @@ namespace Geekbot.net.Commands
 {
     public class Choose : ModuleBase
     {
-        private readonly Random _rnd;
         private readonly IErrorHandler _errorHandler;
+        private readonly Random _rnd;
         private readonly ITranslationHandler _translation;
 
         public Choose(Random RandomClient, IErrorHandler errorHandler, ITranslationHandler translation)
@@ -21,7 +21,8 @@ namespace Geekbot.net.Commands
         [Command("choose", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Let the bot choose for you, seperate options with a semicolon.")]
-        public async Task Command([Remainder] [Summary("option1;option2")] string choices)
+        public async Task Command([Remainder] [Summary("option1;option2")]
+            string choices)
         {
             try
             {

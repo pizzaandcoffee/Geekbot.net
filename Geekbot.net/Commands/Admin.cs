@@ -13,12 +13,13 @@ namespace Geekbot.net.Commands
     [RequireUserPermission(GuildPermission.Administrator)]
     public class Admin : ModuleBase
     {
-        private readonly IDatabase _redis;
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
         private readonly ITranslationHandler _translation;
-        
-        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler, ITranslationHandler translationHandler)
+
+        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler,
+            ITranslationHandler translationHandler)
         {
             _redis = redis;
             _client = client;
@@ -31,7 +32,7 @@ namespace Geekbot.net.Commands
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
         {
-            _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] { new HashEntry("WelcomeMsg", welcomeMessage) });
+            _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("WelcomeMsg", welcomeMessage)});
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
             await ReplyAsync("Welcome message has been changed\r\nHere is an example of how it would look:\r\n" +
                              formatedMessage);
@@ -49,7 +50,8 @@ namespace Geekbot.net.Commands
                 sb.AppendLine("- `!admin showleave true` - send message to mod channel when someone leaves");
                 sb.AppendLine("- `!admin showdel true` - send message to mod channel when someone deletes a message");
                 await channel.SendMessageAsync(sb.ToString());
-                _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] {new HashEntry("ModChannel", channel.Id.ToString())});
+                _redis.HashSet($"{Context.Guild.Id}:Settings",
+                    new[] {new HashEntry("ModChannel", channel.Id.ToString())});
             }
             catch (Exception e)
             {
@@ -69,20 +71,21 @@ namespace Geekbot.net.Commands
                 if (enabled)
                 {
                     await modChannel.SendMessageAsync("Saved - now sending messages here when someone leaves");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] {new HashEntry("ShowLeave", true)});
+                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowLeave", true)});
                 }
                 else
                 {
                     await modChannel.SendMessageAsync("Saved - stopping sending messages here when someone leaves");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] {new HashEntry("ShowLeave", false)});
+                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowLeave", false)});
                 }
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                _errorHandler.HandleCommandException(e, Context,
+                    "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
             }
         }
-        
+
         [Command("showdel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone deletes a message")]
@@ -94,21 +97,24 @@ namespace Geekbot.net.Commands
                 var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
                 if (enabled)
                 {
-                    await modChannel.SendMessageAsync("Saved - now sending messages here when someone deletes a message");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] {new HashEntry("ShowDelete", true)});
+                    await modChannel.SendMessageAsync(
+                        "Saved - now sending messages here when someone deletes a message");
+                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowDelete", true)});
                 }
                 else
                 {
-                    await modChannel.SendMessageAsync("Saved - stopping sending messages here when someone deletes a message");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new HashEntry[] {new HashEntry("ShowDelete", false)});
+                    await modChannel.SendMessageAsync(
+                        "Saved - stopping sending messages here when someone deletes a message");
+                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowDelete", false)});
                 }
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                _errorHandler.HandleCommandException(e, Context,
+                    "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
             }
         }
-        
+
         [Command("setlang", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]
@@ -124,6 +130,7 @@ namespace Geekbot.net.Commands
                     await ReplyAsync(trans["NewLanguageSet"]);
                     return;
                 }
+
                 await ReplyAsync(
                     $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.GetSupportedLanguages())}");
             }
@@ -132,7 +139,7 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("lang", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]

@@ -10,11 +10,11 @@ namespace Geekbot.net.Commands
 {
     public class Dice : ModuleBase
     {
-        private readonly Random rnd;
+        private readonly Random _rnd;
 
         public Dice(Random RandomClient)
         {
-            rnd = RandomClient;
+            _rnd = RandomClient;
         }
 
         [Command("dice", RunMode = RunMode.Async)]
@@ -39,6 +39,7 @@ namespace Geekbot.net.Commands
                         await ReplyAsync("You can only have one mod");
                         return;
                     }
+
                     mod = dice.mod;
                 }
             }
@@ -56,6 +57,7 @@ namespace Geekbot.net.Commands
                 await ReplyAsync("You can't throw more than 20 dices");
                 return;
             }
+
             if (dices.Any(d => d.sides > 120))
             {
                 await ReplyAsync("A dice can't have more than 120 sides");
@@ -73,32 +75,26 @@ namespace Geekbot.net.Commands
                 var results = new List<int>();
                 for (var i = 0; i < dice.times; i++)
                 {
-                    var roll = rnd.Next(1, dice.sides);
+                    var roll = _rnd.Next(1, dice.sides);
                     total += roll;
                     results.Add(roll);
-                    if (roll == dice.sides)
-                    {
-                        extraText = "**Critical Hit!**";
-                    }
-                    if (roll == 1)
-                    {
-                        extraText = "**Critical Fail!**";
-                    }
+                    if (roll == dice.sides) extraText = "**Critical Hit!**";
+                    if (roll == 1) extraText = "**Critical Fail!**";
                 }
+
                 resultStrings.Add($"{dice.diceType} ({string.Join(",", results)})");
             }
+
             rep.Append(string.Join(" + ", resultStrings));
             if (mod != 0)
             {
                 rep.Append($" + {mod}");
                 total += mod;
             }
+
             rep.AppendLine();
             rep.AppendLine($"**Total:** {total}");
-            if (extraText != "")
-            {
-                rep.AppendLine(extraText);
-            }
+            if (extraText != "") rep.AppendLine(extraText);
             await ReplyAsync(rep.ToString());
         }
 
@@ -106,29 +102,25 @@ namespace Geekbot.net.Commands
         {
             var diceParts = dice.Split('d');
             if (diceParts.Length == 2
-                && int.TryParse(diceParts[0], out int times)
-                && int.TryParse(diceParts[1], out int max))
-            {
-                return new DiceTypeDto()
+                && int.TryParse(diceParts[0], out var times)
+                && int.TryParse(diceParts[1], out var max))
+                return new DiceTypeDto
                 {
                     diceType = dice,
                     times = times,
                     sides = max
                 };
-            } 
             if (dice.Length == 1
-                && int.TryParse(diceParts[0], out int mod))
-            {
-                return new DiceTypeDto()
+                && int.TryParse(diceParts[0], out var mod))
+                return new DiceTypeDto
                 {
                     mod = mod
                 };
-            }
             return new DiceTypeDto();
         }
     }
 
-    class DiceTypeDto
+    internal class DiceTypeDto
     {
         public string diceType { get; set; }
         public int times { get; set; }

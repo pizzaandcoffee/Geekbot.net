@@ -8,10 +8,10 @@ namespace Geekbot.net.Commands
 {
     public class Roll : ModuleBase
     {
+        private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
         private readonly Random _rnd;
         private readonly ITranslationHandler _translation;
-        private readonly IErrorHandler _errorHandler;
 
         public Roll(IDatabase redis, Random RandomClient, IErrorHandler errorHandler, ITranslationHandler translation)
         {
@@ -40,7 +40,9 @@ namespace Geekbot.net.Commands
                         await ReplyAsync(string.Format(transDict["NoPrevGuess"], Context.Message.Author.Mention));
                         return;
                     }
-                    _redis.HashSet($"{Context.Guild.Id}:RollsPrevious", new HashEntry[]{ new HashEntry(Context.Message.Author.Id, guess), });
+
+                    _redis.HashSet($"{Context.Guild.Id}:RollsPrevious",
+                        new[] {new HashEntry(Context.Message.Author.Id, guess)});
                     await ReplyAsync(string.Format(transDict["Rolled"], Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {

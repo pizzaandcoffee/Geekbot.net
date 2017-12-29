@@ -13,13 +13,14 @@ namespace Geekbot.net.Commands
     [RequireUserPermission(GuildPermission.Administrator)]
     public class Owner : ModuleBase
     {
-        private readonly IDatabase _redis;
         private readonly DiscordSocketClient _client;
-        private readonly ILogger _logger;
-        private readonly IUserRepository _userRepository;
         private readonly IErrorHandler _errorHandler;
-        
-        public Owner(IDatabase redis, DiscordSocketClient client, ILogger logger, IUserRepository userRepositry, IErrorHandler errorHandler)
+        private readonly ILogger _logger;
+        private readonly IDatabase _redis;
+        private readonly IUserRepository _userRepository;
+
+        public Owner(IDatabase redis, DiscordSocketClient client, ILogger logger, IUserRepository userRepositry,
+            IErrorHandler errorHandler)
         {
             _redis = redis;
             _client = client;
@@ -27,7 +28,7 @@ namespace Geekbot.net.Commands
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
         }
-        
+
         [Command("youtubekey", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set the youtube api key")]
@@ -36,14 +37,15 @@ namespace Geekbot.net.Commands
             var botOwner = Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner"))).Result;
             if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
             {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
+                await ReplyAsync(
+                    $"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
                 return;
             }
 
             _redis.StringSet("youtubeKey", key);
             await ReplyAsync("Apikey has been set");
         }
-        
+
         [Command("game", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set the game that the bot is playing")]
@@ -52,7 +54,8 @@ namespace Geekbot.net.Commands
             var botOwner = Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner"))).Result;
             if (!Context.User.Id.ToString().Equals(botOwner.Id.ToString()))
             {
-                await ReplyAsync($"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
+                await ReplyAsync(
+                    $"Sorry, only the botowner can do this ({botOwner.Username}#{botOwner.Discriminator})");
                 return;
             }
 
@@ -61,7 +64,7 @@ namespace Geekbot.net.Commands
             _logger.Information($"[Geekbot] Changed game to {key}");
             await ReplyAsync($"Now Playing {key}");
         }
-        
+
         [Command("popuserrepo", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Populate user cache")]
@@ -83,6 +86,7 @@ namespace Geekbot.net.Commands
                     $"Sorry, only the botowner can do this");
                 return;
             }
+
             var success = 0;
             var failed = 0;
             try
@@ -98,12 +102,15 @@ namespace Geekbot.net.Commands
                         var inc = succeded ? success++ : failed++;
                     }
                 }
+
                 _logger.Warning("[UserRepository] Finished Updating User Repositry");
-                await ReplyAsync($"Successfully Populated User Repository with {success} Users in {_client.Guilds.Count} Guilds (Failed: {failed})");
+                await ReplyAsync(
+                    $"Successfully Populated User Repository with {success} Users in {_client.Guilds.Count} Guilds (Failed: {failed})");
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Couldn't complete User Repository, see console for more info");
+                _errorHandler.HandleCommandException(e, Context,
+                    "Couldn't complete User Repository, see console for more info");
             }
         }
     }

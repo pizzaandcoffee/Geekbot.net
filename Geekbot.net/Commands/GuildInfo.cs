@@ -10,9 +10,9 @@ namespace Geekbot.net.Commands
 {
     public class GuildInfo : ModuleBase
     {
-        private readonly IDatabase _redis;
-        private readonly ILevelCalc _levelCalc;
         private readonly IErrorHandler _errorHandler;
+        private readonly ILevelCalc _levelCalc;
+        private readonly IDatabase _redis;
 
         public GuildInfo(IDatabase redis, ILevelCalc levelCalc, IErrorHandler errorHandler)
         {

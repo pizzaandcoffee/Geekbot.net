@@ -15,19 +15,20 @@ namespace Geekbot.net.Commands
     [RequireUserPermission(GuildPermission.ManageRoles)]
     public class Mod : ModuleBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
-        private readonly DiscordSocketClient _client;
-        
-        public Mod(IUserRepository userRepositry, IErrorHandler errorHandler, IDatabase redis, DiscordSocketClient client)
+        private readonly IUserRepository _userRepository;
+
+        public Mod(IUserRepository userRepositry, IErrorHandler errorHandler, IDatabase redis,
+            DiscordSocketClient client)
         {
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
             _redis = redis;
             _client = client;
         }
-        
+
         [Command("namehistory", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("See past usernames of an user")]
@@ -38,30 +39,26 @@ namespace Geekbot.net.Commands
                 var userRepo = _userRepository.Get(user.Id);
                 var sb = new StringBuilder();
                 sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
-                foreach (var name in userRepo.UsedNames)
-                {
-                    sb.AppendLine($"- `{name}`");
-                }
+                foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name}`");
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, $"I don't have enough permissions to give {user.Username} that role");
+                _errorHandler.HandleCommandException(e, Context,
+                    $"I don't have enough permissions to give {user.Username} that role");
             }
         }
-        
+
         [Command("kick", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Ban a user")]
-        public async Task kick([Summary("@user")] IUser userNormal, [Summary("reason"), Remainder] string reason = "none")
+        public async Task kick([Summary("@user")] IUser userNormal,
+            [Summary("reason")] [Remainder] string reason = "none")
         {
             try
             {
-                var user = (IGuildUser)userNormal;
-                if (reason == "none")
-                {
-                    reason = "No reason provided";
-                }
+                var user = (IGuildUser) userNormal;
+                if (reason == "none") reason = "No reason provided";
                 await user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(
                     $"You have been kicked from {Context.Guild.Name} for the following reason: \"{reason}\"");
                 await user.KickAsync();

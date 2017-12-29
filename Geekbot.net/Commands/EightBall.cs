@@ -8,8 +8,8 @@ namespace Geekbot.net.Commands
 {
     public class EightBall : ModuleBase
     {
-        private readonly Random _rnd;
         private readonly IErrorHandler _errorHandler;
+        private readonly Random _rnd;
 
         public EightBall(Random RandomClient, IErrorHandler errorHandler)
         {

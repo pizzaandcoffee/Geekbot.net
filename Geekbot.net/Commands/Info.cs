@@ -12,10 +12,10 @@ namespace Geekbot.net.Commands
 {
     public class Info : ModuleBase
     {
-        private readonly IDatabase _redis;
-        private readonly IErrorHandler _errorHandler;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
+        private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
 
         public Info(IDatabase redis, IErrorHandler errorHandler, DiscordSocketClient client, CommandService commands)
         {
@@ -33,30 +33,30 @@ namespace Geekbot.net.Commands
             try
             {
                 var eb = new EmbedBuilder();
-                
+
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(_client.CurrentUser.GetAvatarUrl())
                     .WithName($"{Constants.Name} V{Constants.BotVersion}"));
                 var botOwner = await Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner")));
-                var uptime = (DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime));
-                
+                var uptime = DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime);
+
                 eb.AddInlineField("Bot Name", _client.CurrentUser.Username);
                 eb.AddInlineField("Bot Owner", $"{botOwner.Username}#{botOwner.Discriminator}");
                 eb.AddInlineField("Library", "Discord.NET V1.0.2");
                 eb.AddInlineField("Uptime", $"{uptime.Days}D {uptime.Hours}H {uptime.Minutes}M {uptime.Seconds}S");
                 eb.AddInlineField("Servers", Context.Client.GetGuildsAsync().Result.Count);
                 eb.AddInlineField("Total Commands", _commands.Commands.Count());
-                
+
                 eb.AddField("Website", "https://geekbot.pizzaandcoffee.rocks/");
 
                 await ReplyAsync("", false, eb.Build());
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);              
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("uptime", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get the Bot Uptime")]
@@ -64,12 +64,12 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var uptime = (DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime));
+                var uptime = DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime);
                 await ReplyAsync($"{uptime.Days}D {uptime.Hours}H {uptime.Minutes}M {uptime.Seconds}S");
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);              
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

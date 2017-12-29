@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
@@ -8,19 +9,19 @@ namespace Geekbot.net.Commands
 {
     public class mal : ModuleBase
     {
-        private readonly IMalClient _malClient;
         private readonly IErrorHandler _errorHandler;
+        private readonly IMalClient _malClient;
 
         public mal(IMalClient malClient, IErrorHandler errorHandler)
         {
             _malClient = malClient;
             _errorHandler = errorHandler;
         }
-        
+
         [Command("anime", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about an Anime.")]
-        public async Task searchAnime([Remainder, Summary("AnimeName")] string animeName)
+        public async Task searchAnime([Remainder] [Summary("AnimeName")] string animeName)
         {
             try
             {
@@ -31,11 +32,11 @@ namespace Geekbot.net.Commands
                     {
                         var eb = new EmbedBuilder();
 
-                        var description = System.Web.HttpUtility.HtmlDecode(anime.Synopsis)
+                        var description = HttpUtility.HtmlDecode(anime.Synopsis)
                             .Replace("<br />", "")
                             .Replace("[i]", "*")
                             .Replace("[/i]", "*");
-                        
+
                         eb.Title = anime.Title;
                         eb.Description = description;
                         eb.ImageUrl = anime.Image;
@@ -65,11 +66,11 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("manga", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about a Manga.")]
-        public async Task searchManga([Remainder, Summary("MangaName")] string mangaName)
+        public async Task searchManga([Remainder] [Summary("MangaName")] string mangaName)
         {
             try
             {
@@ -80,11 +81,11 @@ namespace Geekbot.net.Commands
                     {
                         var eb = new EmbedBuilder();
 
-                        var description = System.Web.HttpUtility.HtmlDecode(manga.Synopsis)
+                        var description = HttpUtility.HtmlDecode(manga.Synopsis)
                             .Replace("<br />", "")
                             .Replace("[i]", "*")
                             .Replace("[/i]", "*");
-                        
+
                         eb.Title = manga.Title;
                         eb.Description = description;
                         eb.ImageUrl = manga.Image;

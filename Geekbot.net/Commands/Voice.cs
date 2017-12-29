@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Audio;
 using Discord.Commands;
 using Geekbot.net.Lib;
 
@@ -9,8 +8,8 @@ namespace Geekbot.net.Commands
 {
     public class Voice : ModuleBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly IAudioUtils _audioUtils;
+        private readonly IErrorHandler _errorHandler;
 
         public Voice(IErrorHandler errorHandler, IAudioUtils audioUtils)
         {
@@ -42,7 +41,7 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("disconnect")]
         public async Task DisconnectChannel()
         {
@@ -54,6 +53,7 @@ namespace Geekbot.net.Commands
                     await Context.Channel.SendMessageAsync("I'm not in a voice channel at the moment");
                     return;
                 }
+
                 await audioClient.StopAsync();
                 await ReplyAsync("Disconnected from channel!");
             }
@@ -62,7 +62,7 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
 //        [Command("play")]
 //        public async Task play(IVoiceChannel channel = null)
 //        {

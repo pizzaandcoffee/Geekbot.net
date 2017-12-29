@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Serilog;
@@ -13,13 +12,14 @@ namespace Geekbot.net.Commands
 {
     public class Rank : ModuleBase
     {
-        private readonly IDatabase _redis;
+        private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;
         private readonly ILogger _logger;
+        private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
-        private readonly IEmojiConverter _emojiConverter;
-        
-        public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository, IEmojiConverter emojiConverter)
+
+        public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository,
+            IEmojiConverter emojiConverter)
         {
             _redis = redis;
             _errorHandler = errorHandler;
@@ -27,11 +27,12 @@ namespace Geekbot.net.Commands
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
         }
-        
+
         [Command("rank", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Statistics)]
         [Summary("get user top 10 in messages or karma")]
-        public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
+        public async Task RankCmd([Summary("type")] string typeUnformated = "messages",
+            [Summary("amount")] int amount = 10)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`'");
                     return;
                 }
-                
+
                 var replyBuilder = new StringBuilder();
 
                 if (amount > 20)
@@ -50,7 +51,7 @@ namespace Geekbot.net.Commands
                     replyBuilder.AppendLine(":warning: Limiting to 20");
                     amount = 20;
                 }
-                
+
                 var messageList = _redis.HashGetAll($"{Context.Guild.Id}:{type}");
                 var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
@@ -64,10 +65,10 @@ namespace Geekbot.net.Commands
                     if (listLimiter > amount) break;
                     try
                     {
-                        var guildUser = _userRepository.Get((ulong)user.Name);
+                        var guildUser = _userRepository.Get((ulong) user.Name);
                         if (guildUser.Username != null)
                         {
-                            highscoreUsers.Add(new RankUserPolyfill()
+                            highscoreUsers.Add(new RankUserPolyfill
                             {
                                 Username = guildUser.Username,
                                 Discriminator = guildUser.Discriminator
@@ -75,21 +76,21 @@ namespace Geekbot.net.Commands
                         }
                         else
                         {
-                            highscoreUsers.Add(new RankUserPolyfill()
+                            highscoreUsers.Add(new RankUserPolyfill
                             {
                                 Id = user.Name
                             }, (int) user.Value);
                             failedToRetrieveUser = true;
                         }
+
                         listLimiter++;
                     }
                     catch (Exception e)
                     {
                         _logger.Warning(e, $"Could not retrieve user {user.Name}");
                     }
-                    
                 }
-                
+
                 if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: Couldn't get all userdata\n");
                 replyBuilder.AppendLine($":bar_chart: **{type} Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
@@ -114,13 +115,14 @@ namespace Geekbot.net.Commands
                             break;
                         case "Rolls":
                             replyBuilder.Append($" - {user.Value} Guessed");
-                            break;    
+                            break;
                     }
 
                     replyBuilder.Append("\n");
-                    
+
                     highscorePlace++;
                 }
+
                 await ReplyAsync(replyBuilder.ToString());
             }
             catch (Exception e)
@@ -129,8 +131,8 @@ namespace Geekbot.net.Commands
             }
         }
     }
-    
-    class RankUserPolyfill
+
+    internal class RankUserPolyfill
     {
         public string Username { get; set; }
         public string Discriminator { get; set; }

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Newtonsoft.Json;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -14,23 +12,21 @@ namespace Geekbot.net.Commands
     [Group("quote")]
     public class Quote : ModuleBase
     {
-        private readonly IDatabase redis;
-        private readonly ILogger logger;
         private readonly IErrorHandler errorHandler;
-        
-        public Quote(IDatabase redis, ILogger logger, IErrorHandler errorHandler)
+        private readonly IDatabase redis;
+
+        public Quote(IDatabase redis, IErrorHandler errorHandler)
         {
             this.redis = redis;
-            this.logger = logger;
             this.errorHandler = errorHandler;
         }
 
-        [Command()]
+        [Command]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Return a random quoute from the database")]
         public async Task getRandomQuote()
         {
-            var randomQuote = redis.SetRandomMember($"{Context.Guild.Id}:Quotes");          
+            var randomQuote = redis.SetRandomMember($"{Context.Guild.Id}:Quotes");
             try
             {
                 var quote = JsonConvert.DeserializeObject<QuoteObject>(randomQuote);
@@ -42,7 +38,7 @@ namespace Geekbot.net.Commands
                 errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
             }
         }
-        
+
         [Command("save")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from the last sent message by @user")]
@@ -55,11 +51,13 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("You can't save your own quotes...");
                     return;
                 }
+
                 if (user.IsBot)
                 {
                     await ReplyAsync("You can't save quotes by a bot...");
                     return;
                 }
+
                 var lastMessage = await getLastMessageByUser(user);
                 var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
@@ -69,10 +67,11 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context, "I counldn't find a quote from that user :disappointed:");
+                errorHandler.HandleCommandException(e, Context,
+                    "I counldn't find a quote from that user :disappointed:");
             }
         }
-        
+
         [Command("save")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from a message id")]
@@ -86,24 +85,26 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("You can't save your own quotes...");
                     return;
                 }
+
                 if (message.Author.IsBot)
                 {
                     await ReplyAsync("You can't save quotes by a bot...");
                     return;
                 }
+
                 var quote = createQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
                 var embed = quoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
-                
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context, "I couldn't find a message with that id :disappointed:");
+                errorHandler.HandleCommandException(e, Context,
+                    "I couldn't find a message with that id :disappointed:");
             }
         }
-        
+
         [Command("make")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from the last sent message by @user")]
@@ -118,10 +119,11 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context, "I counldn't find a quote from that user :disappointed:");
+                errorHandler.HandleCommandException(e, Context,
+                    "I counldn't find a quote from that user :disappointed:");
             }
         }
-        
+
         [Command("make")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from a message id")]
@@ -136,21 +138,22 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context, "I couldn't find a message with that id :disappointed:");
+                errorHandler.HandleCommandException(e, Context,
+                    "I couldn't find a message with that id :disappointed:");
             }
         }
 
         private async Task<IMessage> getLastMessageByUser(IUser user)
         {
-            Task<IEnumerable<IMessage>> list = Context.Channel.GetMessagesAsync().Flatten();
+            var list = Context.Channel.GetMessagesAsync().Flatten();
             await list;
             return list.Result
-                .First(msg => msg.Author.Id == user.Id 
-                    && msg.Embeds.Count == 0 
-                    && msg.Id != Context.Message.Id
-                    && !msg.Content.ToLower().StartsWith("!"));
+                .First(msg => msg.Author.Id == user.Id
+                              && msg.Embeds.Count == 0
+                              && msg.Id != Context.Message.Id
+                              && !msg.Content.ToLower().StartsWith("!"));
         }
-        
+
         private EmbedBuilder quoteBuilder(QuoteObject quote)
         {
             var user = Context.Client.GetUserAsync(quote.userId).Result;
@@ -159,10 +162,7 @@ namespace Geekbot.net.Commands
             eb.Title = $"{user.Username} @ {quote.time.Day}.{quote.time.Month}.{quote.time.Year}";
             eb.Description = quote.quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
-            if (quote.image != null)
-            {
-                eb.ImageUrl = quote.image;
-            }
+            if (quote.image != null) eb.ImageUrl = quote.image;
             return eb;
         }
 
@@ -177,7 +177,8 @@ namespace Geekbot.net.Commands
             {
                 image = null;
             }
-            return new QuoteObject()
+
+            return new QuoteObject
             {
                 userId = message.Author.Id,
                 time = message.Timestamp.DateTime,
@@ -186,8 +187,9 @@ namespace Geekbot.net.Commands
             };
         }
     }
-    
-    public class QuoteObject {
+
+    public class QuoteObject
+    {
         public ulong userId { get; set; }
         public string quote { get; set; }
         public DateTime time { get; set; }
