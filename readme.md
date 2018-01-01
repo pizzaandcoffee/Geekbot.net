@@ -1,3 +1,5 @@
+[![pipeline status](https://git.boerlage.me/open/Geekbot.net/badges/master/pipeline.svg)](https://git.boerlage.me/open/Geekbot.net/commits/master)
+
 # [Geekbot.net](https://geekbot.pizzaandcoffee.rocks/)
 
 A General Purpose Discord Bot written in DotNet Core.

@@ -1,0 +1,12 @@
+image: microsoft/dotnet:2.0.3-sdk-stretch
+
+before_script:
+  - set -e
+  - set -u
+  - set -o pipefail
+
+
+build:
+  script:
+    - dotnet restore
+    - dotnet build
