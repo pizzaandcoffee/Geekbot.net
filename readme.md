@@ -11,6 +11,7 @@ You can invite Geekbot to your server with [this link](https://discordapp.com/oa
 * DotNet Core 2
 * Redis
 * Discord.net
+* ffmpeg
 
 ## Running
 

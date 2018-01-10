@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -63,23 +64,32 @@ namespace Geekbot.net.Commands
             }
         }
 
-//        [Command("play")]
-//        public async Task play(IVoiceChannel channel = null)
-//        {
-//            try
-//            {
-//                var audioClient = _audioUtils.GetAudioClient(Context.Guild.Id);
-//                if (audioClient == null)
-//                {
-//                    await Context.Channel.SendMessageAsync("I'm not in a voice channel at the moment");
-//                    return;
-//                }
-//
-//            }
-//            catch (Exception e)
-//            {
-//                _errorHandler.HandleCommandException(e, Context);
-//            }
-//        }
+        [Command("ytplay")]
+        public async Task ytplay(string url)
+        {
+            try
+            {
+                if (!url.Contains("youtube"))
+                {
+                    await ReplyAsync("I can only play youtube videos");
+                    return;
+                }
+                var audioClient = _audioUtils.GetAudioClient(Context.Guild.Id);
+                if (audioClient == null)
+                {
+                    await ReplyAsync("I'm not in a voice channel at the moment");
+                    return;
+                }
+                var ffmpeg = _audioUtils.CreateStreamFromYoutube(url, Context.Guild.Id);
+                var output = ffmpeg.StandardOutput.BaseStream;
+                var discord = audioClient.CreatePCMStream(Discord.Audio.AudioApplication.Mixed);
+                await output.CopyToAsync(discord);
+                await discord.FlushAsync();
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
+        }
     }
 }
