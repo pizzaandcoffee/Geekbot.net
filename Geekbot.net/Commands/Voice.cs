@@ -57,10 +57,12 @@ namespace Geekbot.net.Commands
 
                 await audioClient.StopAsync();
                 await ReplyAsync("Disconnected from channel!");
+                _audioUtils.Cleanup(Context.Guild.Id);
             }
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
+                _audioUtils.Cleanup(Context.Guild.Id);
             }
         }
 
@@ -80,15 +82,20 @@ namespace Geekbot.net.Commands
                     await ReplyAsync("I'm not in a voice channel at the moment");
                     return;
                 }
+
+                var message = await Context.Channel.SendMessageAsync("Just a second, i'm still a bit slow at this");
                 var ffmpeg = _audioUtils.CreateStreamFromYoutube(url, Context.Guild.Id);
                 var output = ffmpeg.StandardOutput.BaseStream;
+                await message.ModifyAsync(msg => msg.Content = "**Playing!** Please note that this feature is experimental");
                 var discord = audioClient.CreatePCMStream(Discord.Audio.AudioApplication.Mixed);
                 await output.CopyToAsync(discord);
                 await discord.FlushAsync();
+                _audioUtils.Cleanup(Context.Guild.Id);
             }
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
+                _audioUtils.Cleanup(Context.Guild.Id);
             }
         }
     }

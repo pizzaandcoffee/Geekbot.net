@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Security.Cryptography;
 using Discord.Audio;
 using Discord.Net;
@@ -16,11 +17,12 @@ namespace Geekbot.net.Lib
         public AudioUtils()
         {
             _audioClients = new Dictionary<ulong, IAudioClient>();
-            _tempFolderPath = Path.GetFullPath("./temp/");
-            if (!Directory.Exists(_tempFolderPath))
+            _tempFolderPath = Path.GetFullPath("./tmp/");
+            if (Directory.Exists(_tempFolderPath))
             {
-                Directory.CreateDirectory(_tempFolderPath);
+                Directory.Delete(_tempFolderPath, true);
             }
+            Directory.CreateDirectory(_tempFolderPath);
         }
         
         public IAudioClient GetAudioClient(ulong guildId)
@@ -49,7 +51,12 @@ namespace Geekbot.net.Lib
         {
             var ytdlMediaUrl = GetYoutubeMediaUrl(url);
             DownloadMediaUrl(ytdlMediaUrl, guildId);
-            return CreateStreamFromFile($"{_tempFolderPath}\\{guildId}.mp3");
+            return CreateStreamFromFile($"{_tempFolderPath}{guildId}");
+        }
+
+        public void Cleanup(ulong guildId)
+        {
+            File.Delete($"{_tempFolderPath}{guildId}");
         }
 
         private string GetYoutubeMediaUrl(string url)
@@ -64,21 +71,26 @@ namespace Geekbot.net.Lib
             var output = Process.Start(ytdl).StandardOutput.ReadToEnd();
             if (string.IsNullOrWhiteSpace(output))
             {
-                throw new System.Exception("Could not get Youtube Media URL");
+                throw new Exception("Could not get Youtube Media URL");
             }
             return output;
         }
 
         private void DownloadMediaUrl(string url, ulong guildId)
         {
-            var ffmpeg = new ProcessStartInfo
+            using (var web = new WebClient())
             {
-                FileName = "ffmpeg",
-                Arguments = $"-re -i \"${url}\" -c:a mp3 -b:a 256k {_tempFolderPath}\\{guildId}.mp3",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-            };
-            Process.Start(ffmpeg).WaitForExit();
+                web.DownloadFile(url, $"{_tempFolderPath}{guildId}");
+            }
+//            var ffmpeg = new ProcessStartInfo
+//            {
+//                FileName = "ffmpeg",
+//                Arguments = $"-i \"{_tempFolderPath}{guildId}\" -c:a mp3 -b:a 256k {_tempFolderPath}{guildId}.mp3",
+//                UseShellExecute = false,
+//                RedirectStandardOutput = true,
+//            };
+//            Process.Start(ffmpeg).WaitForExit();
+//            File.Delete($"{_tempFolderPath}{guildId}");
             return;
         }
     }
@@ -89,5 +101,6 @@ namespace Geekbot.net.Lib
         void StoreAudioClient(ulong guildId, IAudioClient client);
         Process CreateStreamFromFile(string path);
         Process CreateStreamFromYoutube(string url, ulong guildId);
+        void Cleanup(ulong guildId);
     }
 }
