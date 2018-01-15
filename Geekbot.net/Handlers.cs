@@ -69,6 +69,7 @@ namespace Geekbot.net
         {
             try
             {
+                if (message.Author.IsBot) return Task.CompletedTask;
                 if (message == null) return Task.CompletedTask;
                 if (message.Channel.Name.StartsWith('@'))
                 {
