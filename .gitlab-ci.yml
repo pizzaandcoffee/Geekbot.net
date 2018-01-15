@@ -1,12 +1,36 @@
-image: microsoft/dotnet:2.0.3-sdk-stretch
+stages:
+  - build
+  - deploy
 
 before_script:
   - set -e
   - set -u
   - set -o pipefail
 
-
 build:
+  stage: build
+  image: microsoft/dotnet:2.0.3-sdk-stretch
+  artifacts:
+    expire_in: 1h
+    paths:
+      - Geekbot.net/Binaries/
   script:
     - dotnet restore
-    - dotnet build
+    - dotnet publish --configuration Release -o Binaries ./
+
+deploy:
+  stage: deploy
+  image: instrumentisto/rsync-ssh
+  only:
+    - master
+  dependencies:
+    - build
+  before_script:
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n    StrictHostKeyChecking no" > ~/.ssh/config'
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - chmod 700 ~/.ssh
+  script:
+    - rsync -rav -e "ssh -p 65432" ./Geekbot.net/Binaries/* www-data@31.220.42.224:$DEPPATH
+    - ssh -p 65432 www-data@31.220.42.224 "sudo systemctl restart geekbot.service"
