@@ -9,8 +9,11 @@ namespace Geekbot.net.Lib
         public static ILogger createLogger(string[] args)
         {
             var loggerCreation = new LoggerConfiguration()
-                .WriteTo.LiterateConsole()
                 .WriteTo.RollingFile("Logs/geekbot-{Date}.txt", shared: true);
+            if (!Environment.CurrentDirectory.Contains("deploy"))
+            {
+                loggerCreation.WriteTo.LiterateConsole();
+            }
             if (args.Contains("--verbose"))
             {
                 loggerCreation.MinimumLevel.Verbose();
