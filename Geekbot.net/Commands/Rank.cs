@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Serilog;
 using StackExchange.Redis;
@@ -17,15 +18,17 @@ namespace Geekbot.net.Commands
         private readonly ILogger _logger;
         private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
+        private readonly DiscordSocketClient _client;
 
         public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository,
-            IEmojiConverter emojiConverter)
+            IEmojiConverter emojiConverter, DiscordSocketClient client)
         {
             _redis = redis;
             _errorHandler = errorHandler;
             _logger = logger;
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
+            _client = client;
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -55,6 +58,7 @@ namespace Geekbot.net.Commands
                 var messageList = _redis.HashGetAll($"{Context.Guild.Id}:{type}");
                 var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
+                sortedList.Remove(sortedList.Single(e => e.Name.ToString().Equals(_client.CurrentUser.Id.ToString())));
                 if (type == "Messages") sortedList.RemoveAt(0);
 
                 var highscoreUsers = new Dictionary<RankUserPolyfill, int>();
