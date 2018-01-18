@@ -37,3 +37,12 @@ deploy:
   script:
     - rsync -rav -e "ssh -p 65432" ./Geekbot.net/Binaries/* www-data@31.220.42.224:$DEPPATH
     - ssh -p 65432 www-data@31.220.42.224 "sudo systemctl restart geekbot.service"
+
+mirror:
+  stage: deploy
+  image: bravissimolabs/alpine-git:latest
+  only:
+    - master
+  script:
+    - git push https://runebaas:$TOKEN@github.com/pizzaandcoffee/Geekbot.net.git origin/master:master -f
+    
