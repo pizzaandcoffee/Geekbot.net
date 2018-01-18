@@ -25,6 +25,9 @@ deploy:
     - master
   dependencies:
     - build
+  environment:
+      name: Production
+      url: https://discordapp.com/oauth2/authorize?client_id=171249478546882561&scope=bot&permissions=1416834054
   before_script:
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
