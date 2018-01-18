@@ -33,7 +33,16 @@ namespace Geekbot.net.Commands
                     "flat hand",
                     "strip of bacon",
                     "feather",
-                    "piece of pizza"
+                    "piece of pizza",
+                    "moldy banana",
+                    "sharp retort",
+                    "printed version of wikipedia",
+                    "panda paw",
+                    "spiked sledgehammer",
+                    "monstertruck",
+                    "dirty toilet brush",
+                    "sleeping seagull",
+                    "sunflower"
                 };
                 await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[_random.Next(things.Count - 1)]}");
             }
