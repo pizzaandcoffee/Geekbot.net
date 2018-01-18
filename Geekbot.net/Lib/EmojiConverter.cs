@@ -11,7 +11,19 @@ namespace Geekbot.net.Lib
             {
                 return "🔟";
             }
-            var emojiMap = new string[] {"0⃣", "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣"};
+            var emojiMap = new string[]
+            {
+                ":zero:", 
+                ":one:", 
+                ":two:", 
+                ":three:", 
+                ":four:",
+                ":five:",
+                ":six:",
+                ":seven:",
+                ":eight:",
+                ":nine:",
+            };
             var numbers = number.ToString().ToCharArray();
             var returnString = new StringBuilder();
             foreach (var n in numbers)

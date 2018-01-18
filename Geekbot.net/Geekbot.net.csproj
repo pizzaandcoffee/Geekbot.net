@@ -8,6 +8,7 @@
     <Authors>Pizza and Coffee Studios</Authors>
     <Description>A Discord bot</Description>
     <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
+    <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Discord.Net">

@@ -10,12 +10,18 @@ before_script:
 build:
   stage: build
   image: microsoft/dotnet:2.0.3-sdk-stretch
+  variables:
+    NUGET_PACKAGES: "${CI_PROJECT_DIR}/.nugetcache"
+  cache:
+    paths:
+      - .nugetcache
   artifacts:
     expire_in: 1h
     paths:
       - Geekbot.net/Binaries/
   script:
     - dotnet restore
+    - dotnet test Tests
     - dotnet publish --configuration Release -o Binaries ./
 
 deploy:
