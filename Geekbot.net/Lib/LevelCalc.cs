@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Geekbot.net.Lib
 {
-    internal class LevelCalc : ILevelCalc
+    public class LevelCalc : ILevelCalc
     {
         private int[] _levels;
 
