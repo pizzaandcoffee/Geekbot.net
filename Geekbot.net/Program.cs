@@ -27,7 +27,7 @@ namespace Geekbot.net
         private IServiceCollection services;
         private IServiceProvider servicesProvider;
         private RedisValue token;
-        private ILogger logger;
+        private IGeekbotLogger logger;
         private IUserRepository userRepository;
         private string[] args;
         private bool firstStart = false;
@@ -42,23 +42,23 @@ namespace Geekbot.net
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
-            var logger = LoggerFactory.createLogger(args);
-            logger.Information("[Geekbot] Starting...");
+            var logger = new GeekbotLogger();
+            logger.Information("Geekbot", "Starting...");
             try
             {
                 new Program().MainAsync(args, logger).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "[Geekbot] RIP");
+                logger.Error("Geekbot", "RIP", e);
             }
         }
 
-        private async Task MainAsync(string[] args, ILogger logger)
+        private async Task MainAsync(string[] args, IGeekbotLogger logger)
         {
             this.logger = logger;
             this.args = args;
-            logger.Information("[Geekbot] Initing Stuff");
+            logger.Information("Geekbot", "Initing Stuff");
 
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -72,11 +72,11 @@ namespace Geekbot.net
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
                 redis = redisMultiplexer.GetDatabase(6);
-                logger.Information($"[Redis] Connected to db {redis.Database}");
+                logger.Information("Redis", $"Connected to db {redis.Database}");
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "[Redis] Redis Connection Failed");
+                logger.Error("Redis", "Redis Connection Failed", e);
                 Environment.Exit(102);
             }
             
@@ -103,7 +103,7 @@ namespace Geekbot.net
             var audioUtils = new AudioUtils();
             
             services.AddSingleton(redis);
-            services.AddSingleton<ILogger>(logger);
+            services.AddSingleton<IGeekbotLogger>(logger);
             services.AddSingleton<IUserRepository>(userRepository);
             services.AddSingleton<ILevelCalc>(levelCalc);
             services.AddSingleton<IEmojiConverter>(emojiConverter);
@@ -113,7 +113,7 @@ namespace Geekbot.net
             services.AddSingleton<IMediaProvider>(mediaProvider);
             services.AddSingleton<IMalClient>(malClient);
 
-            logger.Information("[Geekbot] Connecting to Discord");
+            logger.Information("Geekbot", "Connecting to Discord");
 
             await Login();
 
@@ -130,9 +130,9 @@ namespace Geekbot.net
                 if (isConneted)
                 {
                     await client.SetGameAsync(redis.StringGet("Game"));
-                    logger.Information($"[Geekbot] Now Connected as {client.CurrentUser.Username} to {client.Guilds.Count} Servers");
+                    logger.Information("Geekbot", $"Now Connected as {client.CurrentUser.Username} to {client.Guilds.Count} Servers");
 
-                    logger.Information("[Geekbot] Registering Stuff");
+                    logger.Information("Geekbot", "Registering Stuff");
                     var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
                     var errorHandler = new ErrorHandler(logger, translationHandler);
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -153,21 +153,21 @@ namespace Geekbot.net
 
                     if (firstStart || args.Contains("--reset"))
                     {
-                        logger.Information("[Geekbot] Finishing setup");
+                        logger.Information("Geekbot", "Finishing setup");
                         await FinishSetup();
-                        logger.Information("[Geekbot] Setup finished");
+                        logger.Information("Geekbot", "Setup finished");
                     }
                     if (!args.Contains("--disable-api"))
                     {
                         startWebApi();
                     }
                     
-                    logger.Information("[Geekbot] Done and ready for use\n");
+                    logger.Information("Geekbot", "Done and ready for use");
                 }
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "Could not connect to discord...");
+                logger.Error("Discord", "Could not connect...", e);
                 Environment.Exit(103);
             }
         }
@@ -181,16 +181,16 @@ namespace Geekbot.net
 
         private void startWebApi()
         {
-            logger.Information("[API] Starting Webserver");
+            logger.Information("API", "Starting Webserver");
             var webApiUrl = new Uri("http://localhost:12995");
             new NancyHost(webApiUrl).Start();
-            logger.Information($"[API] Webserver now running on {webApiUrl}");
+            logger.Information("API", $"Webserver now running on {webApiUrl}");
         }
 
         private async Task<Task> FinishSetup()
         {
             var appInfo = await client.GetApplicationInfoAsync();
-            logger.Information($"[Setup] Just a moment while i setup everything {appInfo.Owner.Username}");
+            logger.Information("Setup", $"Just a moment while i setup everything {appInfo.Owner.Username}");
             try
             {
                 redis.StringSet("botOwner", appInfo.Owner.Id);
@@ -203,12 +203,11 @@ namespace Geekbot.net
                         User.Username = appInfo.Name.ToString();
                     });
                 }
-                logger.Information($"[Setup] Everything done, enjoy!");
+                logger.Information("Setup", "Everything done, enjoy!");
             }
             catch (Exception e)
             {
-                logger.Warning(e, "[Setup] Oha, it seems like something went wrong while running the setup");
-                logger.Warning("[Setup] Geekbot will work never the less, some features might be disabled though");
+                logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
             }
             return Task.CompletedTask;
         }
@@ -219,22 +218,20 @@ namespace Geekbot.net
             switch (message.Severity)
             {
                 case LogSeverity.Verbose:
-                    logger.Verbose(logMessage);
-                    break;
                 case LogSeverity.Debug:
-                    logger.Debug(logMessage);
+                    logger.Debug(message.Source, message.Message);
                     break;
                 case LogSeverity.Info:
-                    logger.Information(logMessage);
+                    logger.Information(message.Source, message.Message);
                     break;
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
                 case LogSeverity.Warning:
                     if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
-                    logger.Error(message.Exception, logMessage);
+                    logger.Error(message.Source, message.Message, message.Exception);
                     break;
                 default:
-                    logger.Information($"{logMessage} --- {message.Severity}");
+                    logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
                     break;
             }
             return Task.CompletedTask;

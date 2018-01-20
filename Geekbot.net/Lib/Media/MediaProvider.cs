@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib.Media
     public class MediaProvider : IMediaProvider
     {
         private readonly Random _random;
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private string[] _checkemImages;
         private string[] _pandaImages;
         private string[] _croissantImages;
@@ -17,61 +17,61 @@ namespace Geekbot.net.Lib.Media
         private string[] _pumpkinImages;
         private string[] _turtlesImages;
         
-        public MediaProvider(Random rnd, ILogger logger)
+        public MediaProvider(Random rnd, IGeekbotLogger logger)
         {
             _random = rnd;
             _logger = logger;
 
-            logger.Information("[Geekbot] Loading Media Files");
+            logger.Information("Geekbot", "Loading Media Files");
             
-            loadCheckem();
-            loadPandas();
-            bakeCroissants();
-            loadSquirrels();
-            loadPumpkins();
-            loadTurtles();
+            LoadCheckem();
+            LoadPandas();
+            BakeCroissants();
+            LoadSquirrels();
+            LoadPumpkins();
+            LoadTurtles();
         }
 
-        private void loadCheckem()
+        private void LoadCheckem()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/checkEmPics"));
             _checkemImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_checkemImages.Length} CheckEm Images");
+            _logger.Debug("Geekbot", $"Loaded {_checkemImages.Length} CheckEm Images");
         }
         
-        private void loadPandas()
+        private void LoadPandas()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pandas"));
             _pandaImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_pandaImages.Length} Panda Images");
+            _logger.Debug("Geekbot", $"Loaded {_pandaImages.Length} Panda Images");
         }
         
-        private void bakeCroissants()
+        private void BakeCroissants()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/croissant"));
             _croissantImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_croissantImages.Length} Croissant Images");
+            _logger.Debug("Geekbot", $"Loaded {_croissantImages.Length} Croissant Images");
         }
         
-        private void loadSquirrels()
+        private void LoadSquirrels()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/squirrel"));
             _squirrelImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_squirrelImages.Length} Squirrel Images");
+            _logger.Debug("Geekbot", $"Loaded {_squirrelImages.Length} Squirrel Images");
         }
         
-        private void loadPumpkins()
+        private void LoadPumpkins()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pumpkin"));
             _pumpkinImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_pumpkinImages.Length} Pumpkin Images");
+            _logger.Debug("Geekbot", $"Loaded {_pumpkinImages.Length} Pumpkin Images");
         }
         
-        private void loadTurtles()
+        private void LoadTurtles()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/turtles"));
             _turtlesImages = rawLinks.Split("\n");
-            _logger.Verbose($"[Geekbot] [Media] Loaded {_turtlesImages.Length} Turtle Images");
+            _logger.Debug("Geekbot", $"Loaded {_turtlesImages.Length} Turtle Images");
         }
         
         public string getCheckem()

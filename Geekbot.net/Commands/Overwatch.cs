@@ -14,13 +14,11 @@ namespace Geekbot.net.Commands
     public class Overwatch : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
 
-        public Overwatch(IErrorHandler errorHandler, ILogger logger, IDatabase redis, IUserRepository userRepository)
+        public Overwatch(IErrorHandler errorHandler, IDatabase redis, IUserRepository userRepository)
         {
             _errorHandler = errorHandler;
-            _logger = logger;
             _userRepository = userRepository;
         }
 
@@ -117,7 +115,6 @@ namespace Geekbot.net.Commands
             {
                 var player = await owClient.GetPlayerAsync(battletag);
                 if (player.Username == null) return null;
-                _logger.Debug($"[OW] Username = {player.Username}");
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(player.ProfilePortraitUrl)

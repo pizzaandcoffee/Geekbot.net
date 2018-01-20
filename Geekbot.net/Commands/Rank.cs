@@ -15,12 +15,12 @@ namespace Geekbot.net.Commands
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
         private readonly DiscordSocketClient _client;
 
-        public Rank(IDatabase redis, IErrorHandler errorHandler, ILogger logger, IUserRepository userRepository,
+        public Rank(IDatabase redis, IErrorHandler errorHandler, IGeekbotLogger logger, IUserRepository userRepository,
             IEmojiConverter emojiConverter, DiscordSocketClient client)
         {
             _redis = redis;
@@ -91,7 +91,7 @@ namespace Geekbot.net.Commands
                     }
                     catch (Exception e)
                     {
-                        _logger.Warning(e, $"Could not retrieve user {user.Name}");
+                        _logger.Warning("Geekbot", $"Could not retrieve user {user.Name}", e);
                     }
                 }
 
