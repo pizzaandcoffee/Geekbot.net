@@ -10,7 +10,7 @@ namespace Geekbot.net.Lib.Media
         private readonly Random rnd;
         private readonly int totalFortunes;
 
-        public FortunesProvider(Random rnd, ILogger logger)
+        public FortunesProvider(Random rnd, IGeekbotLogger logger)
         {
             var path = Path.GetFullPath("./Storage/fortunes");
             if (File.Exists(path))
@@ -19,12 +19,11 @@ namespace Geekbot.net.Lib.Media
                 fortuneArray = rawFortunes.Split("%");
                 totalFortunes = fortuneArray.Length;
                 this.rnd = rnd;
-                logger.Verbose($"[Geekbot] [Fortunes] Loaded {totalFortunes} Fortunes");
+                logger.Debug("Geekbot", "Loaded {totalFortunes} Fortunes");
             }
             else
             {
-                logger.Error("Fortunes File not found");
-                logger.Error($"Path should be {path}");
+                logger.Information("Geekbot", $"Fortunes File not found at {path}");
             }
         }
 

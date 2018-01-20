@@ -11,17 +11,17 @@ namespace Geekbot.net.Lib
 {
     public class TranslationHandler : ITranslationHandler
     {
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
         private Dictionary<ulong, string> _serverLanguages;
         private List<string> _supportedLanguages;
         
-        public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, IDatabase redis, ILogger logger)
+        public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, IDatabase redis, IGeekbotLogger logger)
         {
             _logger = logger;
             _redis = redis;
-            _logger.Information("[Geekbot] Loading Translations");
+            _logger.Information("Geekbot", "Loading Translations");
             LoadTranslations();
             LoadServerLanguages(clientGuilds);
         }
@@ -70,7 +70,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception e)
             {
-                _logger.Fatal(e, "Failed to load Translations");
+                _logger.Error("Geekbot", "Failed to load Translations", e);
                 Environment.Exit(110);
             }
         }
@@ -99,7 +99,7 @@ namespace Geekbot.net.Lib
             translation = _translations[command][stringName]["EN"];
             if (string.IsNullOrWhiteSpace(translation))
             {
-                _logger.Warning($"No translation found for {command} - {stringName}");
+                _logger.Warning("Geekbot", $"No translation found for {command} - {stringName}");
             }
             return translation;
         }
@@ -113,7 +113,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception e)
             {
-                _logger.Error(e, "lol nope");
+                _logger.Error("Geekbot", "lol nope", e);
                 return new Dictionary<string, string>();    
             }
         }
@@ -126,7 +126,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception e)
             {
-                _logger.Error(e, "lol nope");
+                _logger.Error("Geekbot", "lol nope", e);
                 return new Dictionary<string, string>();    
             }
         }
@@ -142,7 +142,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception e)
             {
-                _logger.Error(e, "[Geekbot] Error while changing language");
+                _logger.Error("Geekbot", "Error while changing language", e);
                 return false;
             }
         }

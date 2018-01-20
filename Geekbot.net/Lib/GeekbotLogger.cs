@@ -10,7 +10,7 @@ namespace Geekbot.net.Lib
         public GeekbotLogger()
         {
             JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
-            Info("Geekbot", "Using GeekbotLogger");
+            Information("Geekbot", "Using GeekbotLogger");
         }
         
         public void Debug(string source, string message, object extra = null)
@@ -18,14 +18,19 @@ namespace Geekbot.net.Lib
             HandleLogObject("Debug", source, message, null, extra);
         }
         
-        public void Info(string source, string message, object extra = null)
+        public void Information(string source, string message, object extra = null)
         {
             HandleLogObject("Information", source, message, null, extra);
         }
         
+        public void Warning(string source, string message, Exception stackTrace = null, object extra = null)
+        {
+            HandleLogObject("Warning", source, message, stackTrace, extra);
+        }
+        
         public void Error(string source, string message, Exception stackTrace, object extra = null)
         {
-            HandleLogObject("Debug", source, message, stackTrace, extra);
+            HandleLogObject("Error", source, message, stackTrace, extra);
         }
 
         private Task HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
@@ -63,7 +68,8 @@ namespace Geekbot.net.Lib
     public interface IGeekbotLogger
     {
         void Debug(string source, string message, object extra = null);
-        void Info(string source, string message, object extra = null);
+        void Information(string source, string message, object extra = null);
+        void Warning(string source, string message, Exception stackTrace = null, object extra = null);
         void Error(string source, string message, Exception stackTrace, object extra = null);
     }
 }

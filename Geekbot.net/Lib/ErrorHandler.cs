@@ -15,11 +15,11 @@ namespace Geekbot.net.Lib
 {
     public class ErrorHandler : IErrorHandler
     {
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private readonly ITranslationHandler _translation;
         private readonly IRavenClient _raven;
 
-        public ErrorHandler(ILogger logger, ITranslationHandler translation)
+        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation)
         {
             _logger = logger;
             _translation = translation;
@@ -28,7 +28,7 @@ namespace Geekbot.net.Lib
             if (!string.IsNullOrEmpty(sentryDsn))
             {
                 _raven = new RavenClient(sentryDsn);
-                _logger.Information($"[Geekbot] Command Errors will be logged to Sentry: {sentryDsn}");
+                _logger.Information("Geekbot", $"Command Errors will be logged to Sentry: {sentryDsn}");
             }
             else
             {
@@ -42,8 +42,7 @@ namespace Geekbot.net.Lib
             {
                 var errorString = errorMessage == "def" ? _translation.GetString(Context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
                 var errorObj = SimpleConextConverter.ConvertContext(Context);
-                var errorJson = JsonSerializer.ToJsonString(errorObj);
-                _logger.Error(e, errorJson);
+                _logger.Error("Geekbot", "An error ocured", e, errorObj);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     Context.Channel.SendMessageAsync(errorString);
@@ -65,7 +64,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Errorception");
+                _logger.Error("Geekbot", "Errorception", ex);
             }
         }
 

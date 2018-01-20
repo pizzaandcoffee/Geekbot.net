@@ -15,11 +15,11 @@ namespace Geekbot.net.Commands
     {
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
 
-        public Owner(IDatabase redis, DiscordSocketClient client, ILogger logger, IUserRepository userRepositry,
+        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry,
             IErrorHandler errorHandler)
         {
             _redis = redis;
@@ -61,7 +61,7 @@ namespace Geekbot.net.Commands
 
             _redis.StringSet("Game", key);
             await _client.SetGameAsync(key);
-            _logger.Information($"[Geekbot] Changed game to {key}");
+            _logger.Information("Geekbot", $"Changed game to {key}");
             await ReplyAsync($"Now Playing {key}");
         }
 
@@ -91,11 +91,11 @@ namespace Geekbot.net.Commands
             var failed = 0;
             try
             {
-                _logger.Warning("[UserRepository] Populating User Repositry");
+                _logger.Warning("UserRepository", "Populating User Repositry");
                 await ReplyAsync("Starting Population of User Repository");
                 foreach (var guild in _client.Guilds)
                 {
-                    _logger.Information($"[UserRepository] Populating users from {guild.Name}");
+                    _logger.Information("UserRepository", $"Populating users from {guild.Name}");
                     foreach (var user in guild.Users)
                     {
                         var succeded = await _userRepository.Update(user);
@@ -103,7 +103,7 @@ namespace Geekbot.net.Commands
                     }
                 }
 
-                _logger.Warning("[UserRepository] Finished Updating User Repositry");
+                _logger.Warning("UserRepository", "Finished Updating User Repositry");
                 await ReplyAsync(
                     $"Successfully Populated User Repository with {success} Users in {_client.Guilds.Count} Guilds (Failed: {failed})");
             }

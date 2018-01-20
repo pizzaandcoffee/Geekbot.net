@@ -10,12 +10,12 @@ namespace Geekbot.net.Lib
     public class MalClient : IMalClient
     {
         private readonly IDatabase _redis;
-        private readonly ILogger _logger;
+        private readonly IGeekbotLogger _logger;
         private ICredentialContext _credentials;
         private AnimeSearchMethodsAsync _animeSearch;
         private MangaSearchMethodsAsync _mangaSearch;
         
-        public MalClient(IDatabase redis, ILogger logger)
+        public MalClient(IDatabase redis, IGeekbotLogger logger)
         {
             _redis = redis;
             _logger = logger;
@@ -42,10 +42,10 @@ namespace Geekbot.net.Lib
                 }
                 _animeSearch = new AnimeSearchMethodsAsync(_credentials);
                 _mangaSearch = new MangaSearchMethodsAsync(_credentials);
-                _logger.Verbose($"[Geekbot] [MalClient] Logged in to Mal");
+                _logger.Debug("Geekbot", "Logged in to MAL");
                 return true;
             }
-            _logger.Warning("[Geekbot] [MalClient] No Credentials Set!");
+            _logger.Debug("Geekbot", "No MAL Credentials Set!");
             return false;
             
         }

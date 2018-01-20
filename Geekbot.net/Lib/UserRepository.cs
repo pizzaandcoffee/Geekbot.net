@@ -13,8 +13,8 @@ namespace Geekbot.net.Lib
     public class UserRepository : IUserRepository
     {
         private readonly IDatabase _redis;
-        private readonly ILogger _logger;
-        public UserRepository(IDatabase redis, ILogger logger)
+        private readonly IGeekbotLogger _logger;
+        public UserRepository(IDatabase redis, IGeekbotLogger logger)
         {
             _redis = redis;
             _logger = logger;
@@ -38,12 +38,12 @@ namespace Geekbot.net.Lib
                 }
                 Store(savedUser);
                 
-                _logger.Information($"[UserRepository] Updated User {user.Username}#{user.Discriminator} ({user.Id})");
+                _logger.Information("UserRepository", "Updated User", savedUser);
                 return Task.FromResult(true);
             }
             catch (Exception e)
             {
-                _logger.Warning(e, $"[UserRepository] Failed to update {user.Username}#{user.Discriminator} ({user.Id})");
+                _logger.Warning("UserRepository", $"Failed to update user: {user.Username}#{user.Discriminator} ({user.Id})", e);
                 return Task.FromResult(false);
             }
         }
@@ -105,7 +105,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception e)
             {
-                _logger.Warning(e, $"[UserRepository] Failed to get {userId} from repository");
+                _logger.Warning("UserRepository", "Failed to get {userId} from repository", e);
                 return new UserRepositoryUser();
             }
         }

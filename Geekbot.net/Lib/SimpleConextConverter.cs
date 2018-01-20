@@ -33,8 +33,7 @@ namespace Geekbot.net.Lib
                 {
                     Id = context.Channel.Id.ToString(),
                     Name = context.Channel.Name
-                },
-                TimeStamp = DateTime.Now.ToString()
+                }
             };
         }
         public static MessageDto ConvertSocketMessage(SocketMessage message)
@@ -66,7 +65,6 @@ namespace Geekbot.net.Lib
                     Id = channel.Id.ToString(),
                     Name = channel.Name
                 },
-                TimeStamp = DateTime.Now.ToString()
             };
         }
         
@@ -79,7 +77,6 @@ namespace Geekbot.net.Lib
         public IdAndName User { get; set; }
         public IdAndName Guild { get; set; }
         public IdAndName Channel { get; set; }
-        public string TimeStamp { get; set; }
         
         public class MessageContent
         {
