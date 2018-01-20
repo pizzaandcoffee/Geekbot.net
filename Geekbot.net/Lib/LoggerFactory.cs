@@ -1,26 +1,26 @@
 ﻿using System;
 using Serilog;
-using System.Linq;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.SumoLogic;
 
 namespace Geekbot.net.Lib
 {
     public class LoggerFactory
     {
-        public static ILogger createLogger(string[] args)
+        public static ILogger createLogger()
         {
-            var loggerCreation = new LoggerConfiguration()
-                .WriteTo.RollingFile("Logs/geekbot-{Date}.txt", shared: true);
-            if (!Environment.CurrentDirectory.Contains("deploy"))
+            var loggerCreation = new LoggerConfiguration();
+            var template = "{Message}{NewLine}";
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO")))
             {
-                loggerCreation.WriteTo.LiterateConsole();
-            }
-            if (args.Contains("--verbose"))
-            {
-                loggerCreation.MinimumLevel.Verbose();
+                Console.WriteLine("Logging Geekbot Logs to Sumologic");
+                loggerCreation.WriteTo.SumoLogic(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"), 
+                    outputTemplate: template);
             }
             else
             {
-                loggerCreation.MinimumLevel.Information();
+                loggerCreation.WriteTo.LiterateConsole(outputTemplate: template);
+                loggerCreation.WriteTo.RollingFile("Logs/geekbot-{Date}.txt", shared: true, outputTemplate: template);
             }
             return loggerCreation.CreateLogger();
         }

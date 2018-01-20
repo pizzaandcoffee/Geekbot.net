@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Serilog;
 using Utf8Json;
+using Utf8Json.Formatters;
 using Utf8Json.Resolvers;
 
 namespace Geekbot.net.Lib
 {
     public class GeekbotLogger : IGeekbotLogger
     {
+        private readonly ILogger _serilog;
         public GeekbotLogger()
         {
-            JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
+            _serilog = LoggerFactory.createLogger();
+            //JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
             Information("Geekbot", "Using GeekbotLogger");
         }
         
@@ -36,7 +40,8 @@ namespace Geekbot.net.Lib
         private Task HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
             var logJson = CreateLogObject(type, source, message, null, extra);
-            Console.WriteLine(logJson);
+            // fuck serilog
+            _serilog.Information(logJson + "}");
             return Task.CompletedTask;
         }
 
@@ -51,7 +56,7 @@ namespace Geekbot.net.Lib
                 StackTrace = stackTrace,
                 Extra = extra
             };
-            return Utf8Json.JsonSerializer.ToJsonString(logObject);
+            return JsonSerializer.ToJsonString(logObject);
         }
     }
 
