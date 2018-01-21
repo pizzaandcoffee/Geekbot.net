@@ -12,13 +12,13 @@ namespace Geekbot.net.Commands
     [Group("quote")]
     public class Quote : ModuleBase
     {
-        private readonly IErrorHandler errorHandler;
-        private readonly IDatabase redis;
+        private readonly IErrorHandler _errorHandler;
+        private readonly IDatabase _redis;
 
-        public Quote(IDatabase redis, IErrorHandler errorHandler)
+        public Quote(IDatabase redis, IErrorHandler errorHandler, Random random)
         {
-            this.redis = redis;
-            this.errorHandler = errorHandler;
+            _redis = redis;
+            _errorHandler = errorHandler;
         }
 
         [Command]
@@ -26,16 +26,18 @@ namespace Geekbot.net.Commands
         [Summary("Return a random quoute from the database")]
         public async Task getRandomQuote()
         {
-            var randomQuote = redis.SetRandomMember($"{Context.Guild.Id}:Quotes");
             try
             {
+                var randomQuotes = _redis.SetMembers($"{Context.Guild.Id}:Quotes");
+                var randomNumber = new Random().Next(randomQuotes.Length - 1);
+                var randomQuote = randomQuotes[randomNumber];
                 var quote = JsonConvert.DeserializeObject<QuoteObject>(randomQuote);
-                var embed = quoteBuilder(quote);
+                var embed = quoteBuilder(quote, randomNumber + 1);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
+                _errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
             }
         }
 
@@ -61,13 +63,13 @@ namespace Geekbot.net.Commands
                 var lastMessage = await getLastMessageByUser(user);
                 var quote = createQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
-                redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
+                _redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
                 var embed = quoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context,
+                _errorHandler.HandleCommandException(e, Context,
                     "I counldn't find a quote from that user :disappointed:");
             }
         }
@@ -94,13 +96,13 @@ namespace Geekbot.net.Commands
 
                 var quote = createQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
-                redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
+                _redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
                 var embed = quoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context,
+                _errorHandler.HandleCommandException(e, Context,
                     "I couldn't find a message with that id :disappointed:");
             }
         }
@@ -119,7 +121,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context,
+                _errorHandler.HandleCommandException(e, Context,
                     "I counldn't find a quote from that user :disappointed:");
             }
         }
@@ -138,8 +140,36 @@ namespace Geekbot.net.Commands
             }
             catch (Exception e)
             {
-                errorHandler.HandleCommandException(e, Context,
+                _errorHandler.HandleCommandException(e, Context,
                     "I couldn't find a message with that id :disappointed:");
+            }
+        }
+        
+        [Command("remove")]
+        [RequireUserPermission(GuildPermission.KickMembers)]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
+        [Remarks(CommandCategories.Quotes)]
+        [Summary("Remove a quote (required mod permissions)")]
+        public async Task removeQuote([Summary("quoteId")] int id)
+        {
+            try
+            {
+                var quotes = _redis.SetMembers($"{Context.Guild.Id}:Quotes");
+                var success = _redis.SetRemove($"{Context.Guild.Id}:Quotes", quotes[id - 1]);
+                if (success)
+                {
+                    await ReplyAsync($"Removed quote #{id}");
+                } 
+                else
+                {
+                    await ReplyAsync($"I couldn't find a quote with that id :disappointed:");
+                }
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context,
+                    "I couldn't find a quote with that id :disappointed:");
             }
         }
 
@@ -154,12 +184,13 @@ namespace Geekbot.net.Commands
                               && !msg.Content.ToLower().StartsWith("!"));
         }
 
-        private EmbedBuilder quoteBuilder(QuoteObject quote)
+        private EmbedBuilder quoteBuilder(QuoteObject quote, int id = 0)
         {
             var user = Context.Client.GetUserAsync(quote.userId).Result;
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
-            eb.Title = $"{user.Username} @ {quote.time.Day}.{quote.time.Month}.{quote.time.Year}";
+            eb.Title = id == 0 ? "" : $"#{id} | ";
+            eb.Title += $"{user.Username} @ {quote.time.Day}.{quote.time.Month}.{quote.time.Year}";
             eb.Description = quote.quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
             if (quote.image != null) eb.ImageUrl = quote.image;
