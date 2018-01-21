@@ -159,7 +159,9 @@ namespace Geekbot.net.Commands
                 var success = _redis.SetRemove($"{Context.Guild.Id}:Quotes", quotes[id - 1]);
                 if (success)
                 {
-                    await ReplyAsync($"Removed quote #{id}");
+                    var quote = JsonConvert.DeserializeObject<QuoteObject>(quotes[id - 1]);
+                    var embed = quoteBuilder(quote);
+                    await ReplyAsync($"**Removed #{id}**", false, embed.Build());
                 } 
                 else
                 {
