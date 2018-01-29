@@ -53,12 +53,12 @@ namespace Tests.Lib
                 yield return new object[]
                 {
                     "test",
-                    ":regional_indicator_t::regional_indicator_e::regional_indicator_s::regional_indicator_t:"
+                    ":regional_indicator_t: :regional_indicator_e: :regional_indicator_s: :regional_indicator_t: "
                 };
                 yield return new object[]
                 {
                     "Best3+?",
-                    ":b::regional_indicator_e::regional_indicator_s::regional_indicator_t::three::heavy_plus_sign::question:"
+                    ":b: :regional_indicator_e: :regional_indicator_s: :regional_indicator_t: :three: :heavy_plus_sign: :question: "
                 };
             }
         }
