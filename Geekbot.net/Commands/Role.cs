@@ -134,8 +134,16 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                _redis.HashDelete($"{Context.Guild.Id}:RoleWhitelist", roleName);
-                await ReplyAsync($"Removed {roleName} from the whitelist");
+                
+                var success = _redis.HashDelete($"{Context.Guild.Id}:RoleWhitelist", roleName.ToLower());
+                if (success)
+                {
+                    await ReplyAsync($"Removed {roleName} from the whitelist");
+                    return;
+                }
+
+                await ReplyAsync("There is not whitelisted role with that name...");
+
             }
             catch (Exception e)
             {
