@@ -39,7 +39,7 @@ namespace Tests.Lib
 
 
         [Theory, MemberData(nameof(NumberToEmojiTestData))]
-        public async Task NumberToEmoji(int number, string expectedResult)
+        public void NumberToEmoji(int number, string expectedResult)
         {
             var emojiConverter = new EmojiConverter();
             var result = emojiConverter.numberToEmoji(number);
@@ -65,7 +65,7 @@ namespace Tests.Lib
 
 
         [Theory, MemberData(nameof(textToEmojiTestData))]
-        public async Task TextToEmoji(string text, string expectedResult)
+        public void TextToEmoji(string text, string expectedResult)
         {
             var emojiConverter = new EmojiConverter();
             var result = emojiConverter.textToEmoji(text);
