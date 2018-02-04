@@ -42,6 +42,8 @@ namespace Geekbot.net.Lib
             {
                 var errorString = errorMessage == "def" ? _translation.GetString(Context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
                 var errorObj = SimpleConextConverter.ConvertContext(Context);
+                if (errorObj.Message.Content.Contains("50007")) return;
+                if (errorObj.Message.Content.Contains("50013")) return;
                 _logger.Error("Geekbot", "An error ocured", e, errorObj);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
@@ -49,7 +51,7 @@ namespace Geekbot.net.Lib
                 }
                 
                 if (_raven == null) return;
-
+                
                 var sentryEvent = new SentryEvent(e)
                 {
                     Tags =
