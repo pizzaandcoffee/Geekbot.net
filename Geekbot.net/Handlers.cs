@@ -56,6 +56,9 @@ namespace Geekbot.net
                       message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
                 var context = new CommandContext(_client, message);
                 var commandExec = _commands.ExecuteAsync(context, argPos, _servicesProvider);
+                _logger.Information("Command",
+                    context.Message.Content.Split(" ")[0].Replace("!", ""),
+                    SimpleConextConverter.ConvertContext(context));
                 return Task.CompletedTask;
             }
             catch (Exception e)
