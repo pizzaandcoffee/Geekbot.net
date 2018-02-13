@@ -39,7 +39,7 @@ namespace Tests.Lib
 
 
         [Theory, MemberData(nameof(LevelCalcTestData))]
-        public async Task GetLevel(int messages, int expectedResult)
+        public void GetLevel(int messages, int expectedResult)
         {
             var levelCalc = new LevelCalc();
             var result = levelCalc.GetLevel(messages);
