@@ -56,9 +56,18 @@ namespace Geekbot.net.Commands
                 }
 
                 var messageList = _redis.HashGetAll($"{Context.Guild.Id}:{type}");
+                if (messageList.Length == 0)
+                {
+                    await ReplyAsync($"No {type.ToLowerInvariant()} found on this server");
+                    return;
+                }
                 var sortedList = messageList.OrderByDescending(e => e.Value).ToList();
                 var guildMessages = (int) sortedList.First().Value;
-                sortedList.Remove(sortedList.Single(e => e.Name.ToString().Equals(_client.CurrentUser.Id.ToString())));
+                var theBot = sortedList.FirstOrDefault(e => e.Name.ToString().Equals(_client.CurrentUser.Id.ToString()));
+                if (!string.IsNullOrEmpty(theBot.Name))
+                {
+                    sortedList.Remove(theBot);
+                }
                 if (type == "Messages") sortedList.RemoveAt(0);
 
                 var highscoreUsers = new Dictionary<RankUserPolyfill, int>();
