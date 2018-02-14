@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Principal;
 using Discord.Commands;
 using Discord.Net;
-using Nancy.Extensions;
-using Serilog;
 using SharpRaven;
 using SharpRaven.Data;
-using SharpRaven.Utilities;
-using Utf8Json;
 
 namespace Geekbot.net.Lib
 {

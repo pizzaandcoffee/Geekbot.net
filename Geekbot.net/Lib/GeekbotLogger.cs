@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Serilog;
 using Utf8Json;
-using Utf8Json.Formatters;
-using Utf8Json.Resolvers;
 
 namespace Geekbot.net.Lib
 {
@@ -39,7 +37,7 @@ namespace Geekbot.net.Lib
 
         private Task HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
-            var logJson = CreateLogObject(type, source, message, null, extra);
+            var logJson = CreateLogObject(type, source, message, stackTrace, extra);
             // fuck serilog
             _serilog.Information(logJson + "}");
             return Task.CompletedTask;
