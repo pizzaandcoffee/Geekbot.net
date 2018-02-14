@@ -10,13 +10,11 @@ namespace Geekbot.net.Commands
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
-        private readonly Random _rnd;
         private readonly ITranslationHandler _translation;
 
-        public Roll(IDatabase redis, Random RandomClient, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Roll(IDatabase redis, IErrorHandler errorHandler, ITranslationHandler translation)
         {
             _redis = redis;
-            _rnd = RandomClient;
             _translation = translation;
             _errorHandler = errorHandler;
         }
@@ -28,7 +26,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var number = _rnd.Next(1, 100);
+                var number = new Random().Next(1, 100);
                 var guess = 1000;
                 int.TryParse(stuff, out guess);
                 var transDict = _translation.GetDict(Context);

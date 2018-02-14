@@ -15,7 +15,7 @@ namespace Geekbot.net.Commands
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
 
-        public Quote(IDatabase redis, IErrorHandler errorHandler, Random random)
+        public Quote(IDatabase redis, IErrorHandler errorHandler)
         {
             _redis = redis;
             _errorHandler = errorHandler;

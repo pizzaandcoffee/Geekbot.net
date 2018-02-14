@@ -17,9 +17,9 @@ namespace Geekbot.net.Lib.Media
         private string[] _pumpkinImages;
         private string[] _turtlesImages;
         
-        public MediaProvider(Random rnd, IGeekbotLogger logger)
+        public MediaProvider(IGeekbotLogger logger)
         {
-            _random = rnd;
+            _random = new Random();
             _logger = logger;
 
             logger.Information("Geekbot", "Loading Media Files");

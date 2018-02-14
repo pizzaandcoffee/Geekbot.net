@@ -10,13 +10,6 @@ namespace Geekbot.net.Commands
 {
     public class Dice : ModuleBase
     {
-        private readonly Random _rnd;
-
-        public Dice(Random RandomClient)
-        {
-            _rnd = RandomClient;
-        }
-
         [Command("dice", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Roll a dice.")]
@@ -75,7 +68,7 @@ namespace Geekbot.net.Commands
                 var results = new List<int>();
                 for (var i = 0; i < dice.times; i++)
                 {
-                    var roll = _rnd.Next(1, dice.sides);
+                    var roll = new Random().Next(1, dice.sides);
                     total += roll;
                     results.Add(roll);
                     if (roll == dice.sides) extraText = "**Critical Hit!**";

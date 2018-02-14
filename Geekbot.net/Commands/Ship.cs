@@ -11,12 +11,10 @@ namespace Geekbot.net.Commands
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
-        private readonly Random _rnd;
 
-        public Ship(IDatabase redis, Random randomClient, IErrorHandler errorHandler)
+        public Ship(IDatabase redis, IErrorHandler errorHandler)
         {
             _redis = redis;
-            _rnd = randomClient;
             _errorHandler = errorHandler;
         }
 
@@ -37,7 +35,7 @@ namespace Geekbot.net.Commands
                 var shippingRate = 0;
                 if (dbval.IsNullOrEmpty)
                 {
-                    shippingRate = _rnd.Next(1, 100);
+                    shippingRate = new Random().Next(1, 100);
                     _redis.HashSet($"{Context.Guild.Id}:Ships", dbstring, shippingRate);
                 }
                 else

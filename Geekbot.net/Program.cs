@@ -94,9 +94,8 @@ namespace Geekbot.net
             services = new ServiceCollection();
             
             userRepository = new UserRepository(redis, logger);
-            var randomClient = new Random();
-            var fortunes = new FortunesProvider(randomClient, logger);
-            var mediaProvider = new MediaProvider(randomClient, logger);
+            var fortunes = new FortunesProvider(logger);
+            var mediaProvider = new MediaProvider(logger);
             var malClient = new MalClient(redis, logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
@@ -108,7 +107,6 @@ namespace Geekbot.net
             services.AddSingleton<ILevelCalc>(levelCalc);
             services.AddSingleton<IEmojiConverter>(emojiConverter);
             services.AddSingleton<IAudioUtils>(audioUtils);
-            services.AddSingleton(randomClient);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);
             services.AddSingleton<IMalClient>(malClient);

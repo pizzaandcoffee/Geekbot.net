@@ -9,11 +9,9 @@ namespace Geekbot.net.Commands
     public class EightBall : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly Random _rnd;
 
-        public EightBall(Random RandomClient, IErrorHandler errorHandler)
+        public EightBall(IErrorHandler errorHandler)
         {
-            _rnd = RandomClient;
             _errorHandler = errorHandler;
         }
 
@@ -48,7 +46,7 @@ namespace Geekbot.net.Commands
                     "Very doubtful"
                 };
 
-                var answer = _rnd.Next(replies.Count);
+                var answer = new Random().Next(replies.Count);
                 await ReplyAsync(replies[answer]);
             }
             catch (Exception e)

@@ -12,11 +12,9 @@ namespace Geekbot.net.Commands
     {
         private readonly IMediaProvider _checkEmImages;
         private readonly IErrorHandler _errorHandler;
-        private readonly Random _rnd;
 
-        public CheckEm(Random RandomClient, IMediaProvider mediaProvider, IErrorHandler errorHandler)
+        public CheckEm(IMediaProvider mediaProvider, IErrorHandler errorHandler)
         {
-            _rnd = RandomClient;
             _checkEmImages = mediaProvider;
             _errorHandler = errorHandler;
         }
@@ -28,7 +26,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var number = _rnd.Next(10000000, 99999999);
+                var number = new Random().Next(10000000, 99999999);
                 var dubtriqua = "";
 
                 var ns = GetIntArray(number);

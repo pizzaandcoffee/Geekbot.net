@@ -8,12 +8,10 @@ namespace Geekbot.net.Commands
     public class Choose : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly Random _rnd;
         private readonly ITranslationHandler _translation;
 
-        public Choose(Random RandomClient, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Choose(IErrorHandler errorHandler, ITranslationHandler translation)
         {
-            _rnd = RandomClient;
             _errorHandler = errorHandler;
             _translation = translation;
         }
@@ -28,7 +26,7 @@ namespace Geekbot.net.Commands
             {
                 var transDict = _translation.GetDict(Context);
                 var choicesArray = choices.Split(';');
-                var choice = _rnd.Next(choicesArray.Length);
+                var choice = new Random().Next(choicesArray.Length);
                 await ReplyAsync(string.Format(transDict["Choice"], choicesArray[choice]));
             }
             catch (Exception e)
