@@ -42,11 +42,6 @@ namespace Geekbot.net
                 if (message.Author.IsBot) return Task.CompletedTask;
                 var argPos = 0;
                 var lowCaseMsg = message.ToString().ToLower();
-                if (lowCaseMsg.Equals("ping") || lowCaseMsg.StartsWith("ping "))
-                {
-                    message.Channel.SendMessageAsync("pong");
-                    return Task.CompletedTask;
-                }
                 if (lowCaseMsg.StartsWith("hui"))
                 {
                     message.Channel.SendMessageAsync("hui!!!");
