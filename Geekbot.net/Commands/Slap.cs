@@ -53,7 +53,28 @@ namespace Geekbot.net.Commands
                     "sunflower",
                     "mousepad",
                     "lolipop",
-                    "bottle of rum"
+                    "bottle of rum",
+                    "cheese slice",
+                    "critical 1",
+                    "natural 20",
+                    "mjölnir (aka mewmew)",
+                    "kamehameha",
+                    "copy of Twilight",
+                    "med pack (get ready for the end boss)",
+                    "derp",
+                    "condom (used)",
+                    "gremlin fed after midnight",
+                    "wet baguette",
+                    "exploding kitten",
+                    "shiny piece of shit",
+                    "mismatched pair of socks",
+                    "horcrux",
+                    "tuna",
+                    "suggestion",
+                    "teapot",
+                    "candle",
+                    "dictionary",
+                    "powerless banhammer"
                 };
                 
                 _redis.HashIncrement($"{Context.Guild.Id}:SlapsRecieved", user.Id.ToString());
