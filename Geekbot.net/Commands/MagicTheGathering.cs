@@ -13,12 +13,12 @@ namespace Geekbot.net.Commands
     public class Magicthegathering : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IEmojiConverter _emojiConverter;
+        private readonly IMtgManaConverter _manaConverter;
 
-        public Magicthegathering(IErrorHandler errorHandler, IEmojiConverter emojiConverter)
+        public Magicthegathering(IErrorHandler errorHandler, IMtgManaConverter manaConverter)
         {
             _errorHandler = errorHandler;
-            _emojiConverter = emojiConverter;
+            _manaConverter = manaConverter;
         }
 
         [Command("mtg", RunMode = RunMode.Async)]
@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands
 
                 if (card.ImageUrl != null) eb.ImageUrl = card.ImageUrl.ToString();
 
-                if (!string.IsNullOrEmpty(card.Text)) eb.AddField("Text", card.Text);
+                if (!string.IsNullOrEmpty(card.Text)) eb.AddField("Text", _manaConverter.ConvertMana(card.Text));
 
                 if (!string.IsNullOrEmpty(card.Flavor)) eb.AddField("Flavor", card.Flavor);
                 if (!string.IsNullOrEmpty(card.SetName)) eb.AddInlineField("Set", card.SetName);
@@ -54,7 +54,7 @@ namespace Geekbot.net.Commands
                 if (!string.IsNullOrEmpty(card.Loyalty)) eb.AddInlineField("Loyality", card.Loyalty);
                 if (!string.IsNullOrEmpty(card.Toughness)) eb.AddInlineField("Thoughness", card.Toughness);
 
-                if (!string.IsNullOrEmpty(card.ManaCost)) eb.AddInlineField("Cost", ManaConverter(card.ManaCost));
+                if (!string.IsNullOrEmpty(card.ManaCost)) eb.AddInlineField("Cost", _manaConverter.ConvertMana(card.ManaCost));
                 if (!string.IsNullOrEmpty(card.Rarity)) eb.AddInlineField("Rarity", card.Rarity);
 
                 if (card.Legalities != null)
@@ -86,22 +86,6 @@ namespace Geekbot.net.Commands
                 default:
                     return new Color(255, 252, 214);
             }
-        }
-
-        private string ManaConverter(string mana)
-        {
-            var rgx = new Regex("{(\\d)}");
-            var groups = rgx.Match(mana).Groups;
-            if (groups.Count == 2)
-            {
-                mana = mana.Replace(groups[0].Value, _emojiConverter.numberToEmoji(int.Parse(groups[1].Value)));
-            }
-            return mana
-                .Replace("{W}", ":sunny:")
-                .Replace("{U}", ":droplet:")
-                .Replace("{B}", ":skull:")
-                .Replace("{R}", ":fire:")
-                .Replace("{G}", ":deciduous_tree:");
         }
     }
 }

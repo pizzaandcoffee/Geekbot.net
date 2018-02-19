@@ -100,6 +100,7 @@ namespace Geekbot.net
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
             var audioUtils = new AudioUtils();
+            var mtgManaConverter = new MtgManaConverter();
             
             services.AddSingleton(redis);
             services.AddSingleton<IGeekbotLogger>(logger);
@@ -110,6 +111,7 @@ namespace Geekbot.net
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);
             services.AddSingleton<IMalClient>(malClient);
+            services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
 
             logger.Information("Geekbot", "Connecting to Discord");
 
