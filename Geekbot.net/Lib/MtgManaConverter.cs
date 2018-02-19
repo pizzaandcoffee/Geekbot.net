@@ -41,6 +41,7 @@ namespace Geekbot.net.Lib
             manaDict.Add("{G}", "<:mtg_green:415216131180331009>");
             manaDict.Add("{S}", "<:mtg_s:415216131293446144>");
             manaDict.Add("{T}", "<:mtg_tap:415258392727257088>");
+            manaDict.Add("{C}", "<:mtg_colorless:415216130706374666>");
             manaDict.Add("{2/W}", "<:mtg_2w:415216130446065664>");
             manaDict.Add("{2/U}", "<:mtg_2u:415216130429550592>");
             manaDict.Add("{2/B}", "<:mtg_2b:415216130160984065>");
