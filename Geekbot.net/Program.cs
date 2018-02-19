@@ -135,14 +135,16 @@ namespace Geekbot.net
                     logger.Information("Geekbot", "Registering Stuff");
                     var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
                     var errorHandler = new ErrorHandler(logger, translationHandler);
+                    var reactionListener = new ReactionListener(redis);
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);
                     services.AddSingleton<IErrorHandler>(errorHandler);
                     services.AddSingleton<ITranslationHandler>(translationHandler);
                     services.AddSingleton<DiscordSocketClient>(client);
+                    services.AddSingleton<IReactionListener>(reactionListener);
                     servicesProvider = services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository);
+                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository, reactionListener);
                     
                     client.MessageReceived += handlers.RunCommand;
                     client.MessageReceived += handlers.UpdateStats;
@@ -150,6 +152,8 @@ namespace Geekbot.net
                     client.UserJoined += handlers.UserJoined;
                     client.UserUpdated += handlers.UserUpdated;
                     client.UserLeft += handlers.UserLeft;
+                    client.ReactionAdded += handlers.ReactionAdded;
+                    client.ReactionRemoved += handlers.ReactionRemoved;
 
                     if (firstStart || args.Contains("--reset"))
                     {

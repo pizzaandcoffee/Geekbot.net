@@ -19,8 +19,9 @@ namespace Geekbot.net
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
+        private readonly IReactionListener _reactionListener;
         
-        public Handlers(IDiscordClient client,  IGeekbotLogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository)
+        public Handlers(IDiscordClient client,  IGeekbotLogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository, IReactionListener reactionListener)
         {
             _client = client;
             _logger = logger;
@@ -28,6 +29,7 @@ namespace Geekbot.net
             _servicesProvider = servicesProvider;
             _commands = commands;
             _userRepository = userRepository;
+            _reactionListener = reactionListener;
         }
         
         //
@@ -179,6 +181,26 @@ namespace Geekbot.net
             {
                 _logger.Error("Geekbot", "Failed to send delete message...", e);
             }
+        }
+        
+        //
+        // Reactions
+        // 
+        
+        public Task ReactionAdded(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction reaction)
+        {
+            if (reaction.User.Value.IsBot) return Task.CompletedTask;
+            if (!_reactionListener.IsListener(reaction.MessageId)) return Task.CompletedTask;
+            _reactionListener.GiveRole(socketMessageChannel, reaction);
+            return Task.CompletedTask;
+        }
+
+        public Task ReactionRemoved(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction reaction)
+        {
+            if (reaction.User.Value.IsBot) return Task.CompletedTask;
+            if (!_reactionListener.IsListener(reaction.MessageId)) return Task.CompletedTask;
+            _reactionListener.RemoveRole(socketMessageChannel, reaction);
+            return Task.CompletedTask;
         }
     }
 }

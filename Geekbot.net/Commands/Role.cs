@@ -15,11 +15,13 @@ namespace Geekbot.net.Commands
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IDatabase _redis;
+        private readonly IReactionListener _reactionListener;
 
-        public Role(IErrorHandler errorHandler, IDatabase redis)
+        public Role(IErrorHandler errorHandler, IDatabase redis, IReactionListener reactionListener)
         {
             _errorHandler = errorHandler;
             _redis = redis;
+            _reactionListener = reactionListener;
         }
 
         [Command(RunMode = RunMode.Async)]
@@ -91,7 +93,7 @@ namespace Geekbot.net.Commands
             }
         }
 
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
         [Command("add", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Add a role to the whitelist.")]
@@ -126,7 +128,7 @@ namespace Geekbot.net.Commands
             }
         }
 
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireUserPermission(GuildPermission.ManageRoles)]
         [Command("remove", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Remove a role from the whitelist.")]
@@ -148,6 +150,41 @@ namespace Geekbot.net.Commands
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
+        [RequireUserPermission(GuildPermission.ManageRoles)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Give a role by clicking on an emoji")]
+        [Command("listen", RunMode = RunMode.Async)]
+        public async Task AddListener([Summary("messageID")] string messageId, [Summary("Emoji")] string emoji, [Summary("@role")] IRole role)
+        {
+            try
+            {
+                var message = (IUserMessage) await Context.Channel.GetMessageAsync(ulong.Parse(messageId));
+                IEmote emote;
+                if (!emoji.StartsWith('<'))
+                {
+                    var emo = new Emoji(emoji);
+                    emote = (IEmote) emo;
+                }
+                else
+                {
+                    emote = Emote.Parse(emoji);
+                }
+                await message.AddReactionAsync(emote);
+                await _reactionListener.AddRoleToListener(messageId, emote, role);
+                await Context.Message.DeleteAsync();
+            }
+            catch (HttpException e)
+            {
+                await Context.Channel.SendMessageAsync("Custom emojis from other servers are not supported");
+                Console.WriteLine(e);
+            }
+            catch (Exception e)
+            {
+                await Context.Channel.SendMessageAsync("Something went wrong... please try again on a new message");
+                Console.WriteLine(e);
             }
         }
     }
