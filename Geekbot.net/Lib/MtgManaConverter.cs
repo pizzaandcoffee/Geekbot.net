@@ -70,7 +70,7 @@ namespace Geekbot.net.Lib
             var rgx = Regex.Matches(mana, "(\\{(.*?)\\})");
             foreach (Match manaTypes in rgx)
             {
-                var m = _manaDict.FirstOrDefault(x => x.Key == manaTypes.Value).Value;
+                var m = _manaDict.GetValueOrDefault(manaTypes.Value);
                 if (!string.IsNullOrEmpty(m))
                 {
                     mana = mana.Replace(manaTypes.Value, m);
