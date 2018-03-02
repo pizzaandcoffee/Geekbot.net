@@ -67,7 +67,7 @@ namespace Geekbot.net.Lib
 
         public string ConvertMana(string mana)
         {
-            var rgx = Regex.Matches(mana, "(\\{(.*?)\\})");
+            var rgx = Regex.Matches(mana, @"(\{(.*?)\})");
             foreach (Match manaTypes in rgx)
             {
                 var m = _manaDict.GetValueOrDefault(manaTypes.Value);

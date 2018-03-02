@@ -49,6 +49,15 @@ namespace Geekbot.net
                     message.Channel.SendMessageAsync("hui!!!");
                     return Task.CompletedTask;
                 }
+                if (lowCaseMsg.StartsWith("ping ") || lowCaseMsg.Equals("ping"))
+                {
+                    bool.TryParse(_redis.HashGet($"{((SocketGuildChannel) message.Channel).Guild.Id}:Settings", "ping"), out var allowPings);
+                    if (allowPings)
+                    {
+                        message.Channel.SendMessageAsync("pong");
+                        return Task.CompletedTask;  
+                    }
+                }
                 if (!(message.HasCharPrefix('!', ref argPos) ||
                       message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
                 var context = new CommandContext(_client, message);

@@ -34,8 +34,7 @@ namespace Geekbot.net.Commands
         {
             _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("WelcomeMsg", welcomeMessage)});
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
-            await ReplyAsync("Welcome message has been changed\r\nHere is an example of how it would look:\r\n" +
-                             formatedMessage);
+            await ReplyAsync($"Welcome message has been changed\r\nHere is an example of how it would look:\r\n{formatedMessage}");
         }
 
         [Command("modchannel", RunMode = RunMode.Async)]
@@ -155,5 +154,23 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
+        
+        [Command("ping", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Enable the ping reply.")]
+        public async Task togglePing()
+        {
+            try
+            {
+                bool.TryParse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ping"), out var current);
+                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ping", current ? "false" : "true"), });
+                await ReplyAsync(!current ? "i will reply to ping now" : "No more pongs...");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
     }
 }
