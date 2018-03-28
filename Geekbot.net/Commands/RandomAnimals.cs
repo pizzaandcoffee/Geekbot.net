@@ -64,6 +64,14 @@ namespace Geekbot.net.Commands
         {
             await ReplyAsync("", false, eb(_mediaProvider.getPinguin()));
         }
+        
+        [Command("fox", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Randomness)]
+        [Summary("Get a random turtle image")]
+        public async Task fox()
+        {
+            await ReplyAsync("", false, eb(_mediaProvider.getFox()));
+        }
 
         private EmbedBuilder eb(string image)
         {
