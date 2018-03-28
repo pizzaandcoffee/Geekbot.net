@@ -24,25 +24,26 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    try
-                    {
-                        client.BaseAddress = new Uri("http://random.cat");
-                        var response = await client.GetAsync("/meow.php");
-                        response.EnsureSuccessStatusCode();
-
-                        var stringResponse = await response.Content.ReadAsStringAsync();
-                        var catFile = JsonConvert.DeserializeObject<CatResponse>(stringResponse);
-                        var eb = new EmbedBuilder();
-                        eb.ImageUrl = catFile.file;
-                        await ReplyAsync("", false, eb.Build());
-                    }
-                    catch (HttpRequestException e)
-                    {
-                        await ReplyAsync($"Seems like the dog cought the cat (error occured)\r\n{e.Message}");
-                    }
-                }
+//                using (var client = new HttpClient())
+//                {
+//                    try
+//                    {
+//                        client.BaseAddress = new Uri("http://random.cat");
+//                        var response = await client.GetAsync("/meow.php");
+//                        response.EnsureSuccessStatusCode();
+//
+//                        var stringResponse = await response.Content.ReadAsStringAsync();
+//                        var catFile = JsonConvert.DeserializeObject<CatResponse>(stringResponse);
+//                        var eb = new EmbedBuilder();
+//                        eb.ImageUrl = catFile.file;
+//                        await ReplyAsync("", false, eb.Build());
+//                    }
+//                    catch (HttpRequestException e)
+//                    {
+//                        await ReplyAsync($"Seems like the dog cought the cat (error occured)\r\n{e.Message}");
+//                    }
+//                }
+                await ReplyAsync("Command disabled for now because http://random.cat is down");
             }
             catch (Exception e)
             {
