@@ -16,6 +16,7 @@ namespace Geekbot.net.Lib.Media
         private string[] _squirrelImages;
         private string[] _pumpkinImages;
         private string[] _turtlesImages;
+        private string[] _pinguinImages;
         
         public MediaProvider(IGeekbotLogger logger)
         {
@@ -30,6 +31,7 @@ namespace Geekbot.net.Lib.Media
             LoadSquirrels();
             LoadPumpkins();
             LoadTurtles();
+            LoadPinguins();
         }
 
         private void LoadCheckem()
@@ -74,6 +76,13 @@ namespace Geekbot.net.Lib.Media
             _logger.Debug("Geekbot", $"Loaded {_turtlesImages.Length} Turtle Images");
         }
         
+        private void LoadPinguins()
+        {
+            var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pinguins"));
+            _pinguinImages = rawLinks.Split("\n");
+            _logger.Debug("Geekbot", $"Loaded {_pinguinImages.Length} Pinguin Images");
+        }
+        
         public string getCheckem()
         {
             return _checkemImages[_random.Next(0, _checkemImages.Length)];
@@ -103,6 +112,11 @@ namespace Geekbot.net.Lib.Media
         {
             return _turtlesImages[_random.Next(0, _turtlesImages.Length)];
         }
+        
+        public string getPinguin()
+        {
+            return _pinguinImages[_random.Next(0, _pinguinImages.Length)];
+        }
     }
 
     public interface IMediaProvider
@@ -113,5 +127,6 @@ namespace Geekbot.net.Lib.Media
         string getSquirrel();
         string getPumpkin();
         string getTurtle();
+        string getPinguin();
     }
 }
