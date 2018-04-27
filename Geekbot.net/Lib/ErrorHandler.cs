@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using Discord.Commands;
 using Discord.Net;
@@ -12,12 +14,14 @@ namespace Geekbot.net.Lib
         private readonly IGeekbotLogger _logger;
         private readonly ITranslationHandler _translation;
         private readonly IRavenClient _raven;
+        private readonly bool _errorsInChat;
 
-        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation)
+        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, bool errorsInChat)
         {
             _logger = logger;
             _translation = translation;
-            
+            _errorsInChat = errorsInChat;
+
             var sentryDsn = Environment.GetEnvironmentVariable("SENTRY");
             if (!string.IsNullOrEmpty(sentryDsn))
             {
@@ -41,7 +45,15 @@ namespace Geekbot.net.Lib
                 _logger.Error("Geekbot", "An error ocured", e, errorObj);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    Context.Channel.SendMessageAsync(errorString);
+                    if (_errorsInChat)
+                    {
+                        Context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{e.InnerException}\r\n```");
+                    }
+                    else
+                    {
+                        Context.Channel.SendMessageAsync(errorString);
+                    }
+                    
                 }
                 
                 if (_raven == null) return;

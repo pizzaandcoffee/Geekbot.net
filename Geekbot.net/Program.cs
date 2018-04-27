@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -14,8 +11,8 @@ using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
-using Serilog;
 using StackExchange.Redis;
+using WikipediaApi;
 
 namespace Geekbot.net
 {
@@ -101,6 +98,7 @@ namespace Geekbot.net
             var emojiConverter = new EmojiConverter();
             var audioUtils = new AudioUtils();
             var mtgManaConverter = new MtgManaConverter();
+            var wikipediaClient = new WikipediaClient();
             
             services.AddSingleton(redis);
             services.AddSingleton<IGeekbotLogger>(logger);
@@ -112,6 +110,7 @@ namespace Geekbot.net
             services.AddSingleton<IMediaProvider>(mediaProvider);
             services.AddSingleton<IMalClient>(malClient);
             services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
+            services.AddSingleton<IWikipediaClient>(wikipediaClient);
 
             logger.Information("Geekbot", "Connecting to Discord");
 
@@ -134,7 +133,7 @@ namespace Geekbot.net
 
                     logger.Information("Geekbot", "Registering Stuff");
                     var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
-                    var errorHandler = new ErrorHandler(logger, translationHandler);
+                    var errorHandler = new ErrorHandler(logger, translationHandler, args.Contains("--expose-errors"));
                     var reactionListener = new ReactionListener(redis);
                     await commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     services.AddSingleton(commands);

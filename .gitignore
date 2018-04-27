@@ -10,3 +10,7 @@ UpgradeLog.htm
 .vscode
 Geekbot.net/Logs/*
 !/Geekbot.net/Logs/.keep
+Geekbot.net.sln.DotSettings.user
+Geekbot.net/temp/
+WikipediaApi/bin/
+WikipediaApi/obj/
