@@ -110,7 +110,7 @@ namespace Geekbot.net.Commands
 
         private async Task<EmbedBuilder> createProfile(string battletag)
         {
-            var owConfig = new OverwatchConfig.Builder().WithRegions(Region.Eu).WithPlatforms(Platform.Pc);
+            var owConfig = new OverwatchConfig.Builder().WithPlatforms(Platform.Pc);
             using (var owClient = new OverwatchClient(owConfig))
             {
                 var player = await owClient.GetPlayerAsync(battletag);

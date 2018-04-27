@@ -9,11 +9,11 @@ namespace WikipediaApi
     public class WikipediaClient : IWikipediaClient
     {
         private readonly HttpClient _httpClient;
-        public WikipediaClient()
+        public WikipediaClient(string language = "en")
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://en.wikipedia.org")
+                BaseAddress = new Uri($"https://{language}.wikipedia.org")
             };
         }
 

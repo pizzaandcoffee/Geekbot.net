@@ -74,17 +74,17 @@ namespace Geekbot.net.Commands
             switch (color)
             {
                 case "Black":
-                    return new Color(177, 171, 170);
+                    return new Color(203, 194, 191);
                 case "White":
-                    return new Color(255, 252, 214);
+                    return new Color(255, 251, 213);
                 case "Blue":
-                    return new Color(156, 189, 204);
+                    return new Color(170, 224, 250);
                 case "Red":
-                    return new Color(204, 156, 140);
+                    return new Color(250, 170, 143);
                 case "Green":
-                    return new Color(147, 181, 159);
+                    return new Color(155, 211, 174);
                 default:
-                    return new Color(255, 252, 214);
+                    return new Color(204, 194, 212);
             }
         }
     }
