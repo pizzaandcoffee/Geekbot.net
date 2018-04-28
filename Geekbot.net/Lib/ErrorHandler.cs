@@ -47,7 +47,9 @@ namespace Geekbot.net.Lib
                 {
                     if (_errorsInChat)
                     {
-                        Context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{e.InnerException}\r\n```");
+                        var resStackTrace = string.IsNullOrEmpty(e.InnerException?.ToString()) ? e.StackTrace : e.InnerException.ToString();
+                        var maxLen = Math.Min(resStackTrace.Length, 1850);
+                        Context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace?.Substring(0, maxLen)}\r\n```");
                     }
                     else
                     {
@@ -72,6 +74,7 @@ namespace Geekbot.net.Lib
             }
             catch (Exception ex)
             {
+                Context.Channel.SendMessageAsync("Something went really really wrong here");
                 _logger.Error("Geekbot", "Errorception", ex);
             }
         }

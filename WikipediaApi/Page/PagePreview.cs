@@ -9,7 +9,7 @@ namespace WikipediaApi.Page
     {
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public PageTypes Type { get; set; } = PageTypes.NoExtract;
+        public PageTypes Type { get; set; }
         
         [JsonProperty("title")]
         public string Title { get; set; }

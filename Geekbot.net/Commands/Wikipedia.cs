@@ -59,12 +59,12 @@ namespace Geekbot.net.Commands
                 {
                     Title = article.Title,
                     Description = article.Extract,
-                    ImageUrl = article.Thumbnail.Source.ToString(),
+                    ImageUrl = article.Thumbnail?.Source.ToString(),
                     Url = article.ContentUrls.Desktop.Page.ToString()
                 };
                 await ReplyAsync("", false, eb.Build());
             }
-            catch (HttpRequestException e)
+            catch (HttpRequestException)
             {
                 await ReplyAsync("I couldn't find that article");
             }
@@ -79,6 +79,7 @@ namespace Geekbot.net.Commands
             var doc = new HtmlDocument();
             doc.LoadHtml(extractHtml);
             var nodes = doc.DocumentNode.SelectNodes("//li");
+            if (nodes == null) return "(List is to long to show)";
             var sb = new StringBuilder();
             foreach (var node in nodes)
             {

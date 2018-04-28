@@ -29,7 +29,7 @@ namespace Geekbot.net.Commands
                 sb.AppendLine("https://geekbot.pizzaandcoffee.rocks/commands");
                 var dm = await Context.User.GetOrCreateDMChannelAsync();
                 await dm.SendMessageAsync(sb.ToString());
-                Context.Message.AddReactionAsync(new Emoji("✅"));
+                await Context.Message.AddReactionAsync(new Emoji("✅"));
             }
             catch (Exception e)
             {
