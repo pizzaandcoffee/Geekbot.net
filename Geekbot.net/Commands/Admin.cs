@@ -138,6 +138,24 @@ namespace Geekbot.net.Commands
                 _errorHandler.HandleCommandException(e, Context);
             }
         }
+        
+        [Command("wiki", RunMode = RunMode.Async)]
+        [Remarks(CommandCategories.Admin)]
+        [Summary("Change the wikipedia instance (use lang code in xx.wikipedia.org)")]
+        public async Task setWikiLanguage([Summary("language")] string languageRaw)
+        {
+            try
+            {
+                var language = languageRaw.ToLower();
+                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("WikiLang", language) });
+
+                await ReplyAsync($"Now using the {language} wikipedia");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
+        }
 
         [Command("lang", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]

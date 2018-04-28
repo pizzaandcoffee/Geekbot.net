@@ -5,6 +5,6 @@ namespace WikipediaApi
 {
     public interface IWikipediaClient
     {
-        Task<PagePreview> GetPreview(string pageName);
+        Task<PagePreview> GetPreview(string pageName, string language = "en");
     }
 }

@@ -9,17 +9,14 @@ namespace WikipediaApi
     public class WikipediaClient : IWikipediaClient
     {
         private readonly HttpClient _httpClient;
-        public WikipediaClient(string language = "en")
+        public WikipediaClient()
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri($"https://{language}.wikipedia.org")
-            };
+            _httpClient = new HttpClient();
         }
 
-        public async Task<PagePreview> GetPreview(string pageName)
+        public async Task<PagePreview> GetPreview(string pageName, string language = "en")
         {
-            var response = await _httpClient.GetAsync($"/api/rest_v1/page/summary/{pageName}");
+            var response = await _httpClient.GetAsync($"https://{language}.wikipedia.org/api/rest_v1/page/summary/{pageName}");
             response.EnsureSuccessStatusCode();
 
             var stringResponse = await response.Content.ReadAsStringAsync();

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Net;
 using Geekbot.net.Lib;
 using HtmlAgilityPack;
+using StackExchange.Redis;
 using WikipediaApi;
 using WikipediaApi.Page;
 
@@ -17,11 +17,13 @@ namespace Geekbot.net.Commands
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IWikipediaClient _wikipediaClient;
-        
-        public Wikipedia(IErrorHandler errorHandler, IWikipediaClient wikipediaClient)
+        private readonly IDatabase _redis;
+
+        public Wikipedia(IErrorHandler errorHandler, IWikipediaClient wikipediaClient, IDatabase redis)
         {
             _errorHandler = errorHandler;
             _wikipediaClient = wikipediaClient;
+            _redis = redis;
         }
 
         [Command("wiki", RunMode = RunMode.Async)]
@@ -31,7 +33,12 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var article = await _wikipediaClient.GetPreview(articleName.Replace(" ", "_"));
+                var wikiLang = _redis.HashGet($"{Context.Guild.Id}:Settings", "WikiLang").ToString();
+                if (string.IsNullOrEmpty(wikiLang))
+                {
+                    wikiLang = "en";
+                }
+                var article = await _wikipediaClient.GetPreview(articleName.Replace(" ", "_"), wikiLang);
                 
                 if (article.Type != PageTypes.Standard)
                 {
@@ -58,10 +65,20 @@ namespace Geekbot.net.Commands
                 var eb = new EmbedBuilder
                 {
                     Title = article.Title,
-                    Description = article.Extract,
+                    Description = article.Description,
                     ImageUrl = article.Thumbnail?.Source.ToString(),
-                    Url = article.ContentUrls.Desktop.Page.ToString()
+                    Url = article.ContentUrls.Desktop.Page.ToString(),
+                    Color = new Color(246,246,246),
+                    Timestamp = article.Timestamp,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = "Last Edit",
+                        IconUrl = "http://icons.iconarchive.com/icons/sykonist/popular-sites/256/Wikipedia-icon.png"
+                    }
                 };
+                
+                eb.AddField("Description", article.Extract);
+                if (article.Coordinates != null) eb.AddField("Coordinates", $"{article.Coordinates.lat} Lat {article.Coordinates.lon} Lon");
                 await ReplyAsync("", false, eb.Build());
             }
             catch (HttpRequestException)
@@ -86,7 +103,7 @@ namespace Geekbot.net.Commands
                 var split = node.InnerText.Split(',');
                 var title = split.First();
                 var desc = string.Join(",", split.Skip(1));
-                sb.AppendLine($"**{title}** - {desc}");
+                sb.AppendLine($"• **{title}** -{desc}");
             }
 
             return sb.ToString();
