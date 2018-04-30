@@ -49,10 +49,10 @@ namespace Geekbot.net.Commands
                         Url = definition.Permalink
                     });
                     eb.WithColor(new Color(239, 255, 0));
-                    eb.Description = definition.Definition;
-                    eb.AddField("Example", definition.Example ?? "(no example given...)");
-                    eb.AddInlineField("Upvotes", definition.ThumbsUp);
-                    eb.AddInlineField("Downvotes", definition.ThumbsDown);
+                    if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = definition.Definition;
+                    if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
+                    if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
+                    if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
                     if (definitions.Tags.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
 
                     await ReplyAsync("", false, eb.Build());
