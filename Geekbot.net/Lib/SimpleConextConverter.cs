@@ -1,5 +1,4 @@
-﻿using System;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 
 namespace Geekbot.net.Lib
@@ -8,9 +7,9 @@ namespace Geekbot.net.Lib
     {
         public static MessageDto ConvertContext(ICommandContext context)
         {
-            return new MessageDto()
+            return new MessageDto
             {
-                Message = new MessageDto.MessageContent()
+                Message = new MessageDto.MessageContent
                 {
                     Content = context.Message.Content,
                     Id = context.Message.Id.ToString(),
@@ -19,17 +18,17 @@ namespace Geekbot.net.Lib
                     UserMentions = context.Message.MentionedUserIds.Count,
                     RoleMentions = context.Message.MentionedRoleIds.Count
                 },
-                User = new MessageDto.IdAndName()
+                User = new MessageDto.IdAndName
                 {
                     Id = context.User.Id.ToString(),
                     Name = $"{context.User.Username}#{context.User.Discriminator}"
                 },
-                Guild = new MessageDto.IdAndName()
+                Guild = new MessageDto.IdAndName
                 {
                     Id = context.Guild.Id.ToString(),
                     Name = context.Guild.Name
                 },
-                Channel = new MessageDto.IdAndName()
+                Channel = new MessageDto.IdAndName
                 {
                     Id = context.Channel.Id.ToString(),
                     Name = context.Channel.Name
@@ -39,9 +38,9 @@ namespace Geekbot.net.Lib
         public static MessageDto ConvertSocketMessage(SocketMessage message)
         {
             var channel = (SocketGuildChannel) message.Channel;
-            return new MessageDto()
+            return new MessageDto
             {
-                Message = new MessageDto.MessageContent()
+                Message = new MessageDto.MessageContent
                 {
                     Content = message.Content,
                     Id = message.Id.ToString(),
@@ -50,21 +49,21 @@ namespace Geekbot.net.Lib
                     UserMentions = message.MentionedUsers.Count,
                     RoleMentions = message.MentionedRoles.Count
                 },
-                User = new MessageDto.IdAndName()
+                User = new MessageDto.IdAndName
                 {
                     Id = message.Author.Id.ToString(),
                     Name = $"{message.Author.Username}#{message.Author.Discriminator}"
                 },
-                Guild = new MessageDto.IdAndName()
+                Guild = new MessageDto.IdAndName
                 {
                     Id = channel.Guild.Id.ToString(),
                     Name = channel.Guild.Name
                 },
-                Channel = new MessageDto.IdAndName()
+                Channel = new MessageDto.IdAndName
                 {
                     Id = channel.Id.ToString(),
                     Name = channel.Name
-                },
+                }
             };
         }
         

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -24,7 +23,7 @@ namespace Geekbot.net.Commands
         [Command("mtg", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Games)]
         [Summary("Find a Magic The Gathering Card.")]
-        public async Task getCard([Remainder] [Summary("name")] string cardName)
+        public async Task GetCard([Remainder] [Summary("name")] string cardName)
         {
             try
             {

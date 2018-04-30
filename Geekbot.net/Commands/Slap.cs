@@ -32,7 +32,7 @@ namespace Geekbot.net.Commands
                     return;
                 }
                 
-                var things = new List<string>()
+                var things = new List<string>
                 {
                     "thing",
                     "rubber chicken",

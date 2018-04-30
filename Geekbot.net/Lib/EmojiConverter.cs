@@ -5,13 +5,13 @@ namespace Geekbot.net.Lib
 {
     public class EmojiConverter : IEmojiConverter
     {
-        public string numberToEmoji(int number)
+        public string NumberToEmoji(int number)
         {
             if (number == 10)
             {
                 return "🔟";
             }
-            var emojiMap = new string[]
+            var emojiMap = new[]
             {
                 ":zero:", 
                 ":one:", 
@@ -22,7 +22,7 @@ namespace Geekbot.net.Lib
                 ":six:",
                 ":seven:",
                 ":eight:",
-                ":nine:",
+                ":nine:"
             };
             var numbers = number.ToString().ToCharArray();
             var returnString = new StringBuilder();
@@ -33,7 +33,7 @@ namespace Geekbot.net.Lib
             return returnString.ToString();
         }
 
-        public string textToEmoji(string text)
+        public string TextToEmoji(string text)
         {
             var emojiMap = new Hashtable
             {
@@ -93,7 +93,7 @@ namespace Geekbot.net.Lib
     
     public interface IEmojiConverter
     {
-        string numberToEmoji(int number);
-        string textToEmoji(string text);
+        string NumberToEmoji(int number);
+        string TextToEmoji(string text);
     }
 }

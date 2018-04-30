@@ -36,7 +36,7 @@ namespace Geekbot.net.Commands
                     return;
                 }
 
-                var embed = await pokemonEmbedBuilder(pokemon);
+                var embed = await PokemonEmbedBuilder(pokemon);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
@@ -45,29 +45,29 @@ namespace Geekbot.net.Commands
             }
         }
 
-        private async Task<EmbedBuilder> pokemonEmbedBuilder(Pokemon pokemon)
+        private async Task<EmbedBuilder> PokemonEmbedBuilder(Pokemon pokemon)
         {
             var eb = new EmbedBuilder();
             var species = await DataFetcher.GetApiObject<PokemonSpecies>(pokemon.ID);
-            eb.Title = $"#{pokemon.ID} {toUpper(pokemon.Name)}";
+            eb.Title = $"#{pokemon.ID} {ToUpper(pokemon.Name)}";
             eb.Description = species.FlavorTexts[1].FlavorText;
             eb.ThumbnailUrl = pokemon.Sprites.FrontMale ?? pokemon.Sprites.FrontFemale;
-            eb.AddInlineField(getSingularOrPlural(pokemon.Types.Length, "Type"),
-                string.Join(", ", pokemon.Types.Select(t => toUpper(t.Type.Name))));
-            eb.AddInlineField(getSingularOrPlural(pokemon.Abilities.Length, "Ability"),
-                string.Join(", ", pokemon.Abilities.Select(t => toUpper(t.Ability.Name))));
+            eb.AddInlineField(GetSingularOrPlural(pokemon.Types.Length, "Type"),
+                string.Join(", ", pokemon.Types.Select(t => ToUpper(t.Type.Name))));
+            eb.AddInlineField(GetSingularOrPlural(pokemon.Abilities.Length, "Ability"),
+                string.Join(", ", pokemon.Abilities.Select(t => ToUpper(t.Ability.Name))));
             eb.AddInlineField("Height", pokemon.Height);
             eb.AddInlineField("Weight", pokemon.Mass);
             return eb;
         }
 
-        private string getSingularOrPlural(int lenght, string word)
+        private string GetSingularOrPlural(int lenght, string word)
         {
             if (lenght == 1) return word;
             return word.EndsWith("y") ? $"{word.Remove(word.Length - 1)}ies" : $"{word}s";
         }
 
-        private string toUpper(string s)
+        private string ToUpper(string s)
         {
             if (string.IsNullOrEmpty(s)) return string.Empty;
             return char.ToUpper(s[0]) + s.Substring(1);

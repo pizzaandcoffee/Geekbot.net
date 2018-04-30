@@ -10,7 +10,7 @@ namespace Geekbot.net.Lib
         private readonly ILogger _serilog;
         public GeekbotLogger()
         {
-            _serilog = LoggerFactory.createLogger();
+            _serilog = LoggerFactory.CreateLogger();
             //JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
             Information("Geekbot", "Using GeekbotLogger");
         }
@@ -45,7 +45,7 @@ namespace Geekbot.net.Lib
 
         private string CreateLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
-            var logObject = new GeekbotLoggerObject()
+            var logObject = new GeekbotLoggerObject
             {
                 Timestamp = DateTime.Now,
                 Type = type,

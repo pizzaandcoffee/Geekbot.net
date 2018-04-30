@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using Serilog;
 using StackExchange.Redis;
 using Utf8Json;
 
@@ -50,7 +47,7 @@ namespace Geekbot.net.Lib
 
         private void Store(UserRepositoryUser user)
         {
-            _redis.HashSetAsync($"Users:{user.Id.ToString()}", new HashEntry[]
+            _redis.HashSetAsync($"Users:{user.Id.ToString()}", new[]
             {
                 new HashEntry("Id", user.Id.ToString()),
                 new HashEntry("Username", user.Username),
@@ -58,7 +55,7 @@ namespace Geekbot.net.Lib
                 new HashEntry("AvatarUrl", user.AvatarUrl),
                 new HashEntry("IsBot", user.IsBot), 
                 new HashEntry("Joined", user.Joined.ToString()), 
-                new HashEntry("UsedNames", JsonSerializer.Serialize(user.UsedNames)), 
+                new HashEntry("UsedNames", JsonSerializer.Serialize(user.UsedNames)) 
             });
         }
 
@@ -67,7 +64,7 @@ namespace Geekbot.net.Lib
             try
             {
                 var user = _redis.HashGetAll($"Users:{userId.ToString()}");
-                for (int i = 1; i < 11; i++)
+                for (var i = 1; i < 11; i++)
                 {
                     if (user.Length != 0) break;
                     user = _redis.HashGetAll($"Users:{(userId + (ulong) i).ToString()}");
@@ -88,7 +85,7 @@ namespace Geekbot.net.Lib
                             dto.Discriminator = a.Value.ToString();
                             break;
                         case "AvatarUrl":
-                            dto.AvatarUrl = (a.Value != "0") ? a.Value.ToString() : null;
+                            dto.AvatarUrl = a.Value != "0" ? a.Value.ToString() : null;
                             break;
                         case "IsBot":
                             dto.IsBot = a.Value == 1;
@@ -110,14 +107,14 @@ namespace Geekbot.net.Lib
             }
         }
 
-        public string getUserSetting(ulong userId, string setting)
+        public string GetUserSetting(ulong userId, string setting)
         {
             return _redis.HashGet($"Users:{userId}", setting);
         }
 
-        public bool saveUserSetting(ulong userId, string setting, string value)
+        public bool SaveUserSetting(ulong userId, string setting, string value)
         {
-            _redis.HashSet($"Users:{userId}", new HashEntry[]
+            _redis.HashSet($"Users:{userId}", new[]
             {
                 new HashEntry(setting, value)
             });
@@ -140,7 +137,7 @@ namespace Geekbot.net.Lib
     {
         Task<bool> Update(SocketUser user);
         UserRepositoryUser Get(ulong userId);
-        string getUserSetting(ulong userId, string setting);
-        bool saveUserSetting(ulong userId, string setting, string value);
+        string GetUserSetting(ulong userId, string setting);
+        bool SaveUserSetting(ulong userId, string setting, string value);
     }
 }

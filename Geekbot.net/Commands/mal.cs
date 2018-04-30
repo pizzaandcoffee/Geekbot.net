@@ -7,12 +7,12 @@ using Geekbot.net.Lib;
 
 namespace Geekbot.net.Commands
 {
-    public class mal : ModuleBase
+    public class Mal : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IMalClient _malClient;
 
-        public mal(IMalClient malClient, IErrorHandler errorHandler)
+        public Mal(IMalClient malClient, IErrorHandler errorHandler)
         {
             _malClient = malClient;
             _errorHandler = errorHandler;
@@ -21,13 +21,13 @@ namespace Geekbot.net.Commands
         [Command("anime", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about an Anime.")]
-        public async Task searchAnime([Remainder] [Summary("AnimeName")] string animeName)
+        public async Task SearchAnime([Remainder] [Summary("AnimeName")] string animeName)
         {
             try
             {
-                if (_malClient.isLoggedIn())
+                if (_malClient.IsLoggedIn())
                 {
-                    var anime = await _malClient.getAnime(animeName);
+                    var anime = await _malClient.GetAnime(animeName);
                     if (anime != null)
                     {
                         var eb = new EmbedBuilder();
@@ -70,13 +70,13 @@ namespace Geekbot.net.Commands
         [Command("manga", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about a Manga.")]
-        public async Task searchManga([Remainder] [Summary("MangaName")] string mangaName)
+        public async Task SearchManga([Remainder] [Summary("MangaName")] string mangaName)
         {
             try
             {
-                if (_malClient.isLoggedIn())
+                if (_malClient.IsLoggedIn())
                 {
-                    var manga = await _malClient.getManga(mangaName);
+                    var manga = await _malClient.GetManga(mangaName);
                     if (manga != null)
                     {
                         var eb = new EmbedBuilder();

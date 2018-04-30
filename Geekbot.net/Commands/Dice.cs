@@ -20,12 +20,12 @@ namespace Geekbot.net.Commands
             var mod = 0;
             foreach (var i in splitedDices)
             {
-                var dice = toDice(i);
-                if (dice.sides != 0 && dice.times != 0)
+                var dice = ToDice(i);
+                if (dice.Sides != 0 && dice.Times != 0)
                 {
                     dices.Add(dice);
                 }
-                else if (dice.mod != 0)
+                else if (dice.Mod != 0)
                 {
                     if (mod != 0)
                     {
@@ -33,7 +33,7 @@ namespace Geekbot.net.Commands
                         return;
                     }
 
-                    mod = dice.mod;
+                    mod = dice.Mod;
                 }
             }
 
@@ -45,13 +45,13 @@ namespace Geekbot.net.Commands
             }
 
 
-            if (dices.Any(d => d.times > 20))
+            if (dices.Any(d => d.Times > 20))
             {
                 await ReplyAsync("You can't throw more than 20 dices");
                 return;
             }
 
-            if (dices.Any(d => d.sides > 120))
+            if (dices.Any(d => d.Sides > 120))
             {
                 await ReplyAsync("A dice can't have more than 120 sides");
                 return;
@@ -66,16 +66,16 @@ namespace Geekbot.net.Commands
             foreach (var dice in dices)
             {
                 var results = new List<int>();
-                for (var i = 0; i < dice.times; i++)
+                for (var i = 0; i < dice.Times; i++)
                 {
-                    var roll = new Random().Next(1, dice.sides);
+                    var roll = new Random().Next(1, dice.Sides);
                     total += roll;
                     results.Add(roll);
-                    if (roll == dice.sides) extraText = "**Critical Hit!**";
+                    if (roll == dice.Sides) extraText = "**Critical Hit!**";
                     if (roll == 1) extraText = "**Critical Fail!**";
                 }
 
-                resultStrings.Add($"{dice.diceType} ({string.Join(",", results)})");
+                resultStrings.Add($"{dice.DiceType} ({string.Join(",", results)})");
             }
 
             rep.Append(string.Join(" + ", resultStrings));
@@ -91,7 +91,7 @@ namespace Geekbot.net.Commands
             await ReplyAsync(rep.ToString());
         }
 
-        private DiceTypeDto toDice(string dice)
+        private DiceTypeDto ToDice(string dice)
         {
             var diceParts = dice.Split('d');
             if (diceParts.Length == 2
@@ -99,15 +99,15 @@ namespace Geekbot.net.Commands
                 && int.TryParse(diceParts[1], out var max))
                 return new DiceTypeDto
                 {
-                    diceType = dice,
-                    times = times,
-                    sides = max
+                    DiceType = dice,
+                    Times = times,
+                    Sides = max
                 };
             if (dice.Length == 1
                 && int.TryParse(diceParts[0], out var mod))
                 return new DiceTypeDto
                 {
-                    mod = mod
+                    Mod = mod
                 };
             return new DiceTypeDto();
         }
@@ -115,9 +115,9 @@ namespace Geekbot.net.Commands
 
     internal class DiceTypeDto
     {
-        public string diceType { get; set; }
-        public int times { get; set; }
-        public int sides { get; set; }
-        public int mod { get; set; }
+        public string DiceType { get; set; }
+        public int Times { get; set; }
+        public int Sides { get; set; }
+        public int Mod { get; set; }
     }
 }

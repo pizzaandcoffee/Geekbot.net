@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands
                         var stringResponse = await response.Content.ReadAsStringAsync();
                         var dogFile = JsonConvert.DeserializeObject<DogResponse>(stringResponse);
                         var eb = new EmbedBuilder();
-                        eb.ImageUrl = dogFile.url;
+                        eb.ImageUrl = dogFile.Url;
                         await ReplyAsync("", false, eb.Build());
                     }
                     catch (HttpRequestException e)
@@ -52,7 +52,7 @@ namespace Geekbot.net.Commands
 
         private class DogResponse
         {
-            public string url { get; set; }
+            public string Url { get; set; }
         }
     }
 }

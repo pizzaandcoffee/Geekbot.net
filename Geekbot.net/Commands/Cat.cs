@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands
                         var stringResponse = await response.Content.ReadAsStringAsync();
                         var catFile = JsonConvert.DeserializeObject<CatResponse>(stringResponse);
                         var eb = new EmbedBuilder();
-                        eb.ImageUrl = catFile.file;
+                        eb.ImageUrl = catFile.File;
                         await ReplyAsync("", false, eb.Build());
                     }
                     catch
@@ -52,7 +52,7 @@ namespace Geekbot.net.Commands
 
         private class CatResponse
         {
-            public string file { get; set; }
+            public string File { get; set; }
         }
     }
 }

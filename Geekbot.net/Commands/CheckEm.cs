@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands
                 sb.AppendLine($"**{number}**");
                 if (!string.IsNullOrEmpty(dubtriqua))
                     sb.AppendLine($":tada: {dubtriqua} :tada:");
-                sb.AppendLine(_checkEmImages.getCheckem());
+                sb.AppendLine(_checkEmImages.GetCheckem());
 
                 await ReplyAsync(sb.ToString());
             }

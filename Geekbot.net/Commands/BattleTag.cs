@@ -24,7 +24,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var tag = _userRepository.getUserSetting(Context.User.Id, "BattleTag");
+                var tag = _userRepository.GetUserSetting(Context.User.Id, "BattleTag");
                 if (!string.IsNullOrEmpty(tag))
                     await ReplyAsync($"Your BattleTag is {tag}");
                 else
@@ -43,9 +43,9 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                if (isValidTag(tag))
+                if (IsValidTag(tag))
                 {
-                    _userRepository.saveUserSetting(Context.User.Id, "BattleTag", tag);
+                    _userRepository.SaveUserSetting(Context.User.Id, "BattleTag", tag);
                     await ReplyAsync("Saved!");
                 }
                 else
@@ -59,13 +59,12 @@ namespace Geekbot.net.Commands
             }
         }
 
-        public static bool isValidTag(string tag)
+        public static bool IsValidTag(string tag)
         {
             var splited = tag.Split("#");
             if (splited.Length != 2) return false;
             if (!int.TryParse(splited[1], out var discriminator)) return false;
-            if (splited[1].Length == 4 || splited[1].Length == 5) return true;
-            return false;
+            return splited[1].Length == 4 || splited[1].Length == 5;
         }
     }
 }

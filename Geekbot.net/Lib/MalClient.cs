@@ -2,7 +2,6 @@
 using MyAnimeListSharp.Auth;
 using MyAnimeListSharp.Core;
 using MyAnimeListSharp.Facade.Async;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Lib
@@ -19,10 +18,10 @@ namespace Geekbot.net.Lib
         {
             _redis = redis;
             _logger = logger;
-            reloadClient();
+            ReloadClient();
         }
 
-        public bool reloadClient()
+        public bool ReloadClient()
         {
             var malCredentials = _redis.HashGetAll("malCredentials");
             if (malCredentials.Length != 0)
@@ -50,18 +49,18 @@ namespace Geekbot.net.Lib
             
         }
 
-        public bool isLoggedIn()
+        public bool IsLoggedIn()
         {
             return _credentials != null;
         }
 
-        public async Task<AnimeEntry> getAnime(string query)
+        public async Task<AnimeEntry> GetAnime(string query)
         {
             var response = await _animeSearch.SearchDeserializedAsync(query);
             return response.Entries.Count == 0 ? null : response.Entries[0];
         }
         
-        public async Task<MangaEntry> getManga(string query)
+        public async Task<MangaEntry> GetManga(string query)
         {
             var response = await _mangaSearch.SearchDeserializedAsync(query);
             return response.Entries.Count == 0 ? null : response.Entries[0];
@@ -70,9 +69,8 @@ namespace Geekbot.net.Lib
 
     public interface IMalClient
     {
-        bool reloadClient();
-        bool isLoggedIn();
-        Task<AnimeEntry> getAnime(string query);
-        Task<MangaEntry> getManga(string query);
+        bool IsLoggedIn();
+        Task<AnimeEntry> GetAnime(string query);
+        Task<MangaEntry> GetManga(string query);
     }
 }

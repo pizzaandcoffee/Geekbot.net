@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Newtonsoft.Json;
@@ -36,7 +35,7 @@ namespace Geekbot.net.Commands
 
                         var stringResponse = await response.Content.ReadAsStringAsync();
                         var data = JsonConvert.DeserializeObject<DadJokeResponse>(stringResponse);
-                        await ReplyAsync(data.joke);
+                        await ReplyAsync(data.Joke);
                     }
                     catch (HttpRequestException)
                     {
@@ -52,9 +51,7 @@ namespace Geekbot.net.Commands
 
         private class DadJokeResponse
         {
-            public string id { get; set; }
-            public string joke { get; set; }
-            public string status { get; set; }
+            public string Joke { get; set; }
         }
     }
 }

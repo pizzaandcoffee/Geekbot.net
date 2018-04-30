@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
-using Serilog;
 using StackExchange.Redis;
+using Utf8Json;
 
 namespace Geekbot.net.Lib
 {
@@ -31,7 +31,7 @@ namespace Geekbot.net.Lib
             try
             {
                 var translationFile = File.ReadAllText(Path.GetFullPath("./Storage/Translations.json"));
-                var rawTranslations = Utf8Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(translationFile);
+                var rawTranslations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(translationFile);
                 var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
                 foreach (var command in rawTranslations)
                 {
@@ -136,7 +136,7 @@ namespace Geekbot.net.Lib
             try
             {
                 if (!_supportedLanguages.Contains(language)) return false;
-                _redis.HashSet($"{guildId}:Settings", new HashEntry[]{ new HashEntry("Language", language), });
+                _redis.HashSet($"{guildId}:Settings", new[]{ new HashEntry("Language", language) });
                 _serverLanguages[guildId] = language;
                 return true;
             }

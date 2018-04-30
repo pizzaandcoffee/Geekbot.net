@@ -33,7 +33,7 @@ namespace Geekbot.net.Lib
                     if (!r.Name.ToString().StartsWith('<'))
                     {
                         var emo = new Emoji(r.Name);
-                        emote = (IEmote) emo;
+                        emote = emo;
                     }
                     else
                     {

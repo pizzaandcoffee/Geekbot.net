@@ -24,7 +24,7 @@ namespace Geekbot.net.Commands
         [Command]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Return a random quoute from the database")]
-        public async Task getRandomQuote()
+        public async Task GetRandomQuote()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Geekbot.net.Commands
                 var randomNumber = new Random().Next(randomQuotes.Length - 1);
                 var randomQuote = randomQuotes[randomNumber];
                 var quote = JsonConvert.DeserializeObject<QuoteObject>(randomQuote);
-                var embed = quoteBuilder(quote, randomNumber + 1);
+                var embed = QuoteBuilder(quote, randomNumber + 1);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
@@ -44,7 +44,7 @@ namespace Geekbot.net.Commands
         [Command("save")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from the last sent message by @user")]
-        public async Task saveQuote([Summary("@user")] IUser user)
+        public async Task SaveQuote([Summary("@user")] IUser user)
         {
             try
             {
@@ -60,11 +60,11 @@ namespace Geekbot.net.Commands
                     return;
                 }
 
-                var lastMessage = await getLastMessageByUser(user);
-                var quote = createQuoteObject(lastMessage);
+                var lastMessage = await GetLastMessageByUser(user);
+                var quote = CreateQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 _redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
-                var embed = quoteBuilder(quote);
+                var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
             }
             catch (Exception e)
@@ -77,7 +77,7 @@ namespace Geekbot.net.Commands
         [Command("save")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from a message id")]
-        public async Task saveQuote([Summary("messageId")] ulong messageId)
+        public async Task SaveQuote([Summary("messageId")] ulong messageId)
         {
             try
             {
@@ -94,10 +94,10 @@ namespace Geekbot.net.Commands
                     return;
                 }
 
-                var quote = createQuoteObject(message);
+                var quote = CreateQuoteObject(message);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 _redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
-                var embed = quoteBuilder(quote);
+                var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
             }
             catch (Exception e)
@@ -110,13 +110,13 @@ namespace Geekbot.net.Commands
         [Command("make")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from the last sent message by @user")]
-        public async Task returnSpecifiedQuote([Summary("@user")] IUser user)
+        public async Task ReturnSpecifiedQuote([Summary("@user")] IUser user)
         {
             try
             {
-                var lastMessage = await getLastMessageByUser(user);
-                var quote = createQuoteObject(lastMessage);
-                var embed = quoteBuilder(quote);
+                var lastMessage = await GetLastMessageByUser(user);
+                var quote = CreateQuoteObject(lastMessage);
+                var embed = QuoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
@@ -129,13 +129,13 @@ namespace Geekbot.net.Commands
         [Command("make")]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from a message id")]
-        public async Task returnSpecifiedQuote([Summary("messageId")] ulong messageId)
+        public async Task ReturnSpecifiedQuote([Summary("messageId")] ulong messageId)
         {
             try
             {
                 var message = await Context.Channel.GetMessageAsync(messageId);
-                var quote = createQuoteObject(message);
-                var embed = quoteBuilder(quote);
+                var quote = CreateQuoteObject(message);
+                var embed = QuoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
@@ -151,7 +151,7 @@ namespace Geekbot.net.Commands
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [Remarks(CommandCategories.Quotes)]
         [Summary("Remove a quote (required mod permissions)")]
-        public async Task removeQuote([Summary("quoteId")] int id)
+        public async Task RemoveQuote([Summary("quoteId")] int id)
         {
             try
             {
@@ -160,12 +160,12 @@ namespace Geekbot.net.Commands
                 if (success)
                 {
                     var quote = JsonConvert.DeserializeObject<QuoteObject>(quotes[id - 1]);
-                    var embed = quoteBuilder(quote);
+                    var embed = QuoteBuilder(quote);
                     await ReplyAsync($"**Removed #{id}**", false, embed.Build());
                 } 
                 else
                 {
-                    await ReplyAsync($"I couldn't find a quote with that id :disappointed:");
+                    await ReplyAsync("I couldn't find a quote with that id :disappointed:");
                 }
             }
             catch (Exception e)
@@ -175,7 +175,7 @@ namespace Geekbot.net.Commands
             }
         }
 
-        private async Task<IMessage> getLastMessageByUser(IUser user)
+        private async Task<IMessage> GetLastMessageByUser(IUser user)
         {
             var list = Context.Channel.GetMessagesAsync().Flatten();
             await list;
@@ -186,20 +186,20 @@ namespace Geekbot.net.Commands
                               && !msg.Content.ToLower().StartsWith("!"));
         }
 
-        private EmbedBuilder quoteBuilder(QuoteObject quote, int id = 0)
+        private EmbedBuilder QuoteBuilder(QuoteObject quote, int id = 0)
         {
-            var user = Context.Client.GetUserAsync(quote.userId).Result;
+            var user = Context.Client.GetUserAsync(quote.UserId).Result;
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
             eb.Title = id == 0 ? "" : $"#{id} | ";
-            eb.Title += $"{user.Username} @ {quote.time.Day}.{quote.time.Month}.{quote.time.Year}";
-            eb.Description = quote.quote;
+            eb.Title += $"{user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
+            eb.Description = quote.Quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
-            if (quote.image != null) eb.ImageUrl = quote.image;
+            if (quote.Image != null) eb.ImageUrl = quote.Image;
             return eb;
         }
 
-        private QuoteObject createQuoteObject(IMessage message)
+        private QuoteObject CreateQuoteObject(IMessage message)
         {
             string image;
             try
@@ -213,19 +213,19 @@ namespace Geekbot.net.Commands
 
             return new QuoteObject
             {
-                userId = message.Author.Id,
-                time = message.Timestamp.DateTime,
-                quote = message.Content,
-                image = image
+                UserId = message.Author.Id,
+                Time = message.Timestamp.DateTime,
+                Quote = message.Content,
+                Image = image
             };
         }
     }
 
     public class QuoteObject
     {
-        public ulong userId { get; set; }
-        public string quote { get; set; }
-        public DateTime time { get; set; }
-        public string image { get; set; }
+        public ulong UserId { get; set; }
+        public string Quote { get; set; }
+        public DateTime Time { get; set; }
+        public string Image { get; set; }
     }
 }

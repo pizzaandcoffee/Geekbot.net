@@ -18,16 +18,16 @@ namespace Geekbot.net
 {
     internal class Program
     {
-        private DiscordSocketClient client;
-        private CommandService commands;
-        private IDatabase redis;
-        private IServiceCollection services;
-        private IServiceProvider servicesProvider;
-        private RedisValue token;
-        private IGeekbotLogger logger;
-        private IUserRepository userRepository;
-        private string[] args;
-        private bool firstStart = false;
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IDatabase _redis;
+        private IServiceCollection _services;
+        private IServiceProvider _servicesProvider;
+        private RedisValue _token;
+        private IGeekbotLogger _logger;
+        private IUserRepository _userRepository;
+        private string[] _args;
+        private bool _firstStart;
 
         private static void Main(string[] args)
         {
@@ -53,23 +53,23 @@ namespace Geekbot.net
 
         private async Task MainAsync(string[] args, IGeekbotLogger logger)
         {
-            this.logger = logger;
-            this.args = args;
+            _logger = logger;
+            _args = args;
             logger.Information("Geekbot", "Initing Stuff");
 
-            client = new DiscordSocketClient(new DiscordSocketConfig
+            _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000
             });
-            client.Log += DiscordLogger;
-            commands = new CommandService();
+            _client.Log += DiscordLogger;
+            _commands = new CommandService();
 
             try
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-                redis = redisMultiplexer.GetDatabase(6);
-                logger.Information("Redis", $"Connected to db {redis.Database}");
+                _redis = redisMultiplexer.GetDatabase(6);
+                logger.Information("Redis", $"Connected to db {_redis.Database}");
             }
             catch (Exception e)
             {
@@ -77,40 +77,38 @@ namespace Geekbot.net
                 Environment.Exit(102);
             }
             
-            token = redis.StringGet("discordToken");
-            if (token.IsNullOrEmpty)
+            _token = _redis.StringGet("discordToken");
+            if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
-                redis.StringSet("discordToken", newToken);
-                redis.StringSet("Game", "Ping Pong");
-                token = newToken;
-                firstStart = true;
+                _redis.StringSet("discordToken", newToken);
+                _redis.StringSet("Game", "Ping Pong");
+                _token = newToken;
+                _firstStart = true;
             }
 
-            services = new ServiceCollection();
+            _services = new ServiceCollection();
             
-            userRepository = new UserRepository(redis, logger);
+            _userRepository = new UserRepository(_redis, logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
-            var malClient = new MalClient(redis, logger);
+            var malClient = new MalClient(_redis, logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
-            var audioUtils = new AudioUtils();
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             
-            services.AddSingleton(redis);
-            services.AddSingleton<IGeekbotLogger>(logger);
-            services.AddSingleton<IUserRepository>(userRepository);
-            services.AddSingleton<ILevelCalc>(levelCalc);
-            services.AddSingleton<IEmojiConverter>(emojiConverter);
-            services.AddSingleton<IAudioUtils>(audioUtils);
-            services.AddSingleton<IFortunesProvider>(fortunes);
-            services.AddSingleton<IMediaProvider>(mediaProvider);
-            services.AddSingleton<IMalClient>(malClient);
-            services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
-            services.AddSingleton<IWikipediaClient>(wikipediaClient);
+            _services.AddSingleton(_redis);
+            _services.AddSingleton(logger);
+            _services.AddSingleton(_userRepository);
+            _services.AddSingleton<ILevelCalc>(levelCalc);
+            _services.AddSingleton<IEmojiConverter>(emojiConverter);
+            _services.AddSingleton<IFortunesProvider>(fortunes);
+            _services.AddSingleton<IMediaProvider>(mediaProvider);
+            _services.AddSingleton<IMalClient>(malClient);
+            _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
+            _services.AddSingleton<IWikipediaClient>(wikipediaClient);
 
             logger.Information("Geekbot", "Connecting to Discord");
 
@@ -123,94 +121,94 @@ namespace Geekbot.net
         {
             try
             {
-                await client.LoginAsync(TokenType.Bot, token);
-                await client.StartAsync();
-                var isConneted = await isConnected();
+                await _client.LoginAsync(TokenType.Bot, _token);
+                await _client.StartAsync();
+                var isConneted = await IsConnected();
                 if (isConneted)
                 {
-                    await client.SetGameAsync(redis.StringGet("Game"));
-                    logger.Information("Geekbot", $"Now Connected as {client.CurrentUser.Username} to {client.Guilds.Count} Servers");
+                    await _client.SetGameAsync(_redis.StringGet("Game"));
+                    _logger.Information("Geekbot", $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
-                    logger.Information("Geekbot", "Registering Stuff");
-                    var translationHandler = new TranslationHandler(client.Guilds, redis, logger);
-                    var errorHandler = new ErrorHandler(logger, translationHandler, args.Contains("--expose-errors"));
-                    var reactionListener = new ReactionListener(redis);
-                    await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-                    services.AddSingleton(commands);
-                    services.AddSingleton<IErrorHandler>(errorHandler);
-                    services.AddSingleton<ITranslationHandler>(translationHandler);
-                    services.AddSingleton<DiscordSocketClient>(client);
-                    services.AddSingleton<IReactionListener>(reactionListener);
-                    servicesProvider = services.BuildServiceProvider();
+                    _logger.Information("Geekbot", "Registering Stuff");
+                    var translationHandler = new TranslationHandler(_client.Guilds, _redis, _logger);
+                    var errorHandler = new ErrorHandler(_logger, translationHandler, _args.Contains("--expose-errors"));
+                    var reactionListener = new ReactionListener(_redis);
+                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+                    _services.AddSingleton(_commands);
+                    _services.AddSingleton<IErrorHandler>(errorHandler);
+                    _services.AddSingleton<ITranslationHandler>(translationHandler);
+                    _services.AddSingleton(_client);
+                    _services.AddSingleton<IReactionListener>(reactionListener);
+                    _servicesProvider = _services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(client, logger, redis, servicesProvider, commands, userRepository, reactionListener);
+                    var handlers = new Handlers(_client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
                     
-                    client.MessageReceived += handlers.RunCommand;
-                    client.MessageReceived += handlers.UpdateStats;
-                    client.MessageDeleted += handlers.MessageDeleted;
-                    client.UserJoined += handlers.UserJoined;
-                    client.UserUpdated += handlers.UserUpdated;
-                    client.UserLeft += handlers.UserLeft;
-                    client.ReactionAdded += handlers.ReactionAdded;
-                    client.ReactionRemoved += handlers.ReactionRemoved;
+                    _client.MessageReceived += handlers.RunCommand;
+                    _client.MessageReceived += handlers.UpdateStats;
+                    _client.MessageDeleted += handlers.MessageDeleted;
+                    _client.UserJoined += handlers.UserJoined;
+                    _client.UserUpdated += handlers.UserUpdated;
+                    _client.UserLeft += handlers.UserLeft;
+                    _client.ReactionAdded += handlers.ReactionAdded;
+                    _client.ReactionRemoved += handlers.ReactionRemoved;
 
-                    if (firstStart || args.Contains("--reset"))
+                    if (_firstStart || _args.Contains("--reset"))
                     {
-                        logger.Information("Geekbot", "Finishing setup");
+                        _logger.Information("Geekbot", "Finishing setup");
                         await FinishSetup();
-                        logger.Information("Geekbot", "Setup finished");
+                        _logger.Information("Geekbot", "Setup finished");
                     }
-                    if (!args.Contains("--disable-api"))
+                    if (!_args.Contains("--disable-api"))
                     {
-                        startWebApi();
+                        StartWebApi();
                     }
                     
-                    logger.Information("Geekbot", "Done and ready for use");
+                    _logger.Information("Geekbot", "Done and ready for use");
                 }
             }
             catch (Exception e)
             {
-                logger.Error("Discord", "Could not connect...", e);
+                _logger.Error("Discord", "Could not connect...", e);
                 Environment.Exit(103);
             }
         }
 
-        private async Task<bool> isConnected()
+        private async Task<bool> IsConnected()
         {
-            while (!client.ConnectionState.Equals(ConnectionState.Connected))
+            while (!_client.ConnectionState.Equals(ConnectionState.Connected))
                 await Task.Delay(25);
             return true;
         }
 
-        private void startWebApi()
+        private void StartWebApi()
         {
-            logger.Information("API", "Starting Webserver");
+            _logger.Information("API", "Starting Webserver");
             var webApiUrl = new Uri("http://localhost:12995");
             new NancyHost(webApiUrl).Start();
-            logger.Information("API", $"Webserver now running on {webApiUrl}");
+            _logger.Information("API", $"Webserver now running on {webApiUrl}");
         }
 
         private async Task<Task> FinishSetup()
         {
-            var appInfo = await client.GetApplicationInfoAsync();
-            logger.Information("Setup", $"Just a moment while i setup everything {appInfo.Owner.Username}");
+            var appInfo = await _client.GetApplicationInfoAsync();
+            _logger.Information("Setup", $"Just a moment while i setup everything {appInfo.Owner.Username}");
             try
             {
-                redis.StringSet("botOwner", appInfo.Owner.Id);
-                var req = HttpWebRequest.Create(appInfo.IconUrl);
+                _redis.StringSet("botOwner", appInfo.Owner.Id);
+                var req = WebRequest.Create(appInfo.IconUrl);
                 using (var stream = req.GetResponse().GetResponseStream())
                 {
-                    await client.CurrentUser.ModifyAsync(User =>
+                    await _client.CurrentUser.ModifyAsync(user =>
                     {
-                        User.Avatar = new Image(stream);
-                        User.Username = appInfo.Name.ToString();
+                        user.Avatar = new Image(stream);
+                        user.Username = appInfo.Name.ToString();
                     });
                 }
-                logger.Information("Setup", "Everything done, enjoy!");
+                _logger.Information("Setup", "Everything done, enjoy!");
             }
             catch (Exception e)
             {
-                logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
+                _logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
             }
             return Task.CompletedTask;
         }
@@ -222,19 +220,19 @@ namespace Geekbot.net
             {
                 case LogSeverity.Verbose:
                 case LogSeverity.Debug:
-                    logger.Debug(message.Source, message.Message);
+                    _logger.Debug(message.Source, message.Message);
                     break;
                 case LogSeverity.Info:
-                    logger.Information(message.Source, message.Message);
+                    _logger.Information(message.Source, message.Message);
                     break;
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
                 case LogSeverity.Warning:
                     if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
-                    logger.Error(message.Source, message.Message, message.Exception);
+                    _logger.Error(message.Source, message.Message, message.Exception);
                     break;
                 default:
-                    logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
+                    _logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
                     break;
             }
             return Task.CompletedTask;

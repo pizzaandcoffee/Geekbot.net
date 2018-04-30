@@ -1,6 +1,6 @@
 ﻿namespace Geekbot.net.Lib
 {
-    public class CommandCategories
+    public static class CommandCategories
     {
         public const string Randomness = "Randomness";
         public const string Karma = "Karma";

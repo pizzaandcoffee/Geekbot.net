@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Serilog;
 
 namespace Geekbot.net.Lib.Media
 {
@@ -92,42 +89,42 @@ namespace Geekbot.net.Lib.Media
             _logger.Debug("Geekbot", $"Loaded {_foxImages.Length} Foxes Images");
         }
         
-        public string getCheckem()
+        public string GetCheckem()
         {
             return _checkemImages[_random.Next(0, _checkemImages.Length)];
         }
         
-        public string getPanda()
+        public string GetPanda()
         {
             return _pandaImages[_random.Next(0, _pandaImages.Length)];
         }
         
-        public string getCrossant()
+        public string GetCrossant()
         {
             return _croissantImages[_random.Next(0, _croissantImages.Length)];
         }
         
-        public string getSquirrel()
+        public string GetSquirrel()
         {
             return _squirrelImages[_random.Next(0, _squirrelImages.Length)];
         }
         
-        public string getPumpkin()
+        public string GetPumpkin()
         {
             return _pumpkinImages[_random.Next(0, _pumpkinImages.Length)];
         }
         
-        public string getTurtle()
+        public string GetTurtle()
         {
             return _turtlesImages[_random.Next(0, _turtlesImages.Length)];
         }
         
-        public string getPinguin()
+        public string GetPinguin()
         {
             return _pinguinImages[_random.Next(0, _pinguinImages.Length)];
         }
         
-        public string getFox()
+        public string GetFox()
         {
             return _foxImages[_random.Next(0, _foxImages.Length)];
         }
@@ -135,13 +132,13 @@ namespace Geekbot.net.Lib.Media
 
     public interface IMediaProvider
     {
-        string getCheckem();
-        string getPanda();
-        string getCrossant();
-        string getSquirrel();
-        string getPumpkin();
-        string getTurtle();
-        string getPinguin();
-        string getFox();
+        string GetCheckem();
+        string GetPanda();
+        string GetCrossant();
+        string GetSquirrel();
+        string GetPumpkin();
+        string GetTurtle();
+        string GetPinguin();
+        string GetFox();
     }
 }

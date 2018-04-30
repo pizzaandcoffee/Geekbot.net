@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net

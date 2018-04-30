@@ -18,62 +18,62 @@ namespace Geekbot.net.Commands
         [Command("panda", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random panda image")]
-        public async Task panda()
+        public async Task Panda()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getPanda()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetPanda()));
         }
 
         [Command("croissant", RunMode = RunMode.Async)]
         [Alias("gipfeli")]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random croissant image")]
-        public async Task croissant()
+        public async Task Croissant()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getCrossant()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetCrossant()));
         }
 
         [Command("pumpkin", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random pumpkin image")]
-        public async Task pumpkin()
+        public async Task Pumpkin()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getPumpkin()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetPumpkin()));
         }
 
         [Command("squirrel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random squirrel image")]
-        public async Task squirrel()
+        public async Task Squirrel()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getSquirrel()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetSquirrel()));
         }
 
         [Command("turtle", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]
-        public async Task turtle()
+        public async Task Turtle()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getTurtle()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetTurtle()));
         }
         
         [Command("pinguin", RunMode = RunMode.Async)]
         [Alias("pingu")]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]
-        public async Task pinguin()
+        public async Task Pinguin()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getPinguin()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetPinguin()));
         }
         
         [Command("fox", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]
-        public async Task fox()
+        public async Task Fox()
         {
-            await ReplyAsync("", false, eb(_mediaProvider.getFox()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetFox()));
         }
 
-        private EmbedBuilder eb(string image)
+        private EmbedBuilder Eb(string image)
         {
             var eb = new EmbedBuilder();
             eb.ImageUrl = image;

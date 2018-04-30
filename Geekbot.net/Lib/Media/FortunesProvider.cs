@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using Serilog;
 
 namespace Geekbot.net.Lib.Media
 {
     internal class FortunesProvider : IFortunesProvider
     {
-        private readonly string[] fortuneArray;
-        private readonly int totalFortunes;
+        private readonly string[] _fortuneArray;
+        private readonly int _totalFortunes;
 
         public FortunesProvider(IGeekbotLogger logger)
         {
@@ -15,8 +14,8 @@ namespace Geekbot.net.Lib.Media
             if (File.Exists(path))
             {
                 var rawFortunes = File.ReadAllText(path);
-                fortuneArray = rawFortunes.Split("%");
-                totalFortunes = fortuneArray.Length;
+                _fortuneArray = rawFortunes.Split("%");
+                _totalFortunes = _fortuneArray.Length;
                 logger.Debug("Geekbot", "Loaded {totalFortunes} Fortunes");
             }
             else
@@ -27,7 +26,7 @@ namespace Geekbot.net.Lib.Media
 
         public string GetRandomFortune()
         {
-            return fortuneArray[new Random().Next(0, totalFortunes)];
+            return _fortuneArray[new Random().Next(0, _totalFortunes)];
         }
     }
 

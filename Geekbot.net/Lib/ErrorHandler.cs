@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using Discord.Commands;
 using Discord.Net;
@@ -34,12 +32,12 @@ namespace Geekbot.net.Lib
             }
         }
 
-        public void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def")
+        public void HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def")
         {
             try
             {
-                var errorString = errorMessage == "def" ? _translation.GetString(Context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
-                var errorObj = SimpleConextConverter.ConvertContext(Context);
+                var errorString = errorMessage == "def" ? _translation.GetString(context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
+                var errorObj = SimpleConextConverter.ConvertContext(context);
                 if (e.Message.Contains("50007")) return;
                 if (e.Message.Contains("50013")) return;
                 _logger.Error("Geekbot", "An error ocured", e, errorObj);
@@ -49,11 +47,11 @@ namespace Geekbot.net.Lib
                     {
                         var resStackTrace = string.IsNullOrEmpty(e.InnerException?.ToString()) ? e.StackTrace : e.InnerException.ToString();
                         var maxLen = Math.Min(resStackTrace.Length, 1850);
-                        Context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace?.Substring(0, maxLen)}\r\n```");
+                        context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace.Substring(0, maxLen)}\r\n```");
                     }
                     else
                     {
-                        Context.Channel.SendMessageAsync(errorString);
+                        context.Channel.SendMessageAsync(errorString);
                     }
                     
                 }
@@ -74,18 +72,18 @@ namespace Geekbot.net.Lib
             }
             catch (Exception ex)
             {
-                Context.Channel.SendMessageAsync("Something went really really wrong here");
+                context.Channel.SendMessageAsync("Something went really really wrong here");
                 _logger.Error("Geekbot", "Errorception", ex);
             }
         }
 
-        public async void HandleHttpException(HttpException e, ICommandContext Context)
+        public async void HandleHttpException(HttpException e, ICommandContext context)
         {
-            var errorStrings = _translation.GetDict(Context, "httpErrors");
+            var errorStrings = _translation.GetDict(context, "httpErrors");
             switch(e.HttpCode)
             {
                 case HttpStatusCode.Forbidden:
-                    await Context.Channel.SendMessageAsync(errorStrings["403"]);
+                    await context.Channel.SendMessageAsync(errorStrings["403"]);
                     break;
             }
         }
@@ -95,7 +93,7 @@ namespace Geekbot.net.Lib
 
     public interface IErrorHandler
     {
-        void HandleCommandException(Exception e, ICommandContext Context, string errorMessage = "def");
-        void HandleHttpException(HttpException e, ICommandContext Context);
+        void HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def");
+        void HandleHttpException(HttpException e, ICommandContext context);
     }
 }

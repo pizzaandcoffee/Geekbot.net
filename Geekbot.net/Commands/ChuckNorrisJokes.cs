@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands
 
                         var stringResponse = await response.Content.ReadAsStringAsync();
                         var data = JsonConvert.DeserializeObject<ChuckNorrisJokeResponse>(stringResponse);
-                        await ReplyAsync(data.value);
+                        await ReplyAsync(data.Value);
                     }
                     catch (HttpRequestException)
                     {
@@ -51,11 +51,7 @@ namespace Geekbot.net.Commands
 
         private class ChuckNorrisJokeResponse
         {
-            public string category { get; set; }
-            public string icon_url { get; set; }
-            public string id { get; set; }
-            public string url { get; set; }
-            public string value { get; set; }
+            public string Value { get; set; }
         }
     }
 }

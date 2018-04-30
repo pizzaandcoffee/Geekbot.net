@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
-using Nancy;
 using Geekbot.net.Lib;
+using Nancy;
 
 namespace Geekbot.net.WebApi
 {
@@ -16,25 +15,18 @@ namespace Geekbot.net.WebApi
         {
             Get("/v1/commands", args =>
             {
-                var commands = getCommands().Result;
+                var commands = GetCommands().Result;
 
-                var commandList = new List<CommandDto>();
-                foreach (var cmd in commands.Commands)
-                {
-                    var cmdParamsObj = new List<CommandParamDto>();
-                    foreach (var cmdParam in cmd.Parameters)
-                    {
-                        var singleParamObj = new CommandParamDto()
+                var commandList = (from cmd in commands.Commands
+                    let cmdParamsObj = cmd.Parameters.Select(cmdParam => new CommandParamDto
                         {
                             Summary = cmdParam.Summary,
-                            Default = cmdParam?.DefaultValue?.ToString() ?? null,
-                            Type = cmdParam?.Type?.ToString()
-                        };
-                        cmdParamsObj.Add(singleParamObj);
-                    }
-                    
-                    var param = string.Join(", !", cmd.Aliases);
-                    var cmdObj = new CommandDto()
+                            Default = cmdParam.DefaultValue?.ToString() ?? null,
+                            Type = cmdParam.Type?.ToString()
+                        })
+                        .ToList()
+                    let param = string.Join(", !", cmd.Aliases)
+                    select new CommandDto
                     {
                         Name = cmd.Name,
                         Summary = cmd.Summary,
@@ -42,15 +34,13 @@ namespace Geekbot.net.WebApi
                         IsAdminCommand = (param.Contains("admin")),
                         Aliases = cmd.Aliases.ToArray(),
                         Params = cmdParamsObj
-                    };
-                    commandList.Add(cmdObj);
-                }
+                    }).ToList();
                 return Response.AsJson(commandList);
                 
             });
         }
 
-        private async Task<CommandService> getCommands()
+        private async Task<CommandService> GetCommands()
         {
             var commands = new CommandService();
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());

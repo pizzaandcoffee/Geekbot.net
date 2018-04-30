@@ -110,9 +110,7 @@ namespace Geekbot.net.Commands
 
         private DateTimeOffset ConvertToDateTimeOffset(string dateTimeOffsetString)
         {
-            if (string.IsNullOrEmpty(dateTimeOffsetString))
-                return DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0));
-            return DateTimeOffset.Parse(dateTimeOffsetString);
+            return string.IsNullOrEmpty(dateTimeOffsetString) ? DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0)) : DateTimeOffset.Parse(dateTimeOffsetString);
         }
 
         private bool TimeoutFinished(DateTimeOffset lastKarma)

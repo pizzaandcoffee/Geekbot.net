@@ -40,7 +40,7 @@ namespace Geekbot.net.Commands
         [Command("modchannel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Set a channel for moderation purposes")]
-        public async Task selectModChannel([Summary("#Channel")] ISocketMessageChannel channel)
+        public async Task SelectModChannel([Summary("#Channel")] ISocketMessageChannel channel)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Geekbot.net.Commands
         [Command("showleave", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone leaves")]
-        public async Task showLeave([Summary("true/false")] bool enabled)
+        public async Task ShowLeave([Summary("true/false")] bool enabled)
         {
             var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
@@ -88,7 +88,7 @@ namespace Geekbot.net.Commands
         [Command("showdel", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone deletes a message")]
-        public async Task showDelete([Summary("true/false")] bool enabled)
+        public async Task ShowDelete([Summary("true/false")] bool enabled)
         {
             var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
@@ -117,7 +117,7 @@ namespace Geekbot.net.Commands
         [Command("setlang", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]
-        public async Task setLanguage([Summary("language")] string languageRaw)
+        public async Task SetLanguage([Summary("language")] string languageRaw)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace Geekbot.net.Commands
         [Command("wiki", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Change the wikipedia instance (use lang code in xx.wikipedia.org)")]
-        public async Task setWikiLanguage([Summary("language")] string languageRaw)
+        public async Task SetWikiLanguage([Summary("language")] string languageRaw)
         {
             try
             {
@@ -160,7 +160,7 @@ namespace Geekbot.net.Commands
         [Command("lang", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]
-        public async Task getLanguage()
+        public async Task GetLanguage()
         {
             try
             {
@@ -176,12 +176,12 @@ namespace Geekbot.net.Commands
         [Command("ping", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Enable the ping reply.")]
-        public async Task togglePing()
+        public async Task TogglePing()
         {
             try
             {
                 bool.TryParse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ping"), out var current);
-                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ping", current ? "false" : "true"), });
+                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ping", current ? "false" : "true") });
                 await ReplyAsync(!current ? "i will reply to ping now" : "No more pongs...");
             }
             catch (Exception e)

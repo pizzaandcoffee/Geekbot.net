@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -18,7 +17,7 @@ namespace WikipediaApi.Page
         public string Displaytitle { get; set; }
         
         [JsonProperty("namespace")]
-        public PageNamespace @Namespace { get; set; }
+        public PageNamespace Namespace { get; set; }
         
         [JsonProperty("titles")]
         public PageTitles Titles { get; set; }

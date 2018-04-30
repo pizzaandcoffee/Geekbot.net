@@ -1,5 +1,5 @@
-﻿using Nancy;
-using Geekbot.net.Lib;
+﻿using Geekbot.net.Lib;
+using Nancy;
 
 namespace Geekbot.net.WebApi
 {
@@ -9,7 +9,7 @@ namespace Geekbot.net.WebApi
         {
             Get("/", args =>
             {
-                var responseBody = new ApiStatusDto()
+                var responseBody = new ApiStatusDto
                 {
                     GeekbotVersion = Constants.BotVersion.ToString(),
                     ApiVersion = Constants.ApiVersion.ToString(),

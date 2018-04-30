@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Geekbot.net.Lib;
 using Xunit;
 
 namespace Tests.Lib
 {
-    public class LevelCalc_test
+    public class LevelCalcTest
     {
         public static IEnumerable<object[]> LevelCalcTestData
         {

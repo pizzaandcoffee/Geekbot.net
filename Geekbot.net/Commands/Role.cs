@@ -27,7 +27,7 @@ namespace Geekbot.net.Commands
         [Command(RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get a list of all available roles.")]
-        public async Task getAllRoles()
+        public async Task GetAllRoles()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Geekbot.net.Commands
         [Command(RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get a role by mentioning it.")]
-        public async Task giveRole([Summary("roleNickname")] string roleNameRaw)
+        public async Task GiveRole([Summary("roleNickname")] string roleNameRaw)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Geekbot.net.Commands
         [Command("add", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Add a role to the whitelist.")]
-        public async Task addRole([Summary("@role")] IRole role, [Summary("alias")] string roleName)
+        public async Task AddRole([Summary("@role")] IRole role, [Summary("alias")] string roleName)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace Geekbot.net.Commands
         [Command("remove", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Remove a role from the whitelist.")]
-        public async Task removeRole([Summary("roleNickname")] string roleName)
+        public async Task RemoveRole([Summary("roleNickname")] string roleName)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace Geekbot.net.Commands
                 if (!emoji.StartsWith('<'))
                 {
                     var emo = new Emoji(emoji);
-                    emote = (IEmote) emo;
+                    emote = emo;
                 }
                 else
                 {

@@ -64,9 +64,7 @@ namespace Geekbot.net.Commands
                 return "There might be a chance";
             if (rate >= 60 && rate < 80)
                 return "Almost a match, but could work";
-            if (rate >= 80)
-                return "It's a match";
-            return "a";
+            return rate >= 80 ? "It's a match" : "a";
         }
 
         private string BlockCounter(int rate)

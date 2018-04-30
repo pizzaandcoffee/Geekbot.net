@@ -1,13 +1,12 @@
 ﻿using System;
 using Serilog;
-using Serilog.Formatting.Json;
 using Serilog.Sinks.SumoLogic;
 
 namespace Geekbot.net.Lib
 {
     public class LoggerFactory
     {
-        public static ILogger createLogger()
+        public static ILogger CreateLogger()
         {
             var loggerCreation = new LoggerConfiguration();
             var template = "{Message}{NewLine}";

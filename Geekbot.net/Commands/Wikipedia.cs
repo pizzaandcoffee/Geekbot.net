@@ -78,7 +78,7 @@ namespace Geekbot.net.Commands
                 };
                 
                 eb.AddField("Description", article.Extract);
-                if (article.Coordinates != null) eb.AddField("Coordinates", $"{article.Coordinates.lat} Lat {article.Coordinates.lon} Lon");
+                if (article.Coordinates != null) eb.AddField("Coordinates", $"{article.Coordinates.Lat} Lat {article.Coordinates.Lon} Lon");
                 await ReplyAsync("", false, eb.Build());
             }
             catch (HttpRequestException)

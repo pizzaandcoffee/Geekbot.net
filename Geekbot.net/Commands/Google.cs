@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Net;
 using Geekbot.net.Lib;
-using Newtonsoft.Json;
 using StackExchange.Redis;
+using Utf8Json;
 
 namespace Geekbot.net.Commands
 {
@@ -27,7 +25,7 @@ namespace Geekbot.net.Commands
         [Command("google", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Google Something.")]
-        public async Task askGoogle([Remainder, Summary("SearchText")] string searchText)
+        public async Task AskGoogle([Remainder, Summary("SearchText")] string searchText)
         {
             try
             {
@@ -42,21 +40,21 @@ namespace Geekbot.net.Commands
                     
                     var url = new Uri($"https://kgsearch.googleapis.com/v1/entities:search?languages=en&limit=1&query={searchText}&key={apiKey}");
                     var responseString = client.DownloadString(url);
-                    var response = Utf8Json.JsonSerializer.Deserialize<GoogleKGApiResponse>(responseString);
+                    var response = JsonSerializer.Deserialize<GoogleKgApiResponse>(responseString);
 
-                    if (!response.itemListElement.Any())
+                    if (!response.ItemListElement.Any())
                     {
                         await ReplyAsync("No results were found...");
                         return;
                     }
 
-                    var data = response.itemListElement.First().result;
+                    var data = response.ItemListElement.First().Result;
                     var eb = new EmbedBuilder();
-                    eb.Title = data.name;
-                    if(!string.IsNullOrEmpty(data.description)) eb.WithDescription(data.description);
-                    if(!string.IsNullOrEmpty(data.detailedDescription?.url)) eb.WithUrl(data.detailedDescription.url);
-                    if(!string.IsNullOrEmpty(data.detailedDescription?.articleBody)) eb.AddField("Details", data.detailedDescription.articleBody);
-                    if(!string.IsNullOrEmpty(data.image?.contentUrl)) eb.WithThumbnailUrl(data.image.contentUrl);
+                    eb.Title = data.Name;
+                    if(!string.IsNullOrEmpty(data.Description)) eb.WithDescription(data.Description);
+                    if(!string.IsNullOrEmpty(data.DetailedDescription?.Url)) eb.WithUrl(data.DetailedDescription.Url);
+                    if(!string.IsNullOrEmpty(data.DetailedDescription?.ArticleBody)) eb.AddField("Details", data.DetailedDescription.ArticleBody);
+                    if(!string.IsNullOrEmpty(data.Image?.ContentUrl)) eb.WithThumbnailUrl(data.Image.ContentUrl);
                     
                     await ReplyAsync("", false, eb.Build());
                 }
@@ -67,35 +65,35 @@ namespace Geekbot.net.Commands
             }
         }
 
-        public class GoogleKGApiResponse
+        public class GoogleKgApiResponse
         {
-            public List<GoogleKGApiElement> itemListElement { get; set; }
+            public List<GoogleKgApiElement> ItemListElement { get; set; }
 
-            public class GoogleKGApiElement
+            public class GoogleKgApiElement
             {
-                public GoogleKGApiResult result { get; set; }
-                public double resultScore { get; set; }
+                public GoogleKgApiResult Result { get; set; }
+                public double ResultScore { get; set; }
             }
             
-            public class GoogleKGApiResult
+            public class GoogleKgApiResult
             {
-                public string name { get; set; }
-                public string description { get; set; }
-                public GoogleKGApiImage image { get; set; }
-                public GoogleKGApiDetailed detailedDescription { get; set; }
+                public string Name { get; set; }
+                public string Description { get; set; }
+                public GoogleKgApiImage Image { get; set; }
+                public GoogleKgApiDetailed DetailedDescription { get; set; }
             }
 
-            public class GoogleKGApiImage
+            public class GoogleKgApiImage
             {
-                public string contentUrl { get; set; }
-                public string url { get; set; }
+                public string ContentUrl { get; set; }
+                public string Url { get; set; }
             }
 
-            public class GoogleKGApiDetailed
+            public class GoogleKgApiDetailed
             {
-                public string articleBody { get; set; }
-                public string url { get; set; }
-                public string license { get; set; }
+                public string ArticleBody { get; set; }
+                public string Url { get; set; }
+                public string License { get; set; }
             }
         }
     }

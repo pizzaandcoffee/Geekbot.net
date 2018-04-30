@@ -4,7 +4,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -68,7 +67,7 @@ namespace Geekbot.net.Commands
         [Command("popuserrepo", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Admin)]
         [Summary("Populate user cache")]
-        public async Task popUserRepoCommand()
+        public async Task PopUserRepoCommand()
         {
             try
             {
@@ -82,8 +81,7 @@ namespace Geekbot.net.Commands
             }
             catch (Exception)
             {
-                await ReplyAsync(
-                    $"Sorry, only the botowner can do this");
+                await ReplyAsync("Sorry, only the botowner can do this");
                 return;
             }
 

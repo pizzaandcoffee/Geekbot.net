@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Geekbot.net.Lib;
 using Xunit;
 
 namespace Tests.Lib
 {
-    public class EmojiConverter_test
+    public class EmojiConverterTest
     {
         public static IEnumerable<object[]> NumberToEmojiTestData
         {
@@ -42,11 +41,11 @@ namespace Tests.Lib
         public void NumberToEmoji(int number, string expectedResult)
         {
             var emojiConverter = new EmojiConverter();
-            var result = emojiConverter.numberToEmoji(number);
+            var result = emojiConverter.NumberToEmoji(number);
             Assert.Equal(result, expectedResult);
         }
         
-        public static IEnumerable<object[]> textToEmojiTestData
+        public static IEnumerable<object[]> TextToEmojiTestData
         {
             get
             {
@@ -64,11 +63,11 @@ namespace Tests.Lib
         }
 
 
-        [Theory, MemberData(nameof(textToEmojiTestData))]
+        [Theory, MemberData(nameof(TextToEmojiTestData))]
         public void TextToEmoji(string text, string expectedResult)
         {
             var emojiConverter = new EmojiConverter();
-            var result = emojiConverter.textToEmoji(text);
+            var result = emojiConverter.TextToEmoji(text);
             Assert.Equal(result, expectedResult);
         }
     }

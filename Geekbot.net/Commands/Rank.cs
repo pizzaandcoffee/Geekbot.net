@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
-using Serilog;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands
@@ -110,7 +109,7 @@ namespace Geekbot.net.Commands
                 foreach (var user in highscoreUsers)
                 {
                     replyBuilder.Append(highscorePlace < 11
-                        ? $"{_emojiConverter.numberToEmoji(highscorePlace)} "
+                        ? $"{_emojiConverter.NumberToEmoji(highscorePlace)} "
                         : $"`{highscorePlace}.` ");
 
                     replyBuilder.Append(user.Key.Username != null

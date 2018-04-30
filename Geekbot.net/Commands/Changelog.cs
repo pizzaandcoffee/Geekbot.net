@@ -27,7 +27,7 @@ namespace Geekbot.net.Commands
         [Alias("updates")]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Show the latest 5 updates")]
-        public async Task getChangelog()
+        public async Task GetChangelog()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Geekbot.net.Commands
                     response.EnsureSuccessStatusCode();
 
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    var commits = JsonConvert.DeserializeObject<List<Commit>>(stringResponse);
+                    var commits = JsonConvert.DeserializeObject<List<CommitDto>>(stringResponse);
                     var eb = new EmbedBuilder();
                     eb.WithColor(new Color(143, 165, 102));
                     eb.WithAuthor(new EmbedAuthorBuilder
@@ -51,7 +51,7 @@ namespace Geekbot.net.Commands
                     });
                     var sb = new StringBuilder();
                     foreach (var commit in commits.Take(10))
-                        sb.AppendLine($"- {commit.commit.message} ({commit.commit.author.date:yyyy-MM-dd})");
+                        sb.AppendLine($"- {commit.Commit.Message} ({commit.Commit.Author.Date:yyyy-MM-dd})");
                     eb.Description = sb.ToString();
                     eb.WithFooter(new EmbedFooterBuilder
                     {
@@ -66,24 +66,20 @@ namespace Geekbot.net.Commands
             }
         }
 
-        private class Commit
+        private class CommitDto
         {
-            public string sha { get; set; }
-            public CommitInfo commit { get; set; }
-            public Uri html_url { get; set; }
+            public CommitInfo Commit { get; set; }
         }
 
         private class CommitInfo
         {
-            public commitAuthor author { get; set; }
-            public string message { get; set; }
+            public CommitAuthor Author { get; set; }
+            public string Message { get; set; }
         }
 
-        private class commitAuthor
+        private class CommitAuthor
         {
-            public string name { get; set; }
-            public string email { get; set; }
-            public DateTimeOffset date { get; set; }
+            public DateTimeOffset Date { get; set; }
         }
     }
 }

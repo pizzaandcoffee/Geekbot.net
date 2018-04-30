@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 
@@ -20,7 +18,7 @@ namespace Geekbot.net.Commands
         [Command("gdq", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Games)]
         [Summary("Get a quote from the GDQ donation generator.")]
-        public async Task getQuote()
+        public async Task GetQuote()
         {
             try
             {

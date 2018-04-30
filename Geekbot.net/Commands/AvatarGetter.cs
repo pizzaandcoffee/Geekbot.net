@@ -18,7 +18,7 @@ namespace Geekbot.net.Commands
         [Command("avatar", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Get someones avatar")]
-        public async Task getAvatar([Remainder] [Summary("user")] IUser user = null)
+        public async Task GetAvatar([Remainder] [Summary("user")] IUser user = null)
         {
             try
             {

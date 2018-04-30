@@ -82,14 +82,14 @@ namespace Geekbot.net.Commands
                 var i = 1;
                 pollList.ForEach(option =>
                 {
-                    eb.AddInlineField($"Option {_emojiConverter.numberToEmoji(i)}", option);
+                    eb.AddInlineField($"Option {_emojiConverter.NumberToEmoji(i)}", option);
                     i++;
                 });
                 var pollMessage = await ReplyAsync("", false, eb.Build());
                 i = 1;
                 pollList.ForEach(option =>
                 {
-                    pollMessage.AddReactionAsync(new Emoji(_emojiConverter.numberToEmoji(i)));
+                    pollMessage.AddReactionAsync(new Emoji(_emojiConverter.NumberToEmoji(i)));
                     i++;
                 });
                 var poll = new PollData
@@ -123,7 +123,7 @@ namespace Geekbot.net.Commands
                     return;
                 }
 
-                var results = await getPollResults(currentPoll);
+                var results = await GetPollResults(currentPoll);
                 var sb = new StringBuilder();
                 sb.AppendLine("**Poll Results**");
                 sb.AppendLine(currentPoll.Question);
@@ -152,7 +152,7 @@ namespace Geekbot.net.Commands
             }
         }
 
-        private async Task<List<PollResult>> getPollResults(PollData poll)
+        private async Task<List<PollResult>> GetPollResults(PollData poll)
         {
             var message = (IUserMessage) await Context.Channel.GetMessageAsync(poll.MessageId);
             var results = new List<PollResult>();

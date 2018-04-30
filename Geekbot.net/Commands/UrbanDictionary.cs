@@ -22,7 +22,7 @@ namespace Geekbot.net.Commands
         [Command("urban", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Helpers)]
         [Summary("Lookup something on urban dictionary")]
-        public async Task urbanDefine([Remainder] [Summary("word")] string word)
+        public async Task UrbanDefine([Remainder] [Summary("word")] string word)
         {
             try
             {
@@ -34,26 +34,26 @@ namespace Geekbot.net.Commands
 
                     var stringResponse = await response.Content.ReadAsStringAsync();
                     var definitions = JsonConvert.DeserializeObject<UrbanResponse>(stringResponse);
-                    if (definitions.list.Count == 0)
+                    if (definitions.List.Count == 0)
                     {
                         await ReplyAsync("That word hasn't been defined...");
                         return;
                     }
 
-                    var definition = definitions.list.First(e => !string.IsNullOrWhiteSpace(e.example));
+                    var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder
                     {
-                        Name = definition.word,
-                        Url = definition.permalink
+                        Name = definition.Word,
+                        Url = definition.Permalink
                     });
                     eb.WithColor(new Color(239, 255, 0));
-                    eb.Description = definition.definition;
-                    eb.AddField("Example", definition.example ?? "(no example given...)");
-                    eb.AddInlineField("Upvotes", definition.thumbs_up);
-                    eb.AddInlineField("Downvotes", definition.thumbs_down);
-                    if (definitions.tags.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.tags));
+                    eb.Description = definition.Definition;
+                    eb.AddField("Example", definition.Example ?? "(no example given...)");
+                    eb.AddInlineField("Upvotes", definition.ThumbsUp);
+                    eb.AddInlineField("Downvotes", definition.ThumbsDown);
+                    if (definitions.Tags.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
 
                     await ReplyAsync("", false, eb.Build());
                 }
@@ -66,22 +66,18 @@ namespace Geekbot.net.Commands
 
         private class UrbanResponse
         {
-            public string[] tags { get; set; }
-            public string result_type { get; set; }
-            public List<UrbanListItem> list { get; set; }
+            public string[] Tags { get; set; }
+            public List<UrbanListItem> List { get; set; }
         }
 
         private class UrbanListItem
         {
-            public string definition { get; set; }
-            public string permalink { get; set; }
-            public string thumbs_up { get; set; }
-            public string author { get; set; }
-            public string word { get; set; }
-            public string defid { get; set; }
-            public string current_vote { get; set; }
-            public string example { get; set; }
-            public string thumbs_down { get; set; }
+            public string Definition { get; set; }
+            public string Permalink { get; set; }
+            public string ThumbsUp { get; set; }
+            public string Word { get; set; }
+            public string Example { get; set; }
+            public string ThumbsDown { get; set; }
         }
     }
 }

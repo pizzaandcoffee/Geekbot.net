@@ -23,7 +23,7 @@ namespace Geekbot.net.Commands
         {
             try
             {
-                var emojis = _emojiConverter.textToEmoji(text);
+                var emojis = _emojiConverter.TextToEmoji(text);
                 if (emojis.Length > 1999)
                 {
                     await ReplyAsync("I can't take that much at once!");
