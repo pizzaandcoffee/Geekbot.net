@@ -6,11 +6,11 @@ namespace Geekbot.net.Lib
 {
     public class LoggerFactory
     {
-        public static ILogger CreateLogger()
+        public static ILogger CreateLogger(bool sumologicActive)
         {
             var loggerCreation = new LoggerConfiguration();
             var template = "{Message}{NewLine}";
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO")))
+            if (sumologicActive)
             {
                 Console.WriteLine("Logging Geekbot Logs to Sumologic");
                 loggerCreation.WriteTo.SumoLogic(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"), 

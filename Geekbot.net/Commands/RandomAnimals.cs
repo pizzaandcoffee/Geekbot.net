@@ -59,7 +59,7 @@ namespace Geekbot.net.Commands
         [Command("pinguin", RunMode = RunMode.Async)]
         [Alias("pingu")]
         [Remarks(CommandCategories.Randomness)]
-        [Summary("Get a random turtle image")]
+        [Summary("Get a random pinguin image")]
         public async Task Pinguin()
         {
             await ReplyAsync("", false, Eb(_mediaProvider.GetPinguin()));
@@ -67,7 +67,7 @@ namespace Geekbot.net.Commands
         
         [Command("fox", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Randomness)]
-        [Summary("Get a random turtle image")]
+        [Summary("Get a random fox image")]
         public async Task Fox()
         {
             await ReplyAsync("", false, Eb(_mediaProvider.GetFox()));

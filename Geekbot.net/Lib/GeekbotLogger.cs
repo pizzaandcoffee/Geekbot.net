@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -8,9 +7,18 @@ namespace Geekbot.net.Lib
     public class GeekbotLogger : IGeekbotLogger
     {
         private readonly ILogger _serilog;
-        public GeekbotLogger()
+        private readonly JsonSerializerSettings _serializerSettings;
+        private readonly Formatting _jsonFormatting;
+
+        public GeekbotLogger(bool sumologicActive)
         {
-            _serilog = LoggerFactory.CreateLogger();
+            _serilog = LoggerFactory.CreateLogger(sumologicActive);
+            _serializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                NullValueHandling = NullValueHandling.Include
+            };
+            _jsonFormatting = sumologicActive ? Formatting.None : Formatting.Indented;
             Information("Geekbot", "Using GeekbotLogger");
         }
         
@@ -34,12 +42,11 @@ namespace Geekbot.net.Lib
             HandleLogObject("Error", source, message, stackTrace, extra);
         }
 
-        private Task HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
+        private void HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
             var logJson = CreateLogObject(type, source, message, stackTrace, extra);
             // fuck serilog
             _serilog.Information(logJson + "}");
-            return Task.CompletedTask;
         }
 
         private string CreateLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
@@ -53,7 +60,7 @@ namespace Geekbot.net.Lib
                 StackTrace = stackTrace,
                 Extra = extra
             };
-            return JsonConvert.SerializeObject(logObject);
+            return JsonConvert.SerializeObject(logObject, _jsonFormatting, _serializerSettings);
         }
     }
 

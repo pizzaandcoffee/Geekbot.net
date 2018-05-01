@@ -39,7 +39,8 @@ namespace Geekbot.net
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
-            var logger = new GeekbotLogger();
+            var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
+            var logger = new GeekbotLogger(sumologicActive);
             logger.Information("Geekbot", "Starting...");
             try
             {
