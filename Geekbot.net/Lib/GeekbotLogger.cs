@@ -1,19 +1,18 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace Geekbot.net.Lib
 {
     public class GeekbotLogger : IGeekbotLogger
     {
         private readonly bool _sumologicActive;
-        private readonly ILogger _serilog;
+        private readonly NLog.Logger _logger;
         private readonly JsonSerializerSettings _serializerSettings;
 
         public GeekbotLogger(bool sumologicActive)
         {
             _sumologicActive = sumologicActive;
-            _serilog = LoggerFactory.CreateLogger(sumologicActive);
+            _logger = LoggerFactory.CreateNLog(sumologicActive);
             _serializerSettings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
@@ -24,29 +23,22 @@ namespace Geekbot.net.Lib
         
         public void Debug(string source, string message, object extra = null)
         {
-            _serilog.Debug(CreateLogString("Debug", source, message, null, extra));
+            _logger.Debug(CreateLogString("Debug", source, message, null, extra));
         }
         
         public void Information(string source, string message, object extra = null)
         {
-            _serilog.Information(CreateLogString("Information", source, message, null, extra));
+            _logger.Info(CreateLogString("Information", source, message, null, extra));
         }
         
         public void Warning(string source, string message, Exception stackTrace = null, object extra = null)
         {
-            _serilog.Warning(CreateLogString("Warning", source, message, stackTrace, extra));
+            _logger.Warn(CreateLogString("Warning", source, message, stackTrace, extra));
         }
         
         public void Error(string source, string message, Exception stackTrace, object extra = null)
         {
-            _serilog.Error(CreateLogString("Error", source, message, stackTrace, extra));
-        }
-
-        private void HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
-        {
-            var logJson = CreateLogString(type, source, message, stackTrace, extra);
-            // fuck serilog
-            _serilog.Information(logJson, stackTrace + "}");
+            _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
         }
 
         private string CreateLogString(string type, string source, string message, Exception stackTrace = null, object extra = null)
