@@ -6,61 +6,69 @@ namespace Geekbot.net.Lib
 {
     public class GeekbotLogger : IGeekbotLogger
     {
+        private readonly bool _sumologicActive;
         private readonly ILogger _serilog;
         private readonly JsonSerializerSettings _serializerSettings;
-        private readonly Formatting _jsonFormatting;
 
         public GeekbotLogger(bool sumologicActive)
         {
+            _sumologicActive = sumologicActive;
             _serilog = LoggerFactory.CreateLogger(sumologicActive);
             _serializerSettings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 NullValueHandling = NullValueHandling.Include
             };
-            _jsonFormatting = sumologicActive ? Formatting.None : Formatting.Indented;
             Information("Geekbot", "Using GeekbotLogger");
         }
         
         public void Debug(string source, string message, object extra = null)
         {
-            HandleLogObject("Debug", source, message, null, extra);
+            _serilog.Debug(CreateLogString("Debug", source, message, null, extra));
         }
         
         public void Information(string source, string message, object extra = null)
         {
-            HandleLogObject("Information", source, message, null, extra);
+            _serilog.Information(CreateLogString("Information", source, message, null, extra));
         }
         
         public void Warning(string source, string message, Exception stackTrace = null, object extra = null)
         {
-            HandleLogObject("Warning", source, message, stackTrace, extra);
+            _serilog.Warning(CreateLogString("Warning", source, message, stackTrace, extra));
         }
         
         public void Error(string source, string message, Exception stackTrace, object extra = null)
         {
-            HandleLogObject("Error", source, message, stackTrace, extra);
+            _serilog.Error(CreateLogString("Error", source, message, stackTrace, extra));
         }
 
         private void HandleLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
-            var logJson = CreateLogObject(type, source, message, stackTrace, extra);
+            var logJson = CreateLogString(type, source, message, stackTrace, extra);
             // fuck serilog
-            _serilog.Information(logJson + "}");
+            _serilog.Information(logJson, stackTrace + "}");
         }
 
-        private string CreateLogObject(string type, string source, string message, Exception stackTrace = null, object extra = null)
+        private string CreateLogString(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
-            var logObject = new GeekbotLoggerObject
+            if (_sumologicActive)
             {
-                Timestamp = DateTime.Now,
-                Type = type,
-                Source = source,
-                Message = message,
-                StackTrace = stackTrace,
-                Extra = extra
-            };
-            return JsonConvert.SerializeObject(logObject, _jsonFormatting, _serializerSettings);
+                var logObject = new GeekbotLoggerObject
+                {
+                    Timestamp = DateTime.Now,
+                    Type = type,
+                    Source = source,
+                    Message = message,
+                    StackTrace = stackTrace,
+                    Extra = extra
+                };
+                return JsonConvert.SerializeObject(logObject, Formatting.None, _serializerSettings);
+            }
+            
+            if (source != "Message") return $"[{source}] - {message}";
+            
+            var m = (MessageDto) extra; 
+            return $"[{source}] - [{m.Guild.Name} - {m.Channel.Name}] {m.User.Name}: {m.Message.Content}";
         }
     }
 
