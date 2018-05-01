@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Serilog;
-using Utf8Json;
 
 namespace Geekbot.net.Lib
 {
@@ -11,7 +11,6 @@ namespace Geekbot.net.Lib
         public GeekbotLogger()
         {
             _serilog = LoggerFactory.CreateLogger();
-            //JsonSerializer.SetDefaultResolver(StandardResolver.AllowPrivateExcludeNullSnakeCase);
             Information("Geekbot", "Using GeekbotLogger");
         }
         
@@ -54,7 +53,7 @@ namespace Geekbot.net.Lib
                 StackTrace = stackTrace,
                 Extra = extra
             };
-            return JsonSerializer.ToJsonString(logObject);
+            return JsonConvert.SerializeObject(logObject);
         }
     }
 
