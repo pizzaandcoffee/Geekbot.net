@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -84,7 +83,7 @@ namespace Geekbot.net
                 Environment.Exit(102);
             }
             
-            _token = _redis.StringGet("discordToken");
+            _token = runParameters.Token ??_redis.StringGet("discordToken");
             if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");

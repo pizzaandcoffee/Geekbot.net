@@ -19,5 +19,8 @@ namespace Geekbot.net.Lib
 
         [Option('e', "expose-errors", Default = false, HelpText = "Shows internal errors in the chat")]
         public bool ExposeErrors { get; set; }
+        
+        [Option("token", Default = null, HelpText = "Set a new bot token")]
+        public string Token { get; set; }
     }
 }

@@ -5,13 +5,13 @@ namespace Geekbot.net.Lib
 {
     public class GeekbotLogger : IGeekbotLogger
     {
-        private readonly bool _sumologicActive;
+        private readonly bool _logAsJson;
         private readonly NLog.Logger _logger;
         private readonly JsonSerializerSettings _serializerSettings;
 
         public GeekbotLogger(RunParameters runParameters, bool sumologicActive)
         {
-            _sumologicActive = sumologicActive;
+            _logAsJson = sumologicActive || runParameters.LogJson;
             _logger = LoggerFactory.CreateNLog(runParameters, sumologicActive);
             _serializerSettings = new JsonSerializerSettings
             {
@@ -43,7 +43,7 @@ namespace Geekbot.net.Lib
 
         private string CreateLogString(string type, string source, string message, Exception stackTrace = null, object extra = null)
         {
-            if (_sumologicActive)
+            if (_logAsJson)
             {
                 var logObject = new GeekbotLoggerObject
                 {

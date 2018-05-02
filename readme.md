@@ -11,7 +11,6 @@ You can invite Geekbot to your server with [this link](https://discordapp.com/oa
 * DotNet Core 2
 * Redis
 * Discord.net
-* ffmpeg
 
 ## Running
 
@@ -24,14 +23,7 @@ Run these commands
 
 On your first run geekbot will ask for your bot token, everything else is taken care of.
 
-### Launch Parameters
-
-| Parameter | Description |
-| --- | --- |
-| `--verbose` | Show more log information |
-| `--disable-api` | Disables the webapi on startup |
-| `--reset` | Resets certain parts of the bot |
-| `--migrate` | Migrates the database from V3.1 to the new format from V3.2<br> (make sure to backup before running this) | 
+For a list of launch options use `dotnet run -h` 
 
 ## Contributing
 
