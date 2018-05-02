@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Geekbot.net.Lib;
+using Geekbot.net.Lib.Logger;
+using Geekbot.net.Lib.ReactionListener;
+using Geekbot.net.Lib.UserRepository;
 using StackExchange.Redis;
 
 namespace Geekbot.net
@@ -89,7 +91,6 @@ namespace Geekbot.net
 
                 if (message.Author.IsBot) return Task.CompletedTask;
                 _logger.Information("Message", message.Content, SimpleConextConverter.ConvertSocketMessage(message));
-//                _logger.Information($"[Message] {channel.Guild.Name} ({channel.Guild.Id}) - {message.Channel} ({message.Channel.Id}) - {message.Author.Username}#{message.Author.Discriminator} ({message.Author.Id}) - {message.Content}");
             }
             catch (Exception e)
             {

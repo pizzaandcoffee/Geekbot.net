@@ -8,7 +8,15 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Clients;
+using Geekbot.net.Lib.Converters;
+using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Levels;
+using Geekbot.net.Lib.Localization;
+using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
+using Geekbot.net.Lib.ReactionListener;
+using Geekbot.net.Lib.UserRepository;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using StackExchange.Redis;
@@ -24,7 +32,7 @@ namespace Geekbot.net
         private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
         private RedisValue _token;
-        private IGeekbotLogger _logger;
+        private GeekbotLogger _logger;
         private IUserRepository _userRepository;
         private bool _firstStart;
         private RunParameters _runParameters;
@@ -57,18 +65,19 @@ namespace Geekbot.net
             }
         }
 
-        private async Task MainAsync(RunParameters runParameters, IGeekbotLogger logger)
+        private async Task MainAsync(RunParameters runParameters, GeekbotLogger logger)
         {
             _logger = logger;
             _runParameters = runParameters;
             logger.Information("Geekbot", "Initing Stuff");
+            var discordLogger = new DiscordLogger(logger);
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000
             });
-            _client.Log += DiscordLogger;
+            _client.Log += discordLogger.Log;
             _commands = new CommandService();
 
             try
@@ -215,31 +224,6 @@ namespace Geekbot.net
             catch (Exception e)
             {
                 _logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
-            }
-            return Task.CompletedTask;
-        }
-
-        private Task DiscordLogger(LogMessage message)
-        {
-            var logMessage = $"[{message.Source}] {message.Message}";
-            switch (message.Severity)
-            {
-                case LogSeverity.Verbose:
-                case LogSeverity.Debug:
-                    _logger.Debug(message.Source, message.Message);
-                    break;
-                case LogSeverity.Info:
-                    _logger.Information(message.Source, message.Message);
-                    break;
-                case LogSeverity.Critical:
-                case LogSeverity.Error:
-                case LogSeverity.Warning:
-                    if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
-                    _logger.Error(message.Source, message.Message, message.Exception);
-                    break;
-                default:
-                    _logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
-                    break;
             }
             return Task.CompletedTask;
         }
