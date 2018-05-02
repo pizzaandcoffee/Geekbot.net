@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ApplicationIcon>derp.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
+    <Version>3.6.0</Version>
     <Company>Pizza and Coffee Studios</Company>
     <Authors>Pizza and Coffee Studios</Authors>
     <Description>A Discord bot</Description>
@@ -11,6 +11,7 @@
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.2.1" />
     <PackageReference Include="Discord.Net">
       <Version>1.0.2</Version>
     </PackageReference>
@@ -62,9 +63,6 @@
     <None Update="Storage\squirrel">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Storage\Translations.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Storage\turtles">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -73,6 +71,12 @@
     </None>
     <None Update="Storage\foxes">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Lib\Localization\Translations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Lib\Converters\MtgManaEmojis.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

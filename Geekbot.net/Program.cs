@@ -1,14 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CommandLine;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Clients;
+using Geekbot.net.Lib.Converters;
+using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Levels;
+using Geekbot.net.Lib.Localization;
+using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
+using Geekbot.net.Lib.ReactionListener;
+using Geekbot.net.Lib.UserRepository;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using StackExchange.Redis;
@@ -24,13 +32,18 @@ namespace Geekbot.net
         private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
         private RedisValue _token;
-        private IGeekbotLogger _logger;
+        private GeekbotLogger _logger;
         private IUserRepository _userRepository;
-        private string[] _args;
         private bool _firstStart;
+        private RunParameters _runParameters;
 
         private static void Main(string[] args)
         {
+            RunParameters runParameters = null;
+            Parser.Default.ParseArguments<RunParameters>(args)
+                .WithParsed(e => runParameters = e)
+                .WithNotParsed(_ => Environment.Exit(1));
+            
             var logo = new StringBuilder();
             logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
             logo.AppendLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
@@ -40,11 +53,11 @@ namespace Geekbot.net
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
             var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
-            var logger = new GeekbotLogger(sumologicActive);
+            var logger = new GeekbotLogger(runParameters, sumologicActive);
             logger.Information("Geekbot", "Starting...");
             try
             {
-                new Program().MainAsync(args, logger).GetAwaiter().GetResult();
+                new Program().MainAsync(runParameters, logger).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -52,18 +65,19 @@ namespace Geekbot.net
             }
         }
 
-        private async Task MainAsync(string[] args, IGeekbotLogger logger)
+        private async Task MainAsync(RunParameters runParameters, GeekbotLogger logger)
         {
             _logger = logger;
-            _args = args;
+            _runParameters = runParameters;
             logger.Information("Geekbot", "Initing Stuff");
+            var discordLogger = new DiscordLogger(logger);
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000
             });
-            _client.Log += DiscordLogger;
+            _client.Log += discordLogger.Log;
             _commands = new CommandService();
 
             try
@@ -78,7 +92,7 @@ namespace Geekbot.net
                 Environment.Exit(102);
             }
             
-            _token = _redis.StringGet("discordToken");
+            _token = runParameters.Token ??_redis.StringGet("discordToken");
             if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
@@ -132,7 +146,7 @@ namespace Geekbot.net
 
                     _logger.Information("Geekbot", "Registering Stuff");
                     var translationHandler = new TranslationHandler(_client.Guilds, _redis, _logger);
-                    var errorHandler = new ErrorHandler(_logger, translationHandler, _args.Contains("--expose-errors"));
+                    var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis);
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     _services.AddSingleton(_commands);
@@ -153,13 +167,13 @@ namespace Geekbot.net
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
 
-                    if (_firstStart || _args.Contains("--reset"))
+                    if (_firstStart || _runParameters.Reset)
                     {
                         _logger.Information("Geekbot", "Finishing setup");
                         await FinishSetup();
                         _logger.Information("Geekbot", "Setup finished");
                     }
-                    if (!_args.Contains("--disable-api"))
+                    if (!_runParameters.DisableApi)
                     {
                         StartWebApi();
                     }
@@ -210,31 +224,6 @@ namespace Geekbot.net
             catch (Exception e)
             {
                 _logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
-            }
-            return Task.CompletedTask;
-        }
-
-        private Task DiscordLogger(LogMessage message)
-        {
-            var logMessage = $"[{message.Source}] {message.Message}";
-            switch (message.Severity)
-            {
-                case LogSeverity.Verbose:
-                case LogSeverity.Debug:
-                    _logger.Debug(message.Source, message.Message);
-                    break;
-                case LogSeverity.Info:
-                    _logger.Information(message.Source, message.Message);
-                    break;
-                case LogSeverity.Critical:
-                case LogSeverity.Error:
-                case LogSeverity.Warning:
-                    if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
-                    _logger.Error(message.Source, message.Message, message.Exception);
-                    break;
-                default:
-                    _logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
-                    break;
             }
             return Task.CompletedTask;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Geekbot.net.Lib.Logger;
 
 namespace Geekbot.net.Lib.Media
 {
@@ -16,7 +17,7 @@ namespace Geekbot.net.Lib.Media
                 var rawFortunes = File.ReadAllText(path);
                 _fortuneArray = rawFortunes.Split("%");
                 _totalFortunes = _fortuneArray.Length;
-                logger.Debug("Geekbot", "Loaded {totalFortunes} Fortunes");
+                logger.Trace("Geekbot", $"Loaded {_totalFortunes} Fortunes");
             }
             else
             {
@@ -28,10 +29,5 @@ namespace Geekbot.net.Lib.Media
         {
             return _fortuneArray[new Random().Next(0, _totalFortunes)];
         }
-    }
-
-    public interface IFortunesProvider
-    {
-        string GetRandomFortune();
     }
 }
