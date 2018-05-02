@@ -4,6 +4,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CommandLine;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -26,11 +27,16 @@ namespace Geekbot.net
         private RedisValue _token;
         private IGeekbotLogger _logger;
         private IUserRepository _userRepository;
-        private string[] _args;
         private bool _firstStart;
+        private RunParameters _runParameters;
 
         private static void Main(string[] args)
         {
+            RunParameters runParameters = null;
+            Parser.Default.ParseArguments<RunParameters>(args)
+                .WithParsed(e => runParameters = e)
+                .WithNotParsed(_ => Environment.Exit(1));
+            
             var logo = new StringBuilder();
             logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
             logo.AppendLine(@" / ___| ____| ____| |/ / __ ) / _ \\_  _|");
@@ -40,11 +46,11 @@ namespace Geekbot.net
             logo.AppendLine("=========================================");
             Console.WriteLine(logo.ToString());
             var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
-            var logger = new GeekbotLogger(sumologicActive);
+            var logger = new GeekbotLogger(runParameters, sumologicActive);
             logger.Information("Geekbot", "Starting...");
             try
             {
-                new Program().MainAsync(args, logger).GetAwaiter().GetResult();
+                new Program().MainAsync(runParameters, logger).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -52,10 +58,10 @@ namespace Geekbot.net
             }
         }
 
-        private async Task MainAsync(string[] args, IGeekbotLogger logger)
+        private async Task MainAsync(RunParameters runParameters, IGeekbotLogger logger)
         {
             _logger = logger;
-            _args = args;
+            _runParameters = runParameters;
             logger.Information("Geekbot", "Initing Stuff");
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
@@ -132,7 +138,7 @@ namespace Geekbot.net
 
                     _logger.Information("Geekbot", "Registering Stuff");
                     var translationHandler = new TranslationHandler(_client.Guilds, _redis, _logger);
-                    var errorHandler = new ErrorHandler(_logger, translationHandler, _args.Contains("--expose-errors"));
+                    var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis);
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     _services.AddSingleton(_commands);
@@ -153,13 +159,13 @@ namespace Geekbot.net
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
 
-                    if (_firstStart || _args.Contains("--reset"))
+                    if (_firstStart || _runParameters.Reset)
                     {
                         _logger.Information("Geekbot", "Finishing setup");
                         await FinishSetup();
                         _logger.Information("Geekbot", "Setup finished");
                     }
-                    if (!_args.Contains("--disable-api"))
+                    if (!_runParameters.DisableApi)
                     {
                         StartWebApi();
                     }

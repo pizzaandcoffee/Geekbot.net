@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib
 {
     public class LoggerFactory
     {
-        public static Logger CreateNLog(bool sumologicActive)
+        public static Logger CreateNLog(RunParameters runParameters, bool sumologicActive)
         {
             var config = new LoggingConfiguration();
 
@@ -36,8 +36,9 @@ namespace Geekbot.net.Lib
             }
             else
             {
+                var minLevel = runParameters.Verbose ? LogLevel.Trace : LogLevel.Info;
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Trace, LogLevel.Fatal,
+                    new LoggingRule("*", minLevel, LogLevel.Fatal,
                         new ColoredConsoleTarget
                         {
                             Name = "Console",
@@ -47,7 +48,7 @@ namespace Geekbot.net.Lib
                     );
                 
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Trace, LogLevel.Fatal,
+                    new LoggingRule("*", minLevel, LogLevel.Fatal,
                         new FileTarget
                         {
                             Name = "File",
