@@ -43,7 +43,7 @@ namespace Geekbot.net.Lib.Logger
         
         public void Error(string source, string message, Exception stackTrace, object extra = null)
         {
-            _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
+            _logger.Error(CreateLogString("Error", source, message, stackTrace, extra));
         }
 
         private string CreateLogString(string type, string source, string message, Exception stackTrace = null, object extra = null)

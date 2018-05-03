@@ -52,7 +52,7 @@ namespace Geekbot.net.Commands.Utils.Changelog
                     });
                     var sb = new StringBuilder();
                     foreach (var commit in commits.Take(10))
-                        sb.AppendLine($"- {commit.Commit.Message} ({commit.Commit.AuthorDto.Date:yyyy-MM-dd})");
+                        sb.AppendLine($"- {commit.Commit.Message} ({commit.Commit.Author.Date:yyyy-MM-dd})");
                     eb.Description = sb.ToString();
                     eb.WithFooter(new EmbedFooterBuilder
                     {

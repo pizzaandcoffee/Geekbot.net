@@ -2,7 +2,7 @@
 {
     public class CommitInfoDto
     {
-        public CommitAuthorDto AuthorDto { get; set; }
+        public CommitAuthorDto Author { get; set; }
         public string Message { get; set; }
     }
 }
