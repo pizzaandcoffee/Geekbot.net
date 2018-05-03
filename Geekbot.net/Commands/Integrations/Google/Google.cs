@@ -48,13 +48,13 @@ namespace Geekbot.net.Commands.Integrations.Google
                         return;
                     }
 
-                    var data = response.ItemListElement.First().ResultDto;
+                    var data = response.ItemListElement.First().Result;
                     var eb = new EmbedBuilder();
                     eb.Title = data.Name;
                     if(!string.IsNullOrEmpty(data.Description)) eb.WithDescription(data.Description);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.Url)) eb.WithUrl(data.DetailedDtoDescription.Url);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.ArticleBody)) eb.AddField("Details", data.DetailedDtoDescription.ArticleBody);
-                    if(!string.IsNullOrEmpty(data.ImageDto?.ContentUrl)) eb.WithThumbnailUrl(data.ImageDto.ContentUrl);
+                    if(!string.IsNullOrEmpty(data.Image?.ContentUrl)) eb.WithThumbnailUrl(data.Image.ContentUrl);
                     
                     await ReplyAsync("", false, eb.Build());
                 }
