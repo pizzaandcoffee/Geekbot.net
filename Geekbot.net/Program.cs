@@ -116,9 +116,9 @@ namespace Geekbot.net
             var wikipediaClient = new WikipediaClient();
             var audioUtils = new AudioUtils();
             
-            _services.AddSingleton(_redis);
-            _services.AddSingleton(logger);
-            _services.AddSingleton(_userRepository);
+            _services.AddSingleton<IDatabase>(_redis);
+            _services.AddSingleton<IUserRepository>(_userRepository);
+            _services.AddSingleton<IGeekbotLogger>(logger);
             _services.AddSingleton<ILevelCalc>(levelCalc);
             _services.AddSingleton<IEmojiConverter>(emojiConverter);
             _services.AddSingleton<IFortunesProvider>(fortunes);
