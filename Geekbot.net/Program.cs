@@ -8,6 +8,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.Audio;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
@@ -113,6 +114,7 @@ namespace Geekbot.net
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
+            var audioUtils = new AudioUtils();
             
             _services.AddSingleton(_redis);
             _services.AddSingleton(logger);
@@ -124,6 +126,7 @@ namespace Geekbot.net
             _services.AddSingleton<IMalClient>(malClient);
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
+            _services.AddSingleton<IAudioUtils>(audioUtils);
 
             logger.Information("Geekbot", "Connecting to Discord");
 
