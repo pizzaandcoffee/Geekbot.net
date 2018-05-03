@@ -1,4 +1,4 @@
-﻿namespace Geekbot.net.Commands.User.Rank
+﻿namespace Geekbot.net.Commands.User.Ranking
 {
     internal class RankUserPolyfillDto
     {
