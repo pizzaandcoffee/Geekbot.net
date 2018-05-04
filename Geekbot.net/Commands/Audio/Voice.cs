@@ -18,7 +18,7 @@ namespace Geekbot.net.Commands.Audio
             _audioUtils = audioUtils;
         }
 
-        [Command("join")]
+//        [Command("join")]
         public async Task JoinChannel()
         {
             try
@@ -27,12 +27,10 @@ namespace Geekbot.net.Commands.Audio
                 var channel = (Context.User as IGuildUser)?.VoiceChannel;
                 if (channel == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        "User must be in a voice channel, or a voice channel must be passed as an argument.");
+                    await Context.Channel.SendMessageAsync("You must be in a voice channel.");
                     return;
                 }
 
-                // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
                 var audioClient = await channel.ConnectAsync();
                 _audioUtils.StoreAudioClient(Context.Guild.Id, audioClient);
                 await ReplyAsync($"Connected to {channel.Name}");
@@ -43,7 +41,7 @@ namespace Geekbot.net.Commands.Audio
             }
         }
 
-        [Command("disconnect")]
+//        [Command("disconnect")]
         public async Task DisconnectChannel()
         {
             try
@@ -66,7 +64,7 @@ namespace Geekbot.net.Commands.Audio
             }
         }
 
-        [Command("ytplay")]
+//        [Command("ytplay")]
         public async Task ytplay(string url)
         {
             try

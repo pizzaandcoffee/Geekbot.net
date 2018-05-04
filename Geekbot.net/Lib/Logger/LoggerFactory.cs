@@ -30,7 +30,7 @@ namespace Geekbot.net.Lib.Logger
                             OptimizeBufferReuse = true,
                             MessagesPerRequest = 10,
                             RetryInterval = 5000,
-                            Name = "GeekbotBeta"
+                            Name = "Geekbot"
                         })
                     );
             }
