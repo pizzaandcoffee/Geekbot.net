@@ -6,8 +6,8 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Newtonsoft.Json;
 using StackExchange.Redis;
-using Utf8Json;
 
 namespace Geekbot.net.Commands.Integrations.Google
 {
@@ -40,7 +40,7 @@ namespace Geekbot.net.Commands.Integrations.Google
                     
                     var url = new Uri($"https://kgsearch.googleapis.com/v1/entities:search?languages=en&limit=1&query={searchText}&key={apiKey}");
                     var responseString = client.DownloadString(url);
-                    var response = JsonSerializer.Deserialize<GoogleKgApiResponseDto>(responseString);
+                    var response = JsonConvert.DeserializeObject<GoogleKgApiResponseDto>(responseString);
 
                     if (!response.ItemListElement.Any())
                     {
@@ -48,13 +48,13 @@ namespace Geekbot.net.Commands.Integrations.Google
                         return;
                     }
 
-                    var data = response.ItemListElement.First().ResultDto;
+                    var data = response.ItemListElement.First().Result;
                     var eb = new EmbedBuilder();
                     eb.Title = data.Name;
                     if(!string.IsNullOrEmpty(data.Description)) eb.WithDescription(data.Description);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.Url)) eb.WithUrl(data.DetailedDtoDescription.Url);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.ArticleBody)) eb.AddField("Details", data.DetailedDtoDescription.ArticleBody);
-                    if(!string.IsNullOrEmpty(data.ImageDto?.ContentUrl)) eb.WithThumbnailUrl(data.ImageDto.ContentUrl);
+                    if(!string.IsNullOrEmpty(data.Image?.ContentUrl)) eb.WithThumbnailUrl(data.Image.ContentUrl);
                     
                     await ReplyAsync("", false, eb.Build());
                 }

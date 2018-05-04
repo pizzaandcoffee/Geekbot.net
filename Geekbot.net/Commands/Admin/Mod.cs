@@ -47,7 +47,7 @@ namespace Geekbot.net.Commands.Admin
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context,
-                    $"I don't have enough permissions to give {user.Username} that role");
+                    $"I don't have enough permissions do that");
             }
         }
 

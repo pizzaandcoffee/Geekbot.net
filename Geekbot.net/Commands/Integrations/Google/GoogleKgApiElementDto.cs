@@ -2,7 +2,7 @@
 {
     public class GoogleKgApiElementDto
     {
-        public GoogleKgApiResultDto ResultDto { get; set; }
+        public GoogleKgApiResultDto Result { get; set; }
         public double ResultScore { get; set; }
     }
 }

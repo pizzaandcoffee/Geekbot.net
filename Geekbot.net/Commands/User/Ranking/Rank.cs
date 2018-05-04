@@ -12,7 +12,7 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
 using StackExchange.Redis;
 
-namespace Geekbot.net.Commands.User.Rank
+namespace Geekbot.net.Commands.User.Ranking
 {
     public class Rank : ModuleBase
     {
@@ -37,8 +37,7 @@ namespace Geekbot.net.Commands.User.Rank
         [Command("rank", RunMode = RunMode.Async)]
         [Remarks(CommandCategories.Statistics)]
         [Summary("get user top 10 in messages or karma")]
-        public async Task RankCmd([Summary("type")] string typeUnformated = "messages",
-            [Summary("amount")] int amount = 10)
+        public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
         {
             try
             {

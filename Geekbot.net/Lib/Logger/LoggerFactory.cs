@@ -17,13 +17,13 @@ namespace Geekbot.net.Lib.Logger
             {
                 Console.WriteLine("Logging Geekbot Logs to Sumologic");
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Info, LogLevel.Fatal, 
+                    new LoggingRule("*", LogLevel.Debug, LogLevel.Fatal,
                         new BufferedSumoLogicTarget()
                         {
                             Url = Environment.GetEnvironmentVariable("GEEKBOT_SUMO"),
                             SourceName = "GeekbotLogger",
                             Layout = "${message}",
-                            UseConsoleLog = false,
+                            UseConsoleLog = true,
                             MaxQueueSizeBytes = 500000,
                             FlushingAccuracy = 250,
                             MaxFlushInterval = 10000,
@@ -38,11 +38,11 @@ namespace Geekbot.net.Lib.Logger
             {
                 var minLevel = runParameters.Verbose ? LogLevel.Trace : LogLevel.Info;
                 config.LoggingRules.Add(
-                    new LoggingRule("*", minLevel, LogLevel.Fatal,
+                    new LoggingRule("*", LogLevel.Info, LogLevel.Fatal,
                         new ColoredConsoleTarget
                         {
                             Name = "Console",
-                            Encoding = Encoding.Unicode,
+                            Encoding = Encoding.UTF8,
                             Layout = "[${longdate} ${level:format=FirstCharacter}] ${message} ${exception:format=toString}"
                         })
                     );
@@ -53,7 +53,7 @@ namespace Geekbot.net.Lib.Logger
                         {
                             Name = "File",
                             Layout = "[${longdate} ${level}] ${message}",
-                            Encoding = Encoding.Unicode,
+                            Encoding = Encoding.UTF8,
                             LineEnding = LineEndingMode.Default,
                             MaxArchiveFiles = 30,
                             ArchiveNumbering = ArchiveNumberingMode.Date,

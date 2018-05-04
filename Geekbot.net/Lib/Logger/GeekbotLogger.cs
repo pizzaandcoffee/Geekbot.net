@@ -23,7 +23,7 @@ namespace Geekbot.net.Lib.Logger
         
         public void Trace(string source, string message, object extra = null)
         {
-            _logger.Trace(CreateLogString("Debug", source, message, null, extra));
+            _logger.Trace(CreateLogString("Trace", source, message, null, extra));
         }
         
         public void Debug(string source, string message, object extra = null)
@@ -43,7 +43,7 @@ namespace Geekbot.net.Lib.Logger
         
         public void Error(string source, string message, Exception stackTrace, object extra = null)
         {
-            _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
+            _logger.Error(CreateLogString("Error", source, message, stackTrace, extra));
         }
 
         private string CreateLogString(string type, string source, string message, Exception stackTrace = null, object extra = null)
@@ -65,7 +65,7 @@ namespace Geekbot.net.Lib.Logger
             if (source != "Message") return $"[{source}] - {message}";
             
             var m = (MessageDto) extra; 
-            return $"[{source}] - [{m.Guild.Name} - {m.Channel.Name}] {m.User.Name}: {m.Message.Content}";
+            return $"[{source}] - [{m?.Guild.Name} - {m?.Channel.Name}] {m?.User.Name}: {m?.Message.Content}";
         }
     }
 }
