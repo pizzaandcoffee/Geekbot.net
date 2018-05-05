@@ -36,12 +36,12 @@ namespace Geekbot.net.Lib.UserRepository
                 }
                 Store(savedUser);
                 
-                _logger.Information("UserRepository", "Updated User", savedUser);
+                _logger.Information(LogSource.UserRepository, "Updated User", savedUser);
                 return Task.FromResult(true);
             }
             catch (Exception e)
             {
-                _logger.Warning("UserRepository", $"Failed to update user: {user.Username}#{user.Discriminator} ({user.Id})", e);
+                _logger.Warning(LogSource.UserRepository, $"Failed to update user: {user.Username}#{user.Discriminator} ({user.Id})", e);
                 return Task.FromResult(false);
             }
         }
@@ -103,7 +103,7 @@ namespace Geekbot.net.Lib.UserRepository
             }
             catch (Exception e)
             {
-                _logger.Warning("UserRepository", "Failed to get {userId} from repository", e);
+                _logger.Warning(LogSource.UserRepository, $"Failed to get {userId} from repository", e);
                 return new UserRepositoryUser();
             }
         }

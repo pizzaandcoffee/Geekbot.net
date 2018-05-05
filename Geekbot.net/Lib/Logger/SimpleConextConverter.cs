@@ -56,13 +56,13 @@ namespace Geekbot.net.Lib.Logger
                 },
                 Guild = new MessageDto.IdAndName
                 {
-                    Id = channel.Guild.Id.ToString(),
-                    Name = channel.Guild.Name
+                    Id = channel?.Guild?.Id.ToString(),
+                    Name = channel?.Guild?.Name
                 },
                 Channel = new MessageDto.IdAndName
                 {
-                    Id = channel.Id.ToString(),
-                    Name = channel.Name
+                    Id = channel?.Id.ToString(),
+                    Name = channel?.Name
                 }
             };
         }

@@ -22,7 +22,7 @@ namespace Geekbot.net.Lib.Localization
         {
             _logger = logger;
             _redis = redis;
-            _logger.Information("Geekbot", "Loading Translations");
+            _logger.Information(LogSource.Geekbot, "Loading Translations");
             LoadTranslations();
             LoadServerLanguages(clientGuilds);
         }
@@ -71,7 +71,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Failed to load Translations", e);
+                _logger.Error(LogSource.Geekbot, "Failed to load Translations", e);
                 Environment.Exit(110);
             }
         }
@@ -100,7 +100,7 @@ namespace Geekbot.net.Lib.Localization
             translation = _translations[command][stringName]["EN"];
             if (string.IsNullOrWhiteSpace(translation))
             {
-                _logger.Warning("Geekbot", $"No translation found for {command} - {stringName}");
+                _logger.Warning(LogSource.Geekbot, $"No translation found for {command} - {stringName}");
             }
             return translation;
         }
@@ -114,7 +114,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "lol nope", e);
+                _logger.Error(LogSource.Geekbot, "lol nope", e);
                 return new Dictionary<string, string>();    
             }
         }
@@ -127,7 +127,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "lol nope", e);
+                _logger.Error(LogSource.Geekbot, "lol nope", e);
                 return new Dictionary<string, string>();    
             }
         }
@@ -143,7 +143,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Error while changing language", e);
+                _logger.Error(LogSource.Geekbot, "Error while changing language", e);
                 return false;
             }
         }

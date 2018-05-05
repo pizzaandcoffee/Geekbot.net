@@ -22,7 +22,7 @@ namespace Geekbot.net.Lib.Media
             _random = new Random();
             _logger = logger;
 
-            logger.Information("Geekbot", "Loading Media Files");
+            logger.Information(LogSource.Geekbot, "Loading Media Files");
             
             LoadCheckem();
             LoadPandas();
@@ -38,56 +38,56 @@ namespace Geekbot.net.Lib.Media
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/checkEmPics"));
             _checkemImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_checkemImages.Length} CheckEm Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_checkemImages.Length} CheckEm Images");
         }
         
         private void LoadPandas()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pandas"));
             _pandaImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_pandaImages.Length} Panda Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_pandaImages.Length} Panda Images");
         }
         
         private void BakeCroissants()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/croissant"));
             _croissantImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_croissantImages.Length} Croissant Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_croissantImages.Length} Croissant Images");
         }
         
         private void LoadSquirrels()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/squirrel"));
             _squirrelImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_squirrelImages.Length} Squirrel Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_squirrelImages.Length} Squirrel Images");
         }
         
         private void LoadPumpkins()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pumpkin"));
             _pumpkinImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_pumpkinImages.Length} Pumpkin Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_pumpkinImages.Length} Pumpkin Images");
         }
         
         private void LoadTurtles()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/turtles"));
             _turtlesImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_turtlesImages.Length} Turtle Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_turtlesImages.Length} Turtle Images");
         }
         
         private void LoadPinguins()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/pinguins"));
             _pinguinImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_pinguinImages.Length} Pinguin Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_pinguinImages.Length} Pinguin Images");
         }
         
         private void LoadFoxes()
         {
             var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/foxes"));
             _foxImages = rawLinks.Split("\n");
-            _logger.Trace("Geekbot", $"Loaded {_foxImages.Length} Foxes Images");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_foxImages.Length} Foxes Images");
         }
         
         public string GetCheckem()

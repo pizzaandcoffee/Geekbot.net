@@ -55,14 +55,14 @@ namespace Geekbot.net
             Console.WriteLine(logo.ToString());
             var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
             var logger = new GeekbotLogger(runParameters, sumologicActive);
-            logger.Information("Geekbot", "Starting...");
+            logger.Information(LogSource.Geekbot, "Starting...");
             try
             {
                 new Program().MainAsync(runParameters, logger).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                logger.Error("Geekbot", "RIP", e);
+                logger.Error(LogSource.Geekbot, "RIP", e);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Geekbot.net
         {
             _logger = logger;
             _runParameters = runParameters;
-            logger.Information("Geekbot", "Initing Stuff");
+            logger.Information(LogSource.Geekbot, "Initing Stuff");
             var discordLogger = new DiscordLogger(logger);
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
@@ -85,11 +85,11 @@ namespace Geekbot.net
             {
                 var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
                 _redis = redisMultiplexer.GetDatabase(6);
-                logger.Information("Redis", $"Connected to db {_redis.Database}");
+                logger.Information(LogSource.Redis, $"Connected to db {_redis.Database}");
             }
             catch (Exception e)
             {
-                logger.Error("Redis", "Redis Connection Failed", e);
+                logger.Error(LogSource.Redis, "Redis Connection Failed", e);
                 Environment.Exit(102);
             }
             
@@ -128,7 +128,7 @@ namespace Geekbot.net
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
 
-            logger.Information("Geekbot", "Connecting to Discord");
+            logger.Information(LogSource.Geekbot, "Connecting to Discord");
 
             await Login();
 
@@ -145,9 +145,9 @@ namespace Geekbot.net
                 if (isConneted)
                 {
                     await _client.SetGameAsync(_redis.StringGet("Game"));
-                    _logger.Information("Geekbot", $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
+                    _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
-                    _logger.Information("Geekbot", "Registering Stuff");
+                    _logger.Information(LogSource.Geekbot, "Registering Stuff");
                     var translationHandler = new TranslationHandler(_client.Guilds, _redis, _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis);
@@ -172,21 +172,21 @@ namespace Geekbot.net
 
                     if (_firstStart || _runParameters.Reset)
                     {
-                        _logger.Information("Geekbot", "Finishing setup");
+                        _logger.Information(LogSource.Geekbot, "Finishing setup");
                         await FinishSetup();
-                        _logger.Information("Geekbot", "Setup finished");
+                        _logger.Information(LogSource.Geekbot, "Setup finished");
                     }
                     if (!_runParameters.DisableApi)
                     {
                         StartWebApi();
                     }
                     
-                    _logger.Information("Geekbot", "Done and ready for use");
+                    _logger.Information(LogSource.Geekbot, "Done and ready for use");
                 }
             }
             catch (Exception e)
             {
-                _logger.Error("Discord", "Could not connect...", e);
+                _logger.Error(LogSource.Geekbot, "Could not connect...", e);
                 Environment.Exit(103);
             }
         }
@@ -200,33 +200,23 @@ namespace Geekbot.net
 
         private void StartWebApi()
         {
-            _logger.Information("API", "Starting Webserver");
+            _logger.Information(LogSource.Api, "Starting Webserver");
             var webApiUrl = new Uri("http://localhost:12995");
             new NancyHost(webApiUrl).Start();
-            _logger.Information("API", $"Webserver now running on {webApiUrl}");
+            _logger.Information(LogSource.Api, $"Webserver now running on {webApiUrl}");
         }
 
         private async Task<Task> FinishSetup()
         {
-            var appInfo = await _client.GetApplicationInfoAsync();
-            _logger.Information("Setup", $"Just a moment while i setup everything {appInfo.Owner.Username}");
             try
             {
+                // ToDo: Set bot avatar
+                var appInfo = await _client.GetApplicationInfoAsync();
                 _redis.StringSet("botOwner", appInfo.Owner.Id);
-                var req = WebRequest.Create(appInfo.IconUrl);
-                using (var stream = req.GetResponse().GetResponseStream())
-                {
-                    await _client.CurrentUser.ModifyAsync(user =>
-                    {
-                        user.Avatar = new Image(stream);
-                        user.Username = appInfo.Name.ToString();
-                    });
-                }
-                _logger.Information("Setup", "Everything done, enjoy!");
             }
             catch (Exception e)
             {
-                _logger.Warning("Setup", "Oha, it seems like something went wrong while running the setup, geekbot will work never the less though", e);
+                _logger.Warning(LogSource.Geekbot, "Setup Failed, couldn't retrieve discord application data", e);
             }
             return Task.CompletedTask;
         }

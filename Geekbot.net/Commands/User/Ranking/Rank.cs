@@ -102,7 +102,7 @@ namespace Geekbot.net.Commands.User.Ranking
                     }
                     catch (Exception e)
                     {
-                        _logger.Warning("Geekbot", $"Could not retrieve user {user.Name}", e);
+                        _logger.Warning(LogSource.Geekbot, $"Could not retrieve user {user.Name}", e);
                     }
                 }
 

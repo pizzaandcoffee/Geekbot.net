@@ -26,7 +26,7 @@ namespace Geekbot.net.Lib.ErrorHandling
             if (!string.IsNullOrEmpty(sentryDsn))
             {
                 _raven = new RavenClient(sentryDsn);
-                _logger.Information("Geekbot", $"Command Errors will be logged to Sentry: {sentryDsn}");
+                _logger.Information(LogSource.Geekbot, $"Command Errors will be logged to Sentry: {sentryDsn}");
             }
             else
             {
@@ -42,14 +42,21 @@ namespace Geekbot.net.Lib.ErrorHandling
                 var errorObj = SimpleConextConverter.ConvertContext(context);
                 if (e.Message.Contains("50007")) return;
                 if (e.Message.Contains("50013")) return;
-                _logger.Error("Geekbot", "An error ocured", e, errorObj);
+                _logger.Error(LogSource.Geekbot, "An error ocured", e, errorObj);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     if (_errorsInChat)
                     {
-                        var resStackTrace = string.IsNullOrEmpty(e.InnerException?.ToString()) ? e.StackTrace : e.InnerException.ToString();
-                        var maxLen = Math.Min(resStackTrace.Length, 1850);
-                        context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace.Substring(0, maxLen)}\r\n```");
+                        var resStackTrace = string.IsNullOrEmpty(e.InnerException?.ToString()) ? e.StackTrace : e.InnerException?.ToString();
+                        if (!string.IsNullOrEmpty(resStackTrace))
+                        {
+                            var maxLen = Math.Min(resStackTrace.Length, 1850);
+                            context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace.Substring(0, maxLen)}\r\n```");
+                        }
+                        else
+                        {
+                            context.Channel.SendMessageAsync(e.Message);
+                        }
                     }
                     else
                     {
@@ -75,7 +82,7 @@ namespace Geekbot.net.Lib.ErrorHandling
             catch (Exception ex)
             {
                 context.Channel.SendMessageAsync("Something went really really wrong here");
-                _logger.Error("Geekbot", "Errorception", ex);
+                _logger.Error(LogSource.Geekbot, "Errorception", ex);
             }
         }
 

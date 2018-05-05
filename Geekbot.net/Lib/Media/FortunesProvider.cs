@@ -17,11 +17,11 @@ namespace Geekbot.net.Lib.Media
                 var rawFortunes = File.ReadAllText(path);
                 _fortuneArray = rawFortunes.Split("%");
                 _totalFortunes = _fortuneArray.Length;
-                logger.Trace("Geekbot", $"Loaded {_totalFortunes} Fortunes");
+                logger.Trace(LogSource.Geekbot, $"Loaded {_totalFortunes} Fortunes");
             }
             else
             {
-                logger.Information("Geekbot", $"Fortunes File not found at {path}");
+                logger.Information(LogSource.Geekbot, $"Fortunes File not found at {path}");
             }
         }
 

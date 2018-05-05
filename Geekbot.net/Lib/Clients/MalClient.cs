@@ -42,10 +42,10 @@ namespace Geekbot.net.Lib.Clients
                 }
                 _animeSearch = new AnimeSearchMethodsAsync(_credentials);
                 _mangaSearch = new MangaSearchMethodsAsync(_credentials);
-                _logger.Debug("Geekbot", "Logged in to MAL");
+                _logger.Debug(LogSource.Geekbot, "Logged in to MAL");
                 return true;
             }
-            _logger.Debug("Geekbot", "No MAL Credentials Set!");
+            _logger.Debug(LogSource.Geekbot, "No MAL Credentials Set!");
             return false;
             
         }

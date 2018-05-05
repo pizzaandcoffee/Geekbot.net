@@ -62,14 +62,14 @@ namespace Geekbot.net
                       message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return Task.CompletedTask;
                 var context = new CommandContext(_client, message);
                 var commandExec = _commands.ExecuteAsync(context, argPos, _servicesProvider);
-                _logger.Information("Command",
+                _logger.Information(LogSource.Command,
                     context.Message.Content.Split(" ")[0].Replace("!", ""),
                     SimpleConextConverter.ConvertContext(context));
                 return Task.CompletedTask;
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Failed to run commands", e);
+                _logger.Error(LogSource.Geekbot, "Failed to Process Message", e);
                 return Task.CompletedTask;
             }
         }
@@ -81,7 +81,7 @@ namespace Geekbot.net
                 if (message == null) return Task.CompletedTask;
                 if (message.Channel.Name.StartsWith('@'))
                 {
-                    _logger.Information("Message", "DM-Channel - {message.Channel.Name} - {message.Content}");
+                    _logger.Information(LogSource.Message, $"[DM-Channel] {message.Content}", SimpleConextConverter.ConvertSocketMessage(message));
                     return Task.CompletedTask;
                 }
                 var channel = (SocketGuildChannel) message.Channel;
@@ -90,11 +90,11 @@ namespace Geekbot.net
                 _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
                 if (message.Author.IsBot) return Task.CompletedTask;
-                _logger.Information("Message", message.Content, SimpleConextConverter.ConvertSocketMessage(message));
+                _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));
             }
             catch (Exception e)
             {
-                _logger.Error("Message", "Could not process message stats", e);
+                _logger.Error(LogSource.Message, "Could not process message stats", e);
             }
             return Task.CompletedTask;
         }
@@ -117,11 +117,11 @@ namespace Geekbot.net
                     }
                 }
                 _userRepository.Update(user);
-                _logger.Information("Geekbot", $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
+                _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Failed to send welcome message", e);
+                _logger.Error(LogSource.Geekbot, "Failed to send welcome message", e);
             }
             return Task.CompletedTask;
         }
@@ -149,9 +149,9 @@ namespace Geekbot.net
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Failed to send leave message", e);
+                _logger.Error(LogSource.Geekbot, "Failed to send leave message", e);
             }
-            _logger.Information("Geekbot", $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
+            _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
         }
         
         //
@@ -187,7 +187,7 @@ namespace Geekbot.net
             }
             catch (Exception e)
             {
-                _logger.Error("Geekbot", "Failed to send delete message...", e);
+                _logger.Error(LogSource.Geekbot, "Failed to send delete message...", e);
             }
         }
         

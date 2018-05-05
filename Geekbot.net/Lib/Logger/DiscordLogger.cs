@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord;
+using Geekbot.net.Commands.Randomness.Cat;
 
 namespace Geekbot.net.Lib.Logger
 {
@@ -14,26 +16,37 @@ namespace Geekbot.net.Lib.Logger
         
         public Task Log(LogMessage message)
         {
+            LogSource source;
+            try
+            {
+                source = Enum.Parse<LogSource>(message.Source);
+            }
+            catch
+            {
+                source = LogSource.Discord;
+                _logger.Warning(LogSource.Geekbot, $"Could not parse {message.Source} to a LogSource Enum");
+            }
+            
             var logMessage = $"[{message.Source}] {message.Message}";
             switch (message.Severity)
             {
                 case LogSeverity.Verbose:
-                    _logger.Trace(message.Source, message.Message);
+                    _logger.Trace(source, message.Message);
                     break;
                 case LogSeverity.Debug:
-                    _logger.Debug(message.Source, message.Message);
+                    _logger.Debug(source, message.Message);
                     break;
                 case LogSeverity.Info:
-                    _logger.Information(message.Source, message.Message);
+                    _logger.Information(source, message.Message);
                     break;
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
                 case LogSeverity.Warning:
                     if (logMessage.Contains("VOICE_STATE_UPDATE")) break;
-                    _logger.Error(message.Source, message.Message, message.Exception);
+                    _logger.Error(source, message.Message, message.Exception);
                     break;
                 default:
-                    _logger.Information(message.Source, $"{logMessage} --- {message.Severity}");
+                    _logger.Information(source, $"{logMessage} --- {message.Severity}");
                     break;
             }
             return Task.CompletedTask;
