@@ -43,7 +43,7 @@ namespace Geekbot.net
             RunParameters runParameters = null;
             Parser.Default.ParseArguments<RunParameters>(args)
                 .WithParsed(e => runParameters = e)
-                .WithNotParsed(_ => Environment.Exit(1));
+                .WithNotParsed(_ => Environment.Exit(GeekbotExitCode.InvalidArguments.GetHashCode()));
             
             var logo = new StringBuilder();
             logo.AppendLine(@"  ____ _____ _____ _  ______   ___ _____");
@@ -90,10 +90,10 @@ namespace Geekbot.net
             catch (Exception e)
             {
                 logger.Error(LogSource.Redis, "Redis Connection Failed", e);
-                Environment.Exit(102);
+                Environment.Exit(GeekbotExitCode.RedisConnectionFailed.GetHashCode());
             }
             
-            _token = runParameters.Token ??_redis.StringGet("discordToken");
+            _token = runParameters.Token ?? _redis.StringGet("discordToken");
             if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
@@ -187,7 +187,7 @@ namespace Geekbot.net
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Could not connect...", e);
-                Environment.Exit(103);
+                Environment.Exit(GeekbotExitCode.CouldNotLogin.GetHashCode());
             }
         }
 

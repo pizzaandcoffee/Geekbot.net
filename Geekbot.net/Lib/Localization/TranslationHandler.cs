@@ -72,7 +72,7 @@ namespace Geekbot.net.Lib.Localization
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Failed to load Translations", e);
-                Environment.Exit(110);
+                Environment.Exit(GeekbotExitCode.TranslationsFailed.GetHashCode());
             }
         }
         
@@ -114,8 +114,8 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error(LogSource.Geekbot, "lol nope", e);
-                return new Dictionary<string, string>();    
+                _logger.Error(LogSource.Geekbot, "No translations for command found", e);
+                return new Dictionary<string, string>();
             }
         }
         
@@ -127,7 +127,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error(LogSource.Geekbot, "lol nope", e);
+                _logger.Error(LogSource.Geekbot, "No translations for command found", e);
                 return new Dictionary<string, string>();    
             }
         }
