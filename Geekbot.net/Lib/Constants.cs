@@ -1,9 +1,16 @@
-﻿namespace Geekbot.net.Lib
+﻿using System.Reflection;
+
+namespace Geekbot.net.Lib
 {
     public class Constants
     {
         public const string Name = "Geekbot";
-        public const double BotVersion = 3.7;
+
+        public static string BotVersion()
+        {
+            return typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        }
+
         public const double ApiVersion = 1;
     }
 }

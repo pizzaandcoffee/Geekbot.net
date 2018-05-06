@@ -11,7 +11,7 @@ namespace Geekbot.net.WebApi.Status
             {
                 var responseBody = new ApiStatusDto
                 {
-                    GeekbotVersion = Constants.BotVersion.ToString(),
+                    GeekbotVersion = Constants.BotVersion(),
                     ApiVersion = Constants.ApiVersion.ToString(),
                     Status = "Online"
                 };

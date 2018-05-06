@@ -22,7 +22,7 @@ build:
   script:
     - dotnet restore
     - dotnet test Tests
-    - dotnet publish --configuration Release -o Binaries ./
+    - dotnet publish --version-suffix ${CI_COMMIT_SHA:0:8} --configuration Release -o Binaries ./
 
 deploy:
   stage: deploy

@@ -37,7 +37,7 @@ namespace Geekbot.net.Commands.Utils
 
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(_client.CurrentUser.GetAvatarUrl())
-                    .WithName($"{Constants.Name} V{Constants.BotVersion}"));
+                    .WithName($"{Constants.Name} V{Constants.BotVersion()}"));
                 var botOwner = await Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner")));
                 var uptime = DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime);
 

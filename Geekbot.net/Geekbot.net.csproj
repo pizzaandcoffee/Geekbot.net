@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ApplicationIcon>derp.ico</ApplicationIcon>
     <Version>3.7.0</Version>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
     <Company>Pizza and Coffee Studios</Company>
     <Authors>Pizza and Coffee Studios</Authors>
     <Description>A Discord bot</Description>
