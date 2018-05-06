@@ -1,5 +1,9 @@
-﻿namespace Geekbot.net.Lib.Logger
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace Geekbot.net.Lib.Logger
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum LogSource
     {
         Geekbot,
