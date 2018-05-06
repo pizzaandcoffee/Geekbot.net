@@ -18,19 +18,15 @@ namespace Geekbot.net.Lib.Logger
                 Console.WriteLine("Logging Geekbot Logs to Sumologic");
                 config.LoggingRules.Add(
                     new LoggingRule("*", LogLevel.Debug, LogLevel.Fatal,
-                        new BufferedSumoLogicTarget()
+                        new SumoLogicTarget()
                         {
                             Url = Environment.GetEnvironmentVariable("GEEKBOT_SUMO"),
                             SourceName = "GeekbotLogger",
                             Layout = "${message}",
-                            UseConsoleLog = true,
-                            MaxQueueSizeBytes = 500000,
-                            FlushingAccuracy = 250,
-                            MaxFlushInterval = 10000,
+                            UseConsoleLog = false,
                             OptimizeBufferReuse = true,
-                            MessagesPerRequest = 10,
-                            RetryInterval = 5000,
-                            Name = "Geekbot"
+                            Name = "Geekbot",
+                            AppendException = false
                         })
                     );
             }

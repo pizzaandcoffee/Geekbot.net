@@ -2,7 +2,7 @@
 
 namespace Geekbot.net.Lib
 {
-    public class Constants
+    public static class Constants
     {
         public const string Name = "Geekbot";
 
