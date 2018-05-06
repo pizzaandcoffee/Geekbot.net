@@ -51,9 +51,9 @@ namespace Geekbot.net.Commands.Utils.Dice
                 return;
             }
 
-            if (dices.Any(d => d.Sides > 120))
+            if (dices.Any(d => d.Sides > 144))
             {
-                await ReplyAsync("A dice can't have more than 120 sides");
+                await ReplyAsync("A dice can't have more than 144 sides");
                 return;
             }
 
