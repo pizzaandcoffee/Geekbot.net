@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Polyfills;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -30,6 +31,11 @@ namespace Geekbot.net.Commands.Utils.Quote
             try
             {
                 var randomQuotes = _redis.SetMembers($"{Context.Guild.Id}:Quotes");
+                if (!randomQuotes.Any())
+                {
+                    await ReplyAsync("This server doesn't seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save <messageId>`");
+                    return;
+                }
                 var randomNumber = new Random().Next(randomQuotes.Length - 1);
                 var randomQuote = randomQuotes[randomNumber];
                 var quote = JsonConvert.DeserializeObject<QuoteObjectDto>(randomQuote);
@@ -62,6 +68,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                 }
 
                 var lastMessage = await GetLastMessageByUser(user);
+                if (lastMessage == null) return;
                 var quote = CreateQuoteObject(lastMessage);
                 var quoteStore = JsonConvert.SerializeObject(quote);
                 _redis.SetAdd($"{Context.Guild.Id}:Quotes", quoteStore);
@@ -116,6 +123,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             try
             {
                 var lastMessage = await GetLastMessageByUser(user);
+                if (lastMessage == null) return;
                 var quote = CreateQuoteObject(lastMessage);
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
@@ -178,18 +186,26 @@ namespace Geekbot.net.Commands.Utils.Quote
 
         private async Task<IMessage> GetLastMessageByUser(IUser user)
         {
-            var list = Context.Channel.GetMessagesAsync().Flatten();
-            await list;
-            return list.Result
-                .First(msg => msg.Author.Id == user.Id
-                              && msg.Embeds.Count == 0
-                              && msg.Id != Context.Message.Id
-                              && !msg.Content.ToLower().StartsWith("!"));
+            try
+            {
+                var list = Context.Channel.GetMessagesAsync().Flatten();
+                await list;
+                return list.Result
+                    .First(msg => msg.Author.Id == user.Id
+                                  && msg.Embeds.Count == 0
+                                  && msg.Id != Context.Message.Id
+                                  && !msg.Content.ToLower().StartsWith("!"));
+            }
+            catch
+            {
+                await ReplyAsync($"No quoteable message have been sent by {user.Username} in this channel");
+                return null;
+            }
         }
 
         private EmbedBuilder QuoteBuilder(QuoteObjectDto quote, int id = 0)
         {
-            var user = Context.Client.GetUserAsync(quote.UserId).Result;
+            var user = Context.Client.GetUserAsync(quote.UserId).Result ?? new UserPolyfillDto { Username = "Unknown User" };
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
             eb.Title = id == 0 ? "" : $"#{id} | ";
