@@ -28,7 +28,8 @@ namespace Geekbot.net.Lib.Logger
         
         public void Debug(LogSource source, string message, object extra = null)
         {
-            _logger.Debug(CreateLogString("Debug", source, message, null, extra));
+            if (_logAsJson) _logger.Info(CreateLogString("Debug", source, message, null, extra));
+            else _logger.Debug(CreateLogString("Debug", source, message, null, extra));
         }
         
         public void Information(LogSource source, string message, object extra = null)
@@ -38,12 +39,13 @@ namespace Geekbot.net.Lib.Logger
         
         public void Warning(LogSource source, string message, Exception stackTrace = null, object extra = null)
         {
-            _logger.Warn(CreateLogString("Warning", source, message, stackTrace, extra));
+            if (_logAsJson) _logger.Info(CreateLogString("Warning", source, message, stackTrace, extra));
+            else _logger.Warn(CreateLogString("Warning", source, message, stackTrace, extra));
         }
         
         public void Error(LogSource source, string message, Exception stackTrace, object extra = null)
         {
-            if (_logAsJson) _logger.Error(CreateLogString("Error", source, message, stackTrace, extra));
+            if (_logAsJson) _logger.Info(CreateLogString("Error", source, message, stackTrace, extra));
             else _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
         }
 
