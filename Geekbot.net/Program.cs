@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -7,6 +8,7 @@ using CommandLine;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Audio;
 using Geekbot.net.Lib.Clients;
@@ -18,6 +20,7 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using StackExchange.Redis;
@@ -104,6 +107,18 @@ namespace Geekbot.net
                 _firstStart = true;
             }
 
+            DatabaseContext database = null;
+            try
+            {
+                database = new DatabaseContext();
+                database.Database.EnsureCreated();
+            }
+            catch (Exception e)
+            {
+                logger.Error(LogSource.Geekbot, "Could not Connect to datbase", e);
+                Environment.Exit(GeekbotExitCode.DatabaseConnectionFailed.GetHashCode());
+            }
+
             _services = new ServiceCollection();
             
             _userRepository = new UserRepository(_redis, logger);
@@ -127,6 +142,7 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
+            _services.AddSingleton<DatabaseContext>(database);
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
 

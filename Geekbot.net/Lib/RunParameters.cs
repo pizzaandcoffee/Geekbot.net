@@ -22,5 +22,8 @@ namespace Geekbot.net.Lib
         
         [Option("token", Default = null, HelpText = "Set a new bot token")]
         public string Token { get; set; }
+        
+        [Option("in-memory", Default = false, HelpText = "Disables the web api")]
+        public bool InMemory { get; set; }
     }
 }

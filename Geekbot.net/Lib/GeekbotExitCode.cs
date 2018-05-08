@@ -11,6 +11,7 @@
         
         // Dependent Services
         RedisConnectionFailed = 301,
+        DatabaseConnectionFailed = 302,
         
         // Discord Related
         CouldNotLogin = 401
