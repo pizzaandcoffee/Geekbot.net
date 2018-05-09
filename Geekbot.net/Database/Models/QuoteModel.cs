@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
-namespace Geekbot.net.Database
+namespace Geekbot.net.Database.Models
 {
     public class QuoteModel
     {
@@ -13,10 +12,10 @@ namespace Geekbot.net.Database
         public int InternalId { get; set; }
         
         [Required]
-        public ulong GuildId { get; set; }
+        public long GuildId { get; set; }
         
         [Required]
-        public ulong UserId { get; set; }
+        public long UserId { get; set; }
         
         [Required]
         [DataType(DataType.DateTime)]

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Geekbot.net.Database
 {
@@ -13,7 +12,6 @@ namespace Geekbot.net.Database
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseLoggerFactory(new LoggerFactory().AddConsole())
-                .UseMySql(_connectionString.ToString());
+            => optionsBuilder.UseNpgsql(_connectionString.ToString());
     }
 }

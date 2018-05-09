@@ -5,6 +5,9 @@ namespace Geekbot.net.Lib
 {
     public class RunParameters
     {
+        /**
+         * General Parameters
+         */
         [Option('V', "verbose", Default = false, HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }
 
@@ -23,7 +26,26 @@ namespace Geekbot.net.Lib
         [Option("token", Default = null, HelpText = "Set a new bot token")]
         public string Token { get; set; }
         
-        [Option("in-memory", Default = false, HelpText = "Disables the web api")]
+        /**
+         * Database Stuff
+         */
+        [Option("in-memory", Default = false, HelpText = "Uses the in-memory database instead of postgresql")]
         public bool InMemory { get; set; }
+        
+        // Postresql connection
+        [Option("database", Default = false, HelpText = "Select a postgresql database")]
+        public string DbDatabase { get; set; } = "geekbot";
+
+        [Option("db-host", Default = false, HelpText = "Set a postgresql host (e.g. 127.0.0.1)")]
+        public string DbHost { get; set; } = "localhost";
+        
+        [Option("db-port", Default = false, HelpText = "Set a postgresql host (e.g. 5432)")]
+        public string DbPort { get; set; } = "5432";
+
+        [Option("db-user", Default = false, HelpText = "Set a postgresql user")]
+        public string DbUser { get; set; } = "geekbot";
+
+        [Option("db-password", Default = false, HelpText = "Set a posgresql password")]
+        public string DbPassword { get; set; } = "";
     }
 }

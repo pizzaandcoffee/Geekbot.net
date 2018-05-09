@@ -1,6 +1,8 @@
 ﻿using System;
+using Geekbot.net.Database.LoggingAdapter;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Logger;
+using Npgsql.Logging;
 
 namespace Geekbot.net.Database
 {
@@ -26,9 +28,16 @@ namespace Geekbot.net.Database
                 }
                 else
                 {
-                    database = new SqlDatabase(new SqlConnectionString());
+                    NpgsqlLogManager.Provider = new NpgsqlLoggingProviderAdapter(_logger);
+                    database = new SqlDatabase(new SqlConnectionString
+                    {
+                        Host = _runParameters.DbHost,
+                        Port = _runParameters.DbPort,
+                        Database = _runParameters.DbDatabase,
+                        Username = _runParameters.DbUser,
+                        Password = _runParameters.DbPassword
+                    });
                 }
-
                 database.Database.EnsureCreated();
             }
             catch (Exception e)
@@ -36,7 +45,8 @@ namespace Geekbot.net.Database
                 _logger.Error(LogSource.Geekbot, "Could not Connect to datbase", e);
                 Environment.Exit(GeekbotExitCode.DatabaseConnectionFailed.GetHashCode());
             }
-
+            
+            _logger.Information(LogSource.Database, $"Connected with {database.Database.ProviderName}");
             return database;
         }
     }

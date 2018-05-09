@@ -13,7 +13,6 @@ namespace Geekbot.net.Database
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseLoggerFactory(new LoggerFactory().AddConsole())
-                .UseInMemoryDatabase(databaseName: _name);
+            => optionsBuilder.UseInMemoryDatabase(databaseName: _name);
     }
 }

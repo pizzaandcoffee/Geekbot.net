@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Polyfills;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Utils.Quote
@@ -33,7 +34,7 @@ namespace Geekbot.net.Commands.Utils.Quote
         {
             try
             {
-                var s = _database.Quotes.OrderBy(e => e.GuildId).Where(e => e.GuildId.Equals(Context.Guild.Id)).ToList();
+                var s = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).ToList();
                 
                 if (!s.Any())
                 {
@@ -41,8 +42,8 @@ namespace Geekbot.net.Commands.Utils.Quote
                     return;
                 }
 
-                var random = new Random().Next(1, s.Count());
-                var quote = s[random - 1];
+                var random = new Random().Next(s.Count());
+                var quote = s[random];
                 
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
@@ -172,7 +173,7 @@ namespace Geekbot.net.Commands.Utils.Quote
        {
            try
            {
-               var quote = _database.Quotes.Where(e => e.GuildId == Context.Guild.Id && e.InternalId == id)?.FirstOrDefault();
+               var quote = _database.Quotes.Where(e => e.GuildId == Context.Guild.Id.AsLong() && e.InternalId == id)?.FirstOrDefault();
                if (quote != null)
                {
                    _database.Quotes.Remove(quote);
@@ -212,7 +213,7 @@ namespace Geekbot.net.Commands.Utils.Quote
 
         private EmbedBuilder QuoteBuilder(QuoteModel quote)
         {
-            var user = Context.Client.GetUserAsync(quote.UserId).Result ?? new UserPolyfillDto { Username = "Unknown User" };
+            var user = Context.Client.GetUserAsync(quote.UserId.AsUlong()).Result ?? new UserPolyfillDto { Username = "Unknown User" };
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
             eb.Title = $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
@@ -234,12 +235,15 @@ namespace Geekbot.net.Commands.Utils.Quote
                 image = null;
             }
 
-            var internalId = _database.Quotes.Count(e => e.GuildId == Context.Guild.Id);
+            var last = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+                                 .OrderByDescending(e => e.InternalId).FirstOrDefault();
+            int internalId = 1;
+            if (last != null) internalId = last.InternalId + 1;
             return new QuoteModel()
             {
                 InternalId = internalId,
-                GuildId = Context.Guild.Id,
-                UserId = message.Author.Id,
+                GuildId = Context.Guild.Id.AsLong(),
+                UserId = message.Author.Id.AsLong(),
                 Time = message.Timestamp.DateTime,
                 Quote = message.Content,
                 Image = image

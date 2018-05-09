@@ -34,7 +34,7 @@ namespace Geekbot.net.Lib.Logger
             {
                 var minLevel = runParameters.Verbose ? LogLevel.Trace : LogLevel.Info;
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Info, LogLevel.Fatal,
+                    new LoggingRule("*", minLevel, LogLevel.Fatal,
                         new ColoredConsoleTarget
                         {
                             Name = "Console",

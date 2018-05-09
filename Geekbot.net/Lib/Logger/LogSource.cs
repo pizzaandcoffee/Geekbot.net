@@ -11,6 +11,7 @@ namespace Geekbot.net.Lib.Logger
         Gateway,
         Discord,
         Redis,
+        Database,
         Message,
         UserRepository,
         Command,

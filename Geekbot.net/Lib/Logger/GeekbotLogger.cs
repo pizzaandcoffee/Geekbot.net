@@ -49,6 +49,16 @@ namespace Geekbot.net.Lib.Logger
             else _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
         }
 
+        public NLog.Logger GetNLogger()
+        {
+            return _logger;
+        }
+
+        public bool LogAsJson()
+        {
+            return _logAsJson;
+        }
+
         private string CreateLogString(string type, LogSource source, string message, Exception stackTrace = null, object extra = null)
         {
             if (_logAsJson)
