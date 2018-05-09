@@ -33,18 +33,18 @@ namespace Geekbot.net.Commands.Utils.Quote
         {
             try
             {
-                var s = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id));
-                var totalQuotes = s.Count();
+                var s = _database.Quotes.OrderBy(e => e.GuildId).Where(e => e.GuildId.Equals(Context.Guild.Id)).ToList();
                 
-                if (totalQuotes > 0)
+                if (!s.Any())
                 {
                     await ReplyAsync("This server doesn't seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save <messageId>`");
                     return;
                 }
-                var quote = s.Where(e => e.Id.Equals(new Random().Next(totalQuotes)))?.FirstOrDefault();
+
+                var random = new Random().Next(1, s.Count());
+                var quote = s[random - 1];
                 
-                
-                var embed = QuoteBuilder(quote, 2);
+                var embed = QuoteBuilder(quote);
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
@@ -76,7 +76,8 @@ namespace Geekbot.net.Commands.Utils.Quote
                 if (lastMessage == null) return;
                 
                 var quote = CreateQuoteObject(lastMessage);
-                await _database.Quotes.AddAsync(quote);
+                _database.Quotes.Add(quote);
+                _database.SaveChanges();
 
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
@@ -109,7 +110,8 @@ namespace Geekbot.net.Commands.Utils.Quote
                 }
 
                 var quote = CreateQuoteObject(message);
-                await _database.Quotes.AddAsync(quote);
+                _database.Quotes.Add(quote);
+                _database.SaveChanges();
                 
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
@@ -168,27 +170,25 @@ namespace Geekbot.net.Commands.Utils.Quote
        [Summary("Remove a quote (required mod permissions)")]
        public async Task RemoveQuote([Summary("quoteId")] int id)
        {
-           await ReplyAsync("Command currently Disabled");
-        //    try
-        //    {
-        //        var quotes = _redis.SetMembers($"{Context.Guild.Id}:Quotes");
-        //        var success = _redis.SetRemove($"{Context.Guild.Id}:Quotes", quotes[id - 1]);
-        //        if (success)
-        //        {
-        //            var quote = JsonConvert.DeserializeObject<QuoteObjectDto>(quotes[id - 1]);
-        //            var embed = QuoteBuilder(quote);
-        //            await ReplyAsync($"**Removed #{id}**", false, embed.Build());
-        //        } 
-        //        else
-        //        {
-        //            await ReplyAsync("I couldn't find a quote with that id :disappointed:");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _errorHandler.HandleCommandException(e, Context,
-        //            "I couldn't find a quote with that id :disappointed:");
-        //    }
+           try
+           {
+               var quote = _database.Quotes.Where(e => e.GuildId == Context.Guild.Id && e.InternalId == id)?.FirstOrDefault();
+               if (quote != null)
+               {
+                   _database.Quotes.Remove(quote);
+                   _database.SaveChanges();
+                   var embed = QuoteBuilder(quote);
+                   await ReplyAsync($"**Removed #{id}**", false, embed.Build());
+               }
+               else
+               {
+                   await ReplyAsync("I couldn't find a quote with that id :disappointed:");
+               }
+           }
+           catch (Exception e)
+           {
+               _errorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
+           }
        }
 
         private async Task<IMessage> GetLastMessageByUser(IUser user)
@@ -210,13 +210,12 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
         }
 
-        private EmbedBuilder QuoteBuilder(QuoteModel quote, int id = 0)
+        private EmbedBuilder QuoteBuilder(QuoteModel quote)
         {
             var user = Context.Client.GetUserAsync(quote.UserId).Result ?? new UserPolyfillDto { Username = "Unknown User" };
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
-            eb.Title = id == 0 ? "" : $"#{id} | ";
-            eb.Title += $"{user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
+            eb.Title = $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
             eb.Description = quote.Quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
             if (quote.Image != null) eb.ImageUrl = quote.Image;
@@ -235,8 +234,10 @@ namespace Geekbot.net.Commands.Utils.Quote
                 image = null;
             }
 
+            var internalId = _database.Quotes.Count(e => e.GuildId == Context.Guild.Id);
             return new QuoteModel()
             {
+                InternalId = internalId,
                 GuildId = Context.Guild.Id,
                 UserId = message.Author.Id,
                 Time = message.Timestamp.DateTime,

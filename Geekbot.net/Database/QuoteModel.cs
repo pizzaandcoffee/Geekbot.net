@@ -8,10 +8,22 @@ namespace Geekbot.net.Database
     {
         [Key]
         public int Id { get; set; }
+        
+        [Required]
+        public int InternalId { get; set; }
+        
+        [Required]
         public ulong GuildId { get; set; }
+        
+        [Required]
         public ulong UserId { get; set; }
-        public string Quote { get; set; }
+        
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime Time { get; set; }
+        
+        public string Quote { get; set; }
+        
         public string Image { get; set; }
     }
 }
