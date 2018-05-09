@@ -107,17 +107,7 @@ namespace Geekbot.net
                 _firstStart = true;
             }
 
-            DatabaseContext database = null;
-            try
-            {
-                database = new DatabaseContext();
-                database.Database.EnsureCreated();
-            }
-            catch (Exception e)
-            {
-                logger.Error(LogSource.Geekbot, "Could not Connect to datbase", e);
-                Environment.Exit(GeekbotExitCode.DatabaseConnectionFailed.GetHashCode());
-            }
+            var database = new DatabaseInitializer(runParameters, logger).Initzialize();
 
             _services = new ServiceCollection();
             
