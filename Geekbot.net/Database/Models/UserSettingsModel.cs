@@ -2,19 +2,14 @@
 
 namespace Geekbot.net.Database.Models
 {
-    public class SlapsModel
+    public class UserSettingsModel
     {
         [Key]
         public int Id { get; set; }
         
         [Required]
-        public long GuildId { get; set; }
-        
-        [Required]
         public long UserId { get; set; }
         
-        public int Given { get; set; }
-        
-        public int Recieved { get; set; }
+        // stuff to be added in the future
     }
 }

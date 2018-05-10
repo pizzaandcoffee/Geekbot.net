@@ -18,11 +18,9 @@ namespace Geekbot.net.Commands.Utils.Quote
     {
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
-        private readonly IDatabase _redis;
 
-        public Quote(IDatabase redis, IErrorHandler errorHandler, DatabaseContext database)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database)
         {
-            _redis = redis;
             _errorHandler = errorHandler;
             _database = database;
         }

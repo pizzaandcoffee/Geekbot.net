@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Logger;
@@ -17,17 +18,19 @@ namespace Geekbot.net.Commands.Admin
     {
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
+        private readonly DatabaseContext _database;
         private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
 
-        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler)
+        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database)
         {
             _redis = redis;
             _client = client;
             _logger = logger;
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
+            _database = database;
         }
 
         [Command("youtubekey", RunMode = RunMode.Async)]

@@ -111,7 +111,7 @@ namespace Geekbot.net
 
             _services = new ServiceCollection();
             
-            _userRepository = new UserRepository(_redis, logger);
+            _userRepository = new UserRepository(database, logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
             var malClient = new MalClient(_redis, logger);

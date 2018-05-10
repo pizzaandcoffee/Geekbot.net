@@ -103,7 +103,7 @@ namespace Geekbot.net
         // User Stuff
         //
         
-        public Task UserJoined(SocketGuildUser user)
+        public async Task UserJoined(SocketGuildUser user)
         {
             try
             {
@@ -113,23 +113,21 @@ namespace Geekbot.net
                     if (!message.IsNullOrEmpty)
                     {
                         message = message.ToString().Replace("$user", user.Mention);
-                        user.Guild.DefaultChannel.SendMessageAsync(message);
+                        await user.Guild.DefaultChannel.SendMessageAsync(message);
                     }
                 }
-                _userRepository.Update(user);
+                await _userRepository.Update(user);
                 _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Failed to send welcome message", e);
             }
-            return Task.CompletedTask;
         }
 
-        public Task UserUpdated(SocketUser oldUser, SocketUser newUser)
+        public async Task UserUpdated(SocketUser oldUser, SocketUser newUser)
         {
-            _userRepository.Update(newUser);
-            return Task.CompletedTask;
+            await _userRepository.Update(newUser);
         }
 
         public async Task UserLeft(SocketGuildUser user)

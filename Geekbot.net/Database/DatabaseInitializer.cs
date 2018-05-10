@@ -2,6 +2,7 @@
 using Geekbot.net.Database.LoggingAdapter;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Logger;
+using Microsoft.EntityFrameworkCore;
 using Npgsql.Logging;
 
 namespace Geekbot.net.Database
@@ -39,6 +40,7 @@ namespace Geekbot.net.Database
                     });
                 }
                 database.Database.EnsureCreated();
+                database.Database.Migrate();
             }
             catch (Exception e)
             {

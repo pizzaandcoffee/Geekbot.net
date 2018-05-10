@@ -81,7 +81,7 @@ namespace Geekbot.net.Commands.User.Ranking
                     try
                     {
                         var guildUser = _userRepository.Get((ulong) user.Name);
-                        if (guildUser.Username != null)
+                        if (guildUser?.Username != null)
                         {
                             highscoreUsers.Add(new RankUserPolyfillDto
                             {
