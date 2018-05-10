@@ -15,9 +15,8 @@ namespace Geekbot.net.Database.Models
         public string Name { get; set; }
         
         [Required]
-        public string Owner { get; set; }
+        public long Owner { get; set; }
         
-        [Required]
         public string IconUrl { get; set; }
         
         public DateTimeOffset CreatedAt { get; set; }

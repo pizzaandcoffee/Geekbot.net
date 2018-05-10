@@ -3,22 +3,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.User
 {
     public class GuildInfo : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
+        private readonly DatabaseContext _database;
         private readonly ILevelCalc _levelCalc;
-        private readonly IDatabase _redis;
 
-        public GuildInfo(IDatabase redis, ILevelCalc levelCalc, IErrorHandler errorHandler)
+        public GuildInfo(DatabaseContext database, ILevelCalc levelCalc, IErrorHandler errorHandler)
         {
-            _redis = redis;
+            _database = database;
             _levelCalc = levelCalc;
             _errorHandler = errorHandler;
         }
@@ -39,7 +40,9 @@ namespace Geekbot.net.Commands.User
                 var created = Context.Guild.CreatedAt;
                 var age = Math.Floor((DateTime.Now - created).TotalDays);
 
-                var messages = _redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                var messages = _database.Messages
+                    .Where(e => e.GuildId == Context.Guild.Id.AsLong())
+                    .Sum(e => e.MessageCount);
                 var level = _levelCalc.GetLevel((int) messages);
 
                 eb.AddField("Server Age", $"{created.Day}/{created.Month}/{created.Year} ({age} days)");
