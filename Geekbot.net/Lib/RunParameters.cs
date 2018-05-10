@@ -17,7 +17,7 @@ namespace Geekbot.net.Lib
         [Option('j', "log-json", Default = false, HelpText = "Logs messages as json")]
         public bool LogJson { get; set; }
 
-        [Option("disable-api", Default = false, HelpText = "Disables the web api")]
+        [Option('a', "disable-api", Default = false, HelpText = "Disables the web api")]
         public bool DisableApi { get; set; }
 
         [Option('e', "expose-errors", Default = false, HelpText = "Shows internal errors in the chat")]
@@ -33,19 +33,19 @@ namespace Geekbot.net.Lib
         public bool InMemory { get; set; }
         
         // Postresql connection
-        [Option("database", Default = false, HelpText = "Select a postgresql database")]
-        public string DbDatabase { get; set; } = "geekbot";
+        [Option("database", Default = "geekbot", HelpText = "Select a postgresql database")]
+        public string DbDatabase { get; set; }
 
-        [Option("db-host", Default = false, HelpText = "Set a postgresql host (e.g. 127.0.0.1)")]
-        public string DbHost { get; set; } = "localhost";
+        [Option("db-host", Default = "localhost", HelpText = "Set a postgresql host (e.g. 127.0.0.1)")]
+        public string DbHost { get; set; }
         
-        [Option("db-port", Default = false, HelpText = "Set a postgresql host (e.g. 5432)")]
-        public string DbPort { get; set; } = "5432";
+        [Option("db-port", Default = "5432", HelpText = "Set a postgresql host (e.g. 5432)")]
+        public string DbPort { get; set; }
 
-        [Option("db-user", Default = false, HelpText = "Set a postgresql user")]
-        public string DbUser { get; set; } = "geekbot";
+        [Option("db-user", Default = "geekbot", HelpText = "Set a postgresql user")]
+        public string DbUser { get; set; }
 
-        [Option("db-password", Default = false, HelpText = "Set a posgresql password")]
-        public string DbPassword { get; set; } = "";
+        [Option("db-password", Default = "", HelpText = "Set a posgresql password")]
+        public string DbPassword { get; set; }
     }
 }

@@ -11,6 +11,11 @@
     <Description>A Discord bot</Description>
     <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
     <NoWarn>NU1701</NoWarn>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://geekbot.pizzaandcoffee.rocks</PackageProjectUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
