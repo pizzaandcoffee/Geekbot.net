@@ -1,6 +1,6 @@
 ﻿namespace Geekbot.net.Commands.User.Ranking
 {
-    internal class RankUserPolyfillDto
+    internal class RankUserDto
     {
         public string Username { get; set; }
         public string Discriminator { get; set; }

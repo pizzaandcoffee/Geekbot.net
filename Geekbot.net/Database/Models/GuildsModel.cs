@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Geekbot.net.Database.Models
 {
@@ -18,5 +19,7 @@ namespace Geekbot.net.Database.Models
         
         [Required]
         public string IconUrl { get; set; }
+        
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }
