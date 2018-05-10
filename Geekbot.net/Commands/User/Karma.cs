@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.User
 {
     public class Karma : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
         private readonly ITranslationHandler _translation;
 
-        public Karma(IDatabase redis, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Karma(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translation)
         {
-            _redis = redis;
+            _database = database;
             _errorHandler = errorHandler;
             _translation = translation;
         }
@@ -30,22 +33,26 @@ namespace Geekbot.net.Commands.User
             try
             {
                 var transDict = _translation.GetDict(Context);
-                var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
-                var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
+                var actor = GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
                     await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
                 }
-                else if (TimeoutFinished(lastKarma))
+                else if (TimeoutFinished(actor.TimeOut))
                 {
                     await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
-                        GetTimeLeft(lastKarma)));
+                        GetTimeLeft(actor.TimeOut)));
                 }
                 else
                 {
-                    var newKarma = _redis.HashIncrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
-                    _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
-                        new[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString("u"))});
+                    var target = GetUser(user.Id);
+                    target.Karma = target.Karma + 1;
+                    SetUser(target);
+                    
+                    actor.TimeOut = DateTimeOffset.Now;
+                    SetUser(actor);
+
+                    _database.SaveChanges();
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
@@ -56,7 +63,7 @@ namespace Geekbot.net.Commands.User
                     eb.Title = transDict["Increased"];
                     eb.AddInlineField(transDict["By"], Context.User.Username);
                     eb.AddInlineField(transDict["Amount"], "+1");
-                    eb.AddInlineField(transDict["Current"], newKarma);
+                    eb.AddInlineField(transDict["Current"], target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
@@ -74,22 +81,26 @@ namespace Geekbot.net.Commands.User
             try
             {
                 var transDict = _translation.GetDict(Context);
-                var lastKarmaFromRedis = _redis.HashGet($"{Context.Guild.Id}:KarmaTimeout", Context.User.Id.ToString());
-                var lastKarma = ConvertToDateTimeOffset(lastKarmaFromRedis.ToString());
+                var actor = GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
                     await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
                 }
-                else if (TimeoutFinished(lastKarma))
+                else if (TimeoutFinished(actor.TimeOut))
                 {
                     await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
-                        GetTimeLeft(lastKarma)));
+                        GetTimeLeft(actor.TimeOut)));
                 }
                 else
                 {
-                    var newKarma = _redis.HashDecrement($"{Context.Guild.Id}:Karma", user.Id.ToString());
-                    _redis.HashSet($"{Context.Guild.Id}:KarmaTimeout",
-                        new[] {new HashEntry(Context.User.Id.ToString(), DateTimeOffset.Now.ToString())});
+                    var target = GetUser(user.Id);
+                    target.Karma = target.Karma - 1;
+                    SetUser(target);
+                    
+                    actor.TimeOut = DateTimeOffset.Now;
+                    SetUser(actor);
+
+                    _database.SaveChanges();
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
@@ -100,7 +111,7 @@ namespace Geekbot.net.Commands.User
                     eb.Title = transDict["Decreased"];
                     eb.AddInlineField(transDict["By"], Context.User.Username);
                     eb.AddInlineField(transDict["Amount"], "-1");
-                    eb.AddInlineField(transDict["Current"], newKarma);
+                    eb.AddInlineField(transDict["Current"], target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
@@ -108,11 +119,6 @@ namespace Geekbot.net.Commands.User
             {
                 _errorHandler.HandleCommandException(e, Context);
             }
-        }
-
-        private DateTimeOffset ConvertToDateTimeOffset(string dateTimeOffsetString)
-        {
-            return string.IsNullOrEmpty(dateTimeOffsetString) ? DateTimeOffset.Now.Subtract(new TimeSpan(7, 18, 0, 0)) : DateTimeOffset.Parse(dateTimeOffsetString);
         }
 
         private bool TimeoutFinished(DateTimeOffset lastKarma)
@@ -124,6 +130,32 @@ namespace Geekbot.net.Commands.User
         {
             var dt = lastKarma.AddMinutes(3).Subtract(DateTimeOffset.Now);
             return $"{dt.Minutes} Minutes and {dt.Seconds} Seconds";
+        }
+
+        private KarmaModel GetUser(ulong userId)
+        {
+            var user = _database.Karma.FirstOrDefault(u =>u.GuildId.Equals(Context.Guild.Id.AsLong()) && u.UserId.Equals(userId.AsLong())) ?? CreateNewRow(userId);
+            return user;
+        }
+        
+        private bool SetUser(KarmaModel user)
+        {
+            _database.Karma.Update(user);
+            return true;
+        }
+        
+        private KarmaModel CreateNewRow(ulong userId)
+        {
+            var user = new KarmaModel()
+            {
+                GuildId = Context.Guild.Id.AsLong(),
+                UserId = userId.AsLong(),
+                Karma = 0,
+                TimeOut = DateTimeOffset.MinValue
+            };
+            var newUser = _database.Karma.Add(user).Entity;
+            _database.SaveChanges();
+            return newUser;
         }
     }
 }
