@@ -230,6 +230,62 @@ namespace Geekbot.net.Database
                 }
                 #endregion
                 
+                #region GuildSettings
+                /**
+                 * Users
+                 */
+                try
+                {
+                    var data = _redis.HashGetAll($"{guild.Id}:Settings");
+                    var settings = new GuildSettingsModel()
+                    {
+                        GuildId = guild.Id.AsLong(),
+                        Hui = true
+                    };
+                    foreach (var setting in data)
+                    {
+                        try
+                        {
+                            switch (setting.Name)
+                            {
+                                case "ShowLeave":
+                                    settings.ShowLeave = setting.Value.ToString() == "1";
+                                    break;
+                                case "WikiDel":
+                                    settings.ShowDelete = setting.Value.ToString() == "1";
+                                    break;
+                                case "WikiLang":
+                                    settings.WikiLang = setting.Value.ToString();
+                                    break;
+                                case "Language":
+                                    settings.Language = setting.Value.ToString();
+                                    break;
+                                case "WelcomeMsg":
+                                    settings.WelcomeMessage = setting.Value.ToString();
+                                    break;
+                                case "ping":
+                                    settings.Ping = bool.Parse(setting.Value.ToString());
+                                    break;
+                                case "ModChannel":
+                                    settings.ModChannel = long.Parse(setting.Value);
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                        }
+                        catch
+                        {
+                            _logger.Warning(LogSource.Geekbot, $"Setting failed: {setting.Name} - {guild.Id}");
+                        }
+                    }
+                }
+                catch
+                {
+                    _logger.Warning(LogSource.Geekbot, "Settings migration failed");
+                }
+
+                #endregion
+                
                 #region Users
                 /**
                  * Users

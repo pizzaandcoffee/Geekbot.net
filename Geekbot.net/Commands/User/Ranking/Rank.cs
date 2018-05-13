@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
-using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
 using StackExchange.Redis;
 
@@ -19,21 +17,17 @@ namespace Geekbot.net.Commands.User.Ranking
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;
-        private readonly IGeekbotLogger _logger;
         private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
-        private readonly DiscordSocketClient _client;
         private readonly IDatabase _redis;
 
-        public Rank(DatabaseContext database, IErrorHandler errorHandler, IGeekbotLogger logger, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, DiscordSocketClient client, IDatabase redis)
+        public Rank(DatabaseContext database, IErrorHandler errorHandler, IUserRepository userRepository,
+            IEmojiConverter emojiConverter, IDatabase redis)
         {
             _database = database;
             _errorHandler = errorHandler;
-            _logger = logger;
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
-            _client = client;
             _redis = redis;
         }
 
@@ -144,42 +138,28 @@ namespace Geekbot.net.Commands.User.Ranking
 
         private Dictionary<ulong, int> GetMessageList(int amount)
         {
-
-            var data = _redis.HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1);
-
-            return data.Where(user => !user.Key.Equals(0)).ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
+            return _redis
+                .HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1)
+                .Where(user => !user.Key.Equals(0))
+                .ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
         }
         
         private Dictionary<ulong, int> GetKarmaList(int amount)
         {
-            var data = _database.Karma
+            return _database.Karma
                 .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
                 .OrderByDescending(o => o.Karma)
-                .Take(amount);
-            
-            var dict = new Dictionary<ulong, int>();
-            foreach (var user in data)
-            {
-                dict.Add(user.UserId.AsUlong(), user.Karma);
-            }
-
-            return dict;
+                .Take(amount)
+                .ToDictionary(key => key.UserId.AsUlong(), key => key.Karma);
         }
         
         private Dictionary<ulong, int> GetRollsList(int amount)
         {
-            var data = _database.Rolls
+            return _database.Rolls
                 .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
                 .OrderByDescending(o => o.Rolls)
-                .Take(amount);
-            
-            var dict = new Dictionary<ulong, int>();
-            foreach (var user in data)
-            {
-                dict.Add(user.UserId.AsUlong(), user.Rolls);
-            }
-
-            return dict;
+                .Take(amount)
+                .ToDictionary(key => key.UserId.AsUlong(), key => key.Rolls);
         }
     }
 }
