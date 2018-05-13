@@ -38,7 +38,6 @@ namespace Geekbot.net
         private RedisValue _token;
         private GeekbotLogger _logger;
         private IUserRepository _userRepository;
-        private bool _firstStart;
         private RunParameters _runParameters;
 
         private static void Main(string[] args)
@@ -84,10 +83,13 @@ namespace Geekbot.net
             _client.Log += discordLogger.Log;
             _commands = new CommandService();
 
+            _database = new DatabaseInitializer(runParameters, logger).Initzialize();
+            _globalSettings = new GlobalSettings(_database);
+            
             try
             {
-                var redisMultiplexer = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-                _redis = redisMultiplexer.GetDatabase(6);
+                var redisMultiplexer = ConnectionMultiplexer.Connect($"{runParameters.RedisHost}:{runParameters.RedisPort}");
+                _redis = redisMultiplexer.GetDatabase(int.Parse(runParameters.RedisDatabase));
                 logger.Information(LogSource.Redis, $"Connected to db {_redis.Database}");
             }
             catch (Exception e)
@@ -96,19 +98,15 @@ namespace Geekbot.net
                 Environment.Exit(GeekbotExitCode.RedisConnectionFailed.GetHashCode());
             }
             
-            _token = runParameters.Token ?? _redis.StringGet("discordToken");
+            _token = runParameters.Token ?? _globalSettings.GetKey("DiscordToken");
             if (_token.IsNullOrEmpty)
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
-                _redis.StringSet("discordToken", newToken);
-                _redis.StringSet("Game", "Ping Pong");
+                _globalSettings.SetKey("DiscordToken", newToken);
+                _globalSettings.SetKey("Game", "Ping Pong");
                 _token = newToken;
-                _firstStart = true;
             }
-
-            _database = new DatabaseInitializer(runParameters, logger).Initzialize();
-            _globalSettings = new GlobalSettings(_database);
 
             _services = new ServiceCollection();
             
@@ -177,13 +175,7 @@ namespace Geekbot.net
                     _client.UserLeft += handlers.UserLeft;
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
-
-                    if (_firstStart || _runParameters.Reset)
-                    {
-                        _logger.Information(LogSource.Geekbot, "Finishing setup");
-                        await FinishSetup();
-                        _logger.Information(LogSource.Geekbot, "Setup finished");
-                    }
+                    
                     if (!_runParameters.DisableApi)
                     {
                         StartWebApi();
@@ -209,24 +201,9 @@ namespace Geekbot.net
         private void StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            var webApiUrl = new Uri("http://localhost:12995");
+            var webApiUrl = new Uri($"http://{_runParameters.ApiHost}:{_runParameters.ApiPort}");
             new NancyHost(webApiUrl).Start();
             _logger.Information(LogSource.Api, $"Webserver now running on {webApiUrl}");
-        }
-
-        private async Task<Task> FinishSetup()
-        {
-            try
-            {
-                // ToDo: Set bot avatar
-                var appInfo = await _client.GetApplicationInfoAsync();
-                _redis.StringSet("botOwner", appInfo.Owner.Id);
-            }
-            catch (Exception e)
-            {
-                _logger.Warning(LogSource.Geekbot, "Setup Failed, couldn't retrieve discord application data", e);
-            }
-            return Task.CompletedTask;
         }
     }
 }

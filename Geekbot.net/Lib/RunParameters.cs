@@ -1,20 +1,17 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 
 namespace Geekbot.net.Lib
 {
     public class RunParameters
     {
-        /**
-         * General Parameters
-         */
-        [Option('V', "verbose", Default = false, HelpText = "Prints all messages to standard output.")]
+        /************************************
+         * General                          *
+         ************************************/
+        
+        [Option('V', "verbose", Default = false, HelpText = "Logs everything.")]
         public bool Verbose { get; set; }
 
-        [Option('r', "reset", Default = false, HelpText = "Resets the bot")]
-        public bool Reset { get; set; }
-
-        [Option('j', "log-json", Default = false, HelpText = "Logs messages as json")]
+        [Option('j', "log-json", Default = false, HelpText = "Logger outputs json")]
         public bool LogJson { get; set; }
 
         [Option('a', "disable-api", Default = false, HelpText = "Disables the web api")]
@@ -26,9 +23,10 @@ namespace Geekbot.net.Lib
         [Option("token", Default = null, HelpText = "Set a new bot token")]
         public string Token { get; set; }
         
-        /**
-         * Database Stuff
-         */
+        /************************************
+         * Database                         *
+         ************************************/
+        
         [Option("in-memory", Default = false, HelpText = "Uses the in-memory database instead of postgresql")]
         public bool InMemory { get; set; }
         
@@ -47,5 +45,28 @@ namespace Geekbot.net.Lib
 
         [Option("db-password", Default = "", HelpText = "Set a posgresql password")]
         public string DbPassword { get; set; }
+
+        /************************************
+         * Redis                            *
+         ************************************/
+        
+        [Option("redis-host", Default = "127.0.0.1", HelpText = "Set a redis host")]
+        public string RedisHost { get; set; }
+
+        [Option("redis-port", Default = "6379", HelpText = "Set a redis port")]
+        public string RedisPort { get; set; }
+
+        [Option("redis-database", Default = "6", HelpText = "Select a redis database (1-15)")]
+        public string RedisDatabase { get; set; }
+        
+        /************************************
+         * WebApi                           *
+         ************************************/
+     
+        [Option("api-host", Default = "127.0.0.1", HelpText = "Host on which the WebApi listens")]
+        public string ApiHost { get; set; }
+        
+        [Option("api-port", Default = "12995", HelpText = "Port on which the WebApi listens")]
+        public string ApiPort { get; set; }
     }
 }

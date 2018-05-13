@@ -29,7 +29,7 @@ namespace Geekbot.net.Database
             _client = client;
         }
 
-        public async Task Migrate()
+        public Task Migrate()
         {
             _logger.Information(LogSource.Geekbot, "Starting migration process");
             foreach (var guild in _client.Guilds)
@@ -283,6 +283,8 @@ namespace Geekbot.net.Database
                 _logger.Information(LogSource.Geekbot, $"Finished Migration for {guild.Name}");
             }
             _logger.Information(LogSource.Geekbot, "Finished migration process");
+            
+            return Task.CompletedTask;;
         }
         
         private QuoteModel CreateQuoteObject(ulong guild, QuoteObjectDto quote)

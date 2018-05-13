@@ -9,22 +9,22 @@ namespace Geekbot.net.Lib.ReactionListener
 {
     public class ReactionListener : IReactionListener
     {
-        private readonly IDatabase _database;
+        private readonly IDatabase _redis;
         private Dictionary<string, Dictionary<IEmote, ulong>> _listener;
 
-        public ReactionListener(IDatabase database)
+        public ReactionListener(IDatabase redis)
         {
-            _database = database;
+            _redis = redis;
             LoadListeners();
         }
 
         private Task LoadListeners()
         {
-            var ids = _database.SetMembers("MessageIds");
+            var ids = _redis.SetMembers("MessageIds");
             _listener = new Dictionary<string, Dictionary<IEmote, ulong>>();
             foreach (var id in ids)
             {
-                var reactions = _database.HashGetAll($"Messages:{id}");
+                var reactions = _redis.HashGetAll($"Messages:{id}");
                 var messageId = id;
                 var emojiDict = new Dictionary<IEmote, ulong>();
                 foreach (var r in reactions)
@@ -54,12 +54,12 @@ namespace Geekbot.net.Lib.ReactionListener
 
         public Task AddRoleToListener(string messageId, IEmote emoji, IRole role)
         {
-            if (_database.SetMembers("MessageIds").All(e => e.ToString() != messageId))
+            if (_redis.SetMembers("MessageIds").All(e => e.ToString() != messageId))
             {
-                _database.SetAdd("MessageIds", messageId);
+                _redis.SetAdd("MessageIds", messageId);
             }
-            _database.HashSet($"Messages:{messageId}",  new[] {new HashEntry(emoji.ToString(), role.Id.ToString())});
-            _database.SetAdd("MessageIds", messageId);
+            _redis.HashSet($"Messages:{messageId}",  new[] {new HashEntry(emoji.ToString(), role.Id.ToString())});
+            _redis.SetAdd("MessageIds", messageId);
             if (_listener.ContainsKey(messageId))
             {
                 _listener[messageId].Add(emoji, role.Id);
