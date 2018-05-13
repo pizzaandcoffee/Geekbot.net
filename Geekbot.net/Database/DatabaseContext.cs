@@ -14,7 +14,9 @@ namespace Geekbot.net.Database
         public DbSet<RollsModel> Rolls { get; set; }
         public DbSet<MessagesModel> Messages { get; set; }
         public DbSet<SlapsModel> Slaps { get; set; }
-//        public DbSet<UserSettingsModel> UserSettings { get; set; }
-//        public DbSet<RoleSelfServiceModel> RoleSelfService { get; set; }
+        public DbSet<GlobalsModel> Globals { get; set; }
+        
+        // public DbSet<UserSettingsModel> UserSettings { get; set; }
+        // public DbSet<RoleSelfServiceModel> RoleSelfService { get; set; }
     }
 }

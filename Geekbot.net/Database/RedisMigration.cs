@@ -8,6 +8,7 @@ using Geekbot.net.Commands.Utils.Quote;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
+using MtgApiManager.Lib.Model;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -172,8 +173,6 @@ namespace Geekbot.net.Database
                     {
                         try
                         {
-                            // drop the guild qounter
-                            if(q.Name.ToString() != "0") continue;
                             var user = new MessagesModel()
                             {
                                 GuildId = guild.Id.AsLong(),
@@ -242,16 +241,18 @@ namespace Geekbot.net.Database
                     {
                         try
                         {
-                            _database.Users.Add(new UserModel()
-                                {
-                                    UserId = user.Id.AsLong(),
-                                    Username = user.Username,
-                                    Discriminator = user.Discriminator,
-                                    AvatarUrl = user.GetAvatarUrl(ImageFormat.Auto, 1024),
-                                    IsBot = user.IsBot,
-                                    Joined = user.CreatedAt,
-                                    UsedNames = new [] {user.Username}
-                                });
+                            var namesSerialized = _redis.HashGet($"User:{user.Id}", "UsedNames").ToString();
+                            var names = Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized);
+                            _database.Users.AddIfNotExists(new UserModel()
+                            {
+                                UserId = user.Id.AsLong(),
+                                Username = user.Username,
+                                Discriminator = user.Discriminator,
+                                AvatarUrl = user.GetAvatarUrl(ImageFormat.Auto, 1024),
+                                IsBot = user.IsBot,
+                                Joined = user.CreatedAt,
+                                UsedNames = names
+                            }, model => model.UserId.Equals(user.Id.AsLong()));
                             _database.SaveChanges();
                         }
                         catch
