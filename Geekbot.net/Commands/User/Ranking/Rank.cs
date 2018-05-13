@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
+using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.User.Ranking
 {
@@ -23,9 +23,10 @@ namespace Geekbot.net.Commands.User.Ranking
         private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
         private readonly DiscordSocketClient _client;
+        private readonly IDatabase _redis;
 
         public Rank(DatabaseContext database, IErrorHandler errorHandler, IGeekbotLogger logger, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, DiscordSocketClient client)
+            IEmojiConverter emojiConverter, DiscordSocketClient client, IDatabase redis)
         {
             _database = database;
             _errorHandler = errorHandler;
@@ -33,6 +34,7 @@ namespace Geekbot.net.Commands.User.Ranking
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
             _client = client;
+            _redis = redis;
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -74,8 +76,8 @@ namespace Geekbot.net.Commands.User.Ranking
                         list = GetRollsList(amount);
                         break;
                     default:
-                        list = new Dictionary<ulong, int>();
-                        break;
+                        await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`'");
+                        return;
                 }
 
                 if (!list.Any())
@@ -142,18 +144,10 @@ namespace Geekbot.net.Commands.User.Ranking
 
         private Dictionary<ulong, int> GetMessageList(int amount)
         {
-            var data = _database.Messages
-                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
-                .OrderByDescending(o => o.MessageCount)
-                .Take(amount);
-            
-            var dict = new Dictionary<ulong, int>();
-            foreach (var user in data)
-            {
-                dict.Add(user.UserId.AsUlong(), user.MessageCount);
-            }
 
-            return dict;
+            var data = _redis.HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1);
+
+            return data.Where(user => !user.Key.Equals(0)).ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
         }
         
         private Dictionary<ulong, int> GetKarmaList(int amount)

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using HtmlAgilityPack;
-using StackExchange.Redis;
 using WikipediaApi;
 using WikipediaApi.Page;
 
@@ -18,13 +18,13 @@ namespace Geekbot.net.Commands.Integrations
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IWikipediaClient _wikipediaClient;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
 
-        public Wikipedia(IErrorHandler errorHandler, IWikipediaClient wikipediaClient, IDatabase redis)
+        public Wikipedia(IErrorHandler errorHandler, IWikipediaClient wikipediaClient, DatabaseContext database)
         {
             _errorHandler = errorHandler;
             _wikipediaClient = wikipediaClient;
-            _redis = redis;
+            _database = database;
         }
 
         [Command("wiki", RunMode = RunMode.Async)]
@@ -33,7 +33,7 @@ namespace Geekbot.net.Commands.Integrations
         {
             try
             {
-                var wikiLang = _redis.HashGet($"{Context.Guild.Id}:Settings", "WikiLang").ToString();
+                var wikiLang = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(Context.Guild.Id.AsLong()))?.WikiLang;
                 if (string.IsNullOrEmpty(wikiLang))
                 {
                     wikiLang = "en";

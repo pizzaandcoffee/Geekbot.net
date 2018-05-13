@@ -5,24 +5,25 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.ReactionListener;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Admin
 {
     [Group("role")]
     public class Role : ModuleBase
     {
+        private readonly DatabaseContext _database;
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
         private readonly IReactionListener _reactionListener;
 
-        public Role(IErrorHandler errorHandler, IDatabase redis, IReactionListener reactionListener)
+        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener)
         {
+            _database = database;
             _errorHandler = errorHandler;
-            _redis = redis;
             _reactionListener = reactionListener;
         }
 
@@ -32,8 +33,8 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var roles = _redis.HashGetAll($"{Context.Guild.Id}:RoleWhitelist");
-                if (roles.Length == 0)
+                var roles = _database.RoleSelfService.Where(g => g.GuildId.Equals(Context.Guild.Id.AsLong())).ToList();
+                if (roles.Count == 0)
                 {
                     await ReplyAsync("There are no roles configured for this server");
                     return;
@@ -42,7 +43,7 @@ namespace Geekbot.net.Commands.Admin
                 var sb = new StringBuilder();
                 sb.AppendLine($"**Self Service Roles on {Context.Guild.Name}**");
                 sb.AppendLine("To get a role, use `!role name`");
-                foreach (var role in roles) sb.AppendLine($"- {role.Name}");
+                foreach (var role in roles) sb.AppendLine($"- {role.WhiteListName}");
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
@@ -58,18 +59,19 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var roleName = roleNameRaw.ToLower();
-                if (_redis.HashExists($"{Context.Guild.Id}:RoleWhitelist", roleName))
+                var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
+                    e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
+                if (roleFromDb != null)
                 {
                     var guildUser = (IGuildUser) Context.User;
-                    var roleId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:RoleWhitelist", roleName));
-                    var role = Context.Guild.Roles.First(r => r.Id == roleId);
+                    var role = Context.Guild.Roles.First(r => r.Id == roleFromDb.RoleId.AsUlong());
                     if (role == null)
                     {
                         await ReplyAsync("That role doesn't seem to exist");
                         return;
                     }
 
-                    if (guildUser.RoleIds.Contains(roleId))
+                    if (guildUser.RoleIds.Contains(role.Id))
                     {
                         await guildUser.RemoveRoleAsync(role);
                         await ReplyAsync($"Removed you from {role.Name}");
@@ -113,12 +115,17 @@ namespace Geekbot.net.Commands.Admin
                     || role.Permissions.KickMembers)
                 {
                     await ReplyAsync(
-                        "Woah, i don't think you want to add that role to self service as it contains some dangerous permissions");
+                        "You cannot add that role to self service because it contains one or more dangerous permissions");
                     return;
                 }
 
-                _redis.HashSet($"{Context.Guild.Id}:RoleWhitelist",
-                    new[] {new HashEntry(roleName.ToLower(), role.Id.ToString())});
+                _database.RoleSelfService.Add(new RoleSelfServiceModel
+                {
+                    GuildId = Context.Guild.Id.AsLong(),
+                    RoleId = role.Id.AsLong(),
+                    WhiteListName = roleName
+                });
+                _database.SaveChanges();
                 await ReplyAsync($"Added {role.Name} to the whitelist");
             }
             catch (Exception e)
@@ -134,16 +141,17 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                
-                var success = _redis.HashDelete($"{Context.Guild.Id}:RoleWhitelist", roleName.ToLower());
-                if (success)
+                var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
+                    e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
+                if (roleFromDb != null)
                 {
+                    _database.RoleSelfService.Remove(roleFromDb);
+                    _database.SaveChanges();
                     await ReplyAsync($"Removed {roleName} from the whitelist");
                     return;
                 }
 
-                await ReplyAsync("There is not whitelisted role with that name...");
-
+                await ReplyAsync("There is not whitelisted role with that name");
             }
             catch (Exception e)
             {

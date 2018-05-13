@@ -1,21 +1,23 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
-using StackExchange.Redis;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Commands.Randomness
 {
     public class Ship : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
 
-        public Ship(IDatabase redis, IErrorHandler errorHandler)
+        public Ship(DatabaseContext database, IErrorHandler errorHandler)
         {
-            _redis = redis;
+            _database = database;
             _errorHandler = errorHandler;
         }
 
@@ -25,22 +27,29 @@ namespace Geekbot.net.Commands.Randomness
         {
             try
             {
-                var dbstring = "";
-                if (user1.Id > user2.Id)
-                    dbstring = $"{user1.Id}-{user2.Id}";
-                else
-                    dbstring = $"{user2.Id}-{user1.Id}";
+                var userKeys = user1.Id < user2.Id
+                    ? new Tuple<long, long>(user1.Id.AsLong(), user2.Id.AsLong())
+                    : new Tuple<long, long>(user2.Id.AsLong(), user1.Id.AsLong());
 
-                var dbval = _redis.HashGet($"{Context.Guild.Id}:Ships", dbstring);
+                var dbval = _database.Ships.FirstOrDefault(s =>
+                    s.FirstUserId.Equals(userKeys.Item1) &&
+                    s.SecondUserId.Equals(userKeys.Item2));
+                
                 var shippingRate = 0;
-                if (dbval.IsNullOrEmpty)
+                if (dbval == null)
                 {
                     shippingRate = new Random().Next(1, 100);
-                    _redis.HashSet($"{Context.Guild.Id}:Ships", dbstring, shippingRate);
+                    _database.Ships.Add(new ShipsModel()
+                    {
+                        FirstUserId = userKeys.Item1,
+                        SecondUserId = userKeys.Item2,
+                        Strength = shippingRate
+                    });
+                    _database.SaveChanges();
                 }
                 else
                 {
-                    shippingRate = int.Parse(dbval.ToString());
+                    shippingRate = dbval.Strength;
                 }
 
                 var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";

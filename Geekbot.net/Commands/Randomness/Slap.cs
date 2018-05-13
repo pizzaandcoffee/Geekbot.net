@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
-using StackExchange.Redis;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Commands.Randomness
 {
     public class Slap : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
 
-        public Slap(IErrorHandler errorHandler, IDatabase redis)
+        public Slap(IErrorHandler errorHandler, DatabaseContext database)
         {
             _errorHandler = errorHandler;
-            _redis = redis;
+            _database = database;
         }
 
         [Command("slap", RunMode = RunMode.Async)]
@@ -76,16 +78,53 @@ namespace Geekbot.net.Commands.Randomness
                     "dictionary",
                     "powerless banhammer"
                 };
-                
-                _redis.HashIncrement($"{Context.Guild.Id}:SlapsRecieved", user.Id.ToString());
-                _redis.HashIncrement($"{Context.Guild.Id}:SlapsGiven", Context.User.Id.ToString());
-                
+
                 await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[new Random().Next(things.Count - 1)]}");
+                
+                UpdateRecieved(user.Id);
+                UpdateGiven(Context.User.Id);
+                _database.SaveChanges();
             }
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
             }
+        }
+
+        private void UpdateGiven(ulong userId)
+        {
+            var user = GetUser(userId);
+            user.Given++;
+            _database.Slaps.Update(user);
+        }
+        
+        private void UpdateRecieved(ulong userId)
+        {
+            var user = GetUser(userId);
+            user.Recieved++;
+            _database.Slaps.Update(user);
+        }
+
+        private SlapsModel GetUser(ulong userId)
+        {
+            var user = _database.Slaps.FirstOrDefault(e => 
+                e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
+                e.UserId.Equals(userId.AsLong())
+            );
+
+            if (user != null) return user;
+            
+            _database.Slaps.Add(new SlapsModel
+            {
+                GuildId = Context.Guild.Id.AsLong(),
+                UserId = userId.AsLong(),
+                Recieved = 0,
+                Given = 0
+            });
+            _database.SaveChanges();
+            return _database.Slaps.FirstOrDefault(e =>
+                e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
+                e.UserId.Equals(userId.AsLong()));
         }
     }
 }

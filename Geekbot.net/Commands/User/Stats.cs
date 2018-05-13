@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
 using StackExchange.Redis;
 
@@ -14,10 +16,12 @@ namespace Geekbot.net.Commands.User
         private readonly IErrorHandler _errorHandler;
         private readonly ILevelCalc _levelCalc;
         private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
 
-        public Stats(IDatabase redis, IErrorHandler errorHandler, ILevelCalc levelCalc)
+        public Stats(IDatabase redis, DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
         {
             _redis = redis;
+            _database = database;
             _errorHandler = errorHandler;
             _levelCalc = levelCalc;
         }
@@ -47,20 +51,23 @@ namespace Geekbot.net.Commands.User
                     .WithName(userInfo.Username));
                 eb.WithColor(new Color(221, 255, 119));
 
-                var karma = _redis.HashGet($"{Context.Guild.Id}:Karma", userInfo.Id.ToString());
-                var correctRolls = _redis.HashGet($"{Context.Guild.Id}:Rolls", userInfo.Id.ToString());
+                var karma = _database.Karma.FirstOrDefault(e =>
+                    e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
+                    e.UserId.Equals(userInfo.Id.AsLong()));
+                var correctRolls = _database.Rolls.FirstOrDefault(e =>
+                    e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
+                    e.UserId.Equals(userInfo.Id.AsLong()));
 
                 eb.AddInlineField("Discordian Since",
                         $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
                     .AddInlineField("Joined Server",
                         $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
-                    .AddInlineField("Karma", karma.ToString() ?? "0")
+                    .AddInlineField("Karma", karma?.Karma ?? 0)
                     .AddInlineField("Level", level)
                     .AddInlineField("Messages Sent", messages)
                     .AddInlineField("Server Total", $"{percent}%");
 
-                if (!correctRolls.IsNullOrEmpty)
-                    eb.AddInlineField("Guessed Rolls", correctRolls);
+                if (correctRolls != null) eb.AddInlineField("Guessed Rolls", correctRolls.Rolls);
 
                 await ReplyAsync("", false, eb.Build());
             }
