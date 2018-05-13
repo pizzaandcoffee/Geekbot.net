@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +12,13 @@ using Geekbot.net.Lib.Audio;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Levels;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using StackExchange.Redis;
@@ -33,6 +31,8 @@ namespace Geekbot.net
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IDatabase _redis;
+        private DatabaseContext _database;
+        private IGlobalSettings _globalSettings;
         private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
         private RedisValue _token;
@@ -107,11 +107,12 @@ namespace Geekbot.net
                 _firstStart = true;
             }
 
-            var database = new DatabaseInitializer(runParameters, logger).Initzialize();
+            _database = new DatabaseInitializer(runParameters, logger).Initzialize();
+            _globalSettings = new GlobalSettings(_database);
 
             _services = new ServiceCollection();
             
-            _userRepository = new UserRepository(database, logger);
+            _userRepository = new UserRepository(_database, logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
             var malClient = new MalClient(_redis, logger);
@@ -132,7 +133,8 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
-            _services.AddSingleton<DatabaseContext>(database);
+            _services.AddSingleton<DatabaseContext>(_database);
+            _services.AddSingleton<IGlobalSettings>(_globalSettings);
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
 
@@ -150,7 +152,7 @@ namespace Geekbot.net
                 var isConneted = await IsConnected();
                 if (isConneted)
                 {
-                    await _client.SetGameAsync(_redis.StringGet("Game"));
+                    await _client.SetGameAsync(_globalSettings.GetKey("Game"));
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
@@ -165,7 +167,7 @@ namespace Geekbot.net
                     _services.AddSingleton<IReactionListener>(reactionListener);
                     _servicesProvider = _services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(_client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
+                    var handlers = new Handlers(_database, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
                     
                     _client.MessageReceived += handlers.RunCommand;
                     _client.MessageReceived += handlers.UpdateStats;

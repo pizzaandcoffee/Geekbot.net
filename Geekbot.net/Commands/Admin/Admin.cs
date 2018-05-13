@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Geekbot.net.Lib;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
 using StackExchange.Redis;
 
@@ -17,13 +20,13 @@ namespace Geekbot.net.Commands.Admin
     {
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
         private readonly ITranslationHandler _translation;
 
-        public Admin(IDatabase redis, DiscordSocketClient client, IErrorHandler errorHandler,
+        public Admin(DatabaseContext database, DiscordSocketClient client, IErrorHandler errorHandler,
             ITranslationHandler translationHandler)
         {
-            _redis = redis;
+            _database = database;
             _client = client;
             _errorHandler = errorHandler;
             _translation = translationHandler;
@@ -33,7 +36,11 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
         {
-            _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("WelcomeMsg", welcomeMessage)});
+            var guild = GetGuildSettings(Context.Guild.Id);
+            guild.WelcomeMessage = welcomeMessage;
+            _database.GuildSettings.Update(guild);
+            _database.SaveChanges();
+            
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
             await ReplyAsync($"Welcome message has been changed\r\nHere is an example of how it would look:\r\n{formatedMessage}");
         }
@@ -44,13 +51,18 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
+                var m = await channel.SendMessageAsync("verifying...");
+
+                var guild = GetGuildSettings(Context.Guild.Id);
+                guild.ModChannel = channel.Id.AsLong();
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                
                 var sb = new StringBuilder();
                 sb.AppendLine("Successfully saved mod channel, you can now do the following");
-                sb.AppendLine("- `!admin showleave true` - send message to mod channel when someone leaves");
-                sb.AppendLine("- `!admin showdel true` - send message to mod channel when someone deletes a message");
-                await channel.SendMessageAsync(sb.ToString());
-                _redis.HashSet($"{Context.Guild.Id}:Settings",
-                    new[] {new HashEntry("ModChannel", channel.Id.ToString())});
+                sb.AppendLine("- `!admin showleave` - send message to mod channel when someone leaves");
+                sb.AppendLine("- `!admin showdel` - send message to mod channel when someone deletes a message");
+                await m.ModifyAsync(e => e.Content = sb.ToString());
             }
             catch (Exception e)
             {
@@ -59,56 +71,50 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("showleave", RunMode = RunMode.Async)]
-        [Summary("Notify modchannel when someone leaves")]
-        public async Task ShowLeave([Summary("true/false")] bool enabled)
+        [Summary("Toggle - notify modchannel when someone leaves")]
+        public async Task ShowLeave()
         {
-            var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
             {
-                var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
-                if (enabled)
-                {
-                    await modChannel.SendMessageAsync("Saved - now sending messages here when someone leaves");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowLeave", true)});
-                }
-                else
-                {
-                    await modChannel.SendMessageAsync("Saved - stopping sending messages here when someone leaves");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowLeave", false)});
-                }
+                var guild = GetGuildSettings(Context.Guild.Id);
+                var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
+                if (modChannel == null) return;
+                
+                guild.ShowLeave = !guild.ShowLeave;
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                await modChannel.SendMessageAsync(guild.ShowLeave
+                    ? "Saved - now sending messages here when someone leaves"
+                    : "Saved - stopping sending messages here when someone leaves"
+                );
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
-                    "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
 
         [Command("showdel", RunMode = RunMode.Async)]
-        [Summary("Notify modchannel when someone deletes a message")]
-        public async Task ShowDelete([Summary("true/false")] bool enabled)
+        [Summary("Toggle - notify modchannel when someone deletes a message")]
+        public async Task ShowDelete()
         {
-            var modChannelId = ulong.Parse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ModChannel"));
             try
             {
-                var modChannel = (ISocketMessageChannel) _client.GetChannel(modChannelId);
-                if (enabled)
-                {
-                    await modChannel.SendMessageAsync(
-                        "Saved - now sending messages here when someone deletes a message");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowDelete", true)});
-                }
-                else
-                {
-                    await modChannel.SendMessageAsync(
-                        "Saved - stopping sending messages here when someone deletes a message");
-                    _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ShowDelete", false)});
-                }
+                var guild = GetGuildSettings(Context.Guild.Id);
+                var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
+                if (modChannel == null) return;
+                
+                guild.ShowDelete = !guild.ShowDelete;
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                await modChannel.SendMessageAsync(guild.ShowDelete
+                    ? "Saved - now sending messages here when someone deletes a message"
+                    : "Saved - stopping sending messages here when someone deletes a message"
+                );
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
-                    "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -122,6 +128,11 @@ namespace Geekbot.net.Commands.Admin
                 var success = _translation.SetLanguage(Context.Guild.Id, language);
                 if (success)
                 {
+                    var guild = GetGuildSettings(Context.Guild.Id);
+                    guild.Language = language;
+                    _database.GuildSettings.Update(guild);
+                    _database.SaveChanges();
+                    
                     var trans = _translation.GetDict(Context);
                     await ReplyAsync(trans["NewLanguageSet"]);
                     return;
@@ -143,24 +154,12 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var language = languageRaw.ToLower();
-                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("WikiLang", language) });
-
+                var guild = GetGuildSettings(Context.Guild.Id);
+                guild.WikiLang = language;
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                
                 await ReplyAsync($"Now using the {language} wikipedia");
-            }
-            catch (Exception e)
-            {
-                _errorHandler.HandleCommandException(e, Context);
-            }
-        }
-
-        [Command("lang", RunMode = RunMode.Async)]
-        [Summary("Change the bots language")]
-        public async Task GetLanguage()
-        {
-            try
-            {
-                var trans = _translation.GetDict(Context);
-                await ReplyAsync(trans["GetLanguage"]);
             }
             catch (Exception e)
             {
@@ -174,13 +173,69 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                bool.TryParse(_redis.HashGet($"{Context.Guild.Id}:Settings", "ping"), out var current);
-                _redis.HashSet($"{Context.Guild.Id}:Settings", new[] {new HashEntry("ping", current ? "false" : "true") });
-                await ReplyAsync(!current ? "i will reply to ping now" : "No more pongs...");
+                var guild = GetGuildSettings(Context.Guild.Id);
+                guild.Ping = !guild.Ping;
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                await ReplyAsync(guild.Ping ? "i will reply to ping now" : "No more pongs...");
             }
             catch (Exception e)
             {
                 _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
+        [Command("hui", RunMode = RunMode.Async)]
+        [Summary("Enable the ping reply.")]
+        public async Task ToggleHui()
+        {
+            try
+            {
+                var guild = GetGuildSettings(Context.Guild.Id);
+                guild.Hui = !guild.Hui;
+                _database.GuildSettings.Update(guild);
+                _database.SaveChanges();
+                await ReplyAsync(guild.Hui ? "i will reply to hui now" : "No more hui's...");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+
+        private GuildSettingsModel GetGuildSettings(ulong guildId)
+        {
+            var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
+            if (guild != null) return guild;
+            Console.WriteLine("Adding non-exist Guild Settings to database");
+            _database.GuildSettings.Add(new GuildSettingsModel()
+            {
+                GuildId = guildId.AsLong(),
+                Hui = false,
+                Ping = false,
+                Language = "en",
+                ShowDelete = false,
+                ShowLeave = false,
+                WikiLang = "en"
+            });
+            _database.SaveChanges();
+            return _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
+        }
+
+        private async Task<ISocketMessageChannel> GetModChannel(ulong channelId)
+        {
+            try
+            {
+                if(channelId == ulong.MinValue) throw new Exception();
+                var modChannel = (ISocketMessageChannel) _client.GetChannel(channelId);
+                if(modChannel == null) throw new Exception();
+                return modChannel;
+            }
+            catch
+            {
+                await ReplyAsync(
+                    "Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
+                return null;
             }
         }
         

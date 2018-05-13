@@ -4,22 +4,21 @@ using System.Net;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.GlobalSettings;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Integrations.Google
 {
     public class Google : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly IGlobalSettings _globalSettings;
 
-        public Google(IErrorHandler errorHandler, IDatabase redis)
+        public Google(IErrorHandler errorHandler, IGlobalSettings globalSettings)
         {
             _errorHandler = errorHandler;
-            _redis = redis;
+            _globalSettings = globalSettings;
         }
         
         [Command("google", RunMode = RunMode.Async)]
@@ -30,12 +29,12 @@ namespace Geekbot.net.Commands.Integrations.Google
             {
                 using (var client = new WebClient())
                 {
-                    var apiKey = _redis.StringGet("googleGraphKey");
-                    if (!apiKey.HasValue)
+                    var apiKey = _globalSettings.GetKey("GoogleGraphKey");
+                    if (string.IsNullOrEmpty(apiKey))
                     {
                         await ReplyAsync("No Google API key has been set, please contact my owner");
                         return;
-                    } 
+                    }
                     
                     var url = new Uri($"https://kgsearch.googleapis.com/v1/entities:search?languages=en&limit=1&query={searchText}&key={apiKey}");
                     var responseString = client.DownloadString(url);
@@ -48,8 +47,10 @@ namespace Geekbot.net.Commands.Integrations.Google
                     }
 
                     var data = response.ItemListElement.First().Result;
-                    var eb = new EmbedBuilder();
-                    eb.Title = data.Name;
+                    var eb = new EmbedBuilder
+                    {
+                        Title = data.Name
+                    };
                     if(!string.IsNullOrEmpty(data.Description)) eb.WithDescription(data.Description);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.Url)) eb.WithUrl(data.DetailedDtoDescription.Url);
                     if(!string.IsNullOrEmpty(data.DetailedDtoDescription?.ArticleBody)) eb.AddField("Details", data.DetailedDtoDescription.ArticleBody);

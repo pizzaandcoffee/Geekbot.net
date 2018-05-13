@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
 using StackExchange.Redis;
@@ -19,11 +18,12 @@ namespace Geekbot.net.Commands.Admin
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
+        private readonly IGlobalSettings _globalSettings;
         private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
         private readonly IUserRepository _userRepository;
 
-        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database)
+        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database, IGlobalSettings globalSettings)
         {
             _redis = redis;
             _client = client;
@@ -31,6 +31,7 @@ namespace Geekbot.net.Commands.Admin
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
             _database = database;
+            _globalSettings = globalSettings;
         }
 
         [Command("migrate", RunMode = RunMode.Async)]
@@ -55,7 +56,7 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
-            _redis.StringSet("youtubeKey", key);
+            _globalSettings.SetKey("YoutubeKey", key);
             await ReplyAsync("Apikey has been set");
         }
 
@@ -63,7 +64,7 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set the game that the bot is playing")]
         public async Task SetGame([Remainder] [Summary("Game")] string key)
         {
-            _redis.StringSet("Game", key);
+            _globalSettings.SetKey("Game", key);
             await _client.SetGameAsync(key);
             _logger.Information(LogSource.Geekbot, $"Changed game to {key}");
             await ReplyAsync($"Now Playing {key}");

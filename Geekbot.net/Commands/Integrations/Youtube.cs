@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.GlobalSettings;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Integrations
 {
     public class Youtube : ModuleBase
     {
+        private readonly IGlobalSettings _globalSettings;
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
 
-        public Youtube(IDatabase redis, IErrorHandler errorHandler)
+        public Youtube(IGlobalSettings globalSettings, IErrorHandler errorHandler)
         {
-            _redis = redis;
+            _globalSettings = globalSettings;
             _errorHandler = errorHandler;
         }
 
@@ -24,8 +23,8 @@ namespace Geekbot.net.Commands.Integrations
         [Summary("Search for something on youtube.")]
         public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
         {
-            var key = _redis.StringGet("youtubeKey");
-            if (key.IsNullOrEmpty)
+            var key = _globalSettings.GetKey("YoutubeKey");
+            if (string.IsNullOrEmpty(key))
             {
                 await ReplyAsync("No youtube key set, please tell my senpai to set one");
                 return;
@@ -35,7 +34,7 @@ namespace Geekbot.net.Commands.Integrations
             {
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer
                 {
-                    ApiKey = key.ToString(),
+                    ApiKey = key,
                     ApplicationName = GetType().ToString()
                 });
 

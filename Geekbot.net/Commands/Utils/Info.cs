@@ -7,7 +7,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Utils
 {
@@ -16,11 +15,9 @@ namespace Geekbot.net.Commands.Utils
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
 
-        public Info(IDatabase redis, IErrorHandler errorHandler, DiscordSocketClient client, CommandService commands)
+        public Info(IErrorHandler errorHandler, DiscordSocketClient client, CommandService commands)
         {
-            _redis = redis;
             _errorHandler = errorHandler;
             _client = client;
             _commands = commands;
@@ -37,7 +34,7 @@ namespace Geekbot.net.Commands.Utils
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(_client.CurrentUser.GetAvatarUrl())
                     .WithName($"{Constants.Name} V{Constants.BotVersion()}"));
-                var botOwner = await Context.Guild.GetUserAsync(ulong.Parse(_redis.StringGet("botOwner")));
+                var botOwner = (await _client.GetApplicationInfoAsync()).Owner;
                 var uptime = DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime);
 
                 eb.AddInlineField("Bot Name", _client.CurrentUser.Username);

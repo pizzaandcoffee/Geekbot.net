@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Database;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
@@ -13,6 +16,7 @@ namespace Geekbot.net
 {
     public class Handlers
     {
+        private readonly DatabaseContext _database;
         private readonly IDiscordClient _client;
         private readonly IGeekbotLogger _logger;
         private readonly IDatabase _redis;
@@ -21,8 +25,9 @@ namespace Geekbot.net
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
         
-        public Handlers(IDiscordClient client,  IGeekbotLogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository, IReactionListener reactionListener)
+        public Handlers(DatabaseContext database, IDiscordClient client,  IGeekbotLogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository, IReactionListener reactionListener)
         {
+            _database = database;
             _client = client;
             _logger = logger;
             _redis = redis;
@@ -46,13 +51,21 @@ namespace Geekbot.net
                 var lowCaseMsg = message.ToString().ToLower();
                 if (lowCaseMsg.StartsWith("hui"))
                 {
-                    message.Channel.SendMessageAsync("hui!!!");
-                    return Task.CompletedTask;
+                    var hasPing = _database.GuildSettings.FirstOrDefault(guild =>
+                                          guild.GuildId.Equals(((SocketGuildChannel) message.Channel).Guild.Id.AsLong()))
+                                      ?.Hui ?? false;
+                    if (hasPing)
+                    {
+                        message.Channel.SendMessageAsync("hui!!!");
+                        return Task.CompletedTask;
+                    }
                 }
                 if (lowCaseMsg.StartsWith("ping ") || lowCaseMsg.Equals("ping"))
                 {
-                    bool.TryParse(_redis.HashGet($"{((SocketGuildChannel) message.Channel).Guild.Id}:Settings", "ping"), out var allowPings);
-                    if (allowPings)
+                    var hasPing = _database.GuildSettings.FirstOrDefault(guild =>
+                                          guild.GuildId.Equals(((SocketGuildChannel) message.Channel).Guild.Id.AsLong()))
+                                      ?.Ping ?? false;
+                    if (hasPing)
                     {
                         message.Channel.SendMessageAsync("pong");
                         return Task.CompletedTask;  
@@ -109,10 +122,12 @@ namespace Geekbot.net
             {
                 if (!user.IsBot)
                 {
-                    var message = _redis.HashGet($"{user.Guild.Id}:Settings", "WelcomeMsg");
-                    if (!message.IsNullOrEmpty)
+                    var message = _database.GuildSettings.FirstOrDefault(guild =>
+                                          guild.GuildId.Equals(user.Guild.Id.AsLong()))
+                                      ?.WelcomeMessage;
+                    if (!string.IsNullOrEmpty(message))
                     {
-                        message = message.ToString().Replace("$user", user.Mention);
+                        message = message.Replace("$user", user.Mention);
                         await user.Guild.DefaultChannel.SendMessageAsync(message);
                     }
                 }
@@ -134,15 +149,12 @@ namespace Geekbot.net
         {
             try
             {
-                var sendLeftEnabled = _redis.HashGet($"{user.Guild.Id}:Settings", "ShowLeave");
-                if (sendLeftEnabled.ToString() == "1")
+                var guild = _database.GuildSettings.FirstOrDefault(g =>
+                    g.GuildId.Equals(user.Guild.Id.AsLong()));
+                if (guild?.ShowLeave ?? false)
                 {
-                    var modChannel = ulong.Parse(_redis.HashGet($"{user.Guild.Id}:Settings", "ModChannel"));
-                    if (!string.IsNullOrEmpty(modChannel.ToString()))
-                    {
-                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(modChannel);
-                        await modChannelSocket.SendMessageAsync($"{user.Username}#{user.Discriminator} left the server");
-                    }
+                    var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(guild.ModChannel.AsUlong());
+                    await modChannelSocket.SendMessageAsync($"{user.Username}#{user.Discriminator} left the server");
                 }
             }
             catch (Exception e)
@@ -160,27 +172,24 @@ namespace Geekbot.net
         {
             try
             {
-                var guild = ((IGuildChannel) channel).Guild;
-                var sendLeftEnabled = _redis.HashGet($"{guild.Id}:Settings", "ShowDelete");
-                if (sendLeftEnabled.ToString() == "1")
+                var guildSocketData = ((IGuildChannel) channel).Guild;
+                var guild = _database.GuildSettings.FirstOrDefault(g =>
+                    g.GuildId.Equals(guildSocketData.Id.AsLong()));
+                if (guild?.ShowDelete ?? false)
                 {
-                    var modChannel = ulong.Parse(_redis.HashGet($"{guild.Id}:Settings", "ModChannel"));
-                    if (!string.IsNullOrEmpty(modChannel.ToString()) && modChannel != channel.Id)
+                    var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(guild.ModChannel.AsUlong());
+                    var sb = new StringBuilder();
+                    if (message.Value != null)
                     {
-                        var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(modChannel);
-                        var sb = new StringBuilder();
-                        if (message.Value != null)
-                        {
-                            sb.AppendLine(
-                                $"The following message from {message.Value.Author.Username}#{message.Value.Author.Discriminator} was deleted in <#{channel.Id}>");
-                            sb.AppendLine(message.Value.Content);
-                        }
-                        else
-                        {
-                            sb.AppendLine("Someone deleted a message, the message was not cached...");
-                        }
-                        await modChannelSocket.SendMessageAsync(sb.ToString());
+                        sb.AppendLine(
+                            $"The following message from {message.Value.Author.Username}#{message.Value.Author.Discriminator} was deleted in <#{channel.Id}>");
+                        sb.AppendLine(message.Value.Content);
                     }
+                    else
+                    {
+                        sb.AppendLine("Someone deleted a message, the message was not cached...");
+                    }
+                    await modChannelSocket.SendMessageAsync(sb.ToString());
                 }
             }
             catch (Exception e)
