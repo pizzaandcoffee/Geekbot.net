@@ -22,7 +22,6 @@ namespace Geekbot.net.Commands.Games
         }
 
         [Command("roll", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Fun)]
         [Summary("Guess which number the bot will roll (1-100")]
         public async Task RollCommand([Remainder] [Summary("guess")] string stuff = "noGuess")
         {

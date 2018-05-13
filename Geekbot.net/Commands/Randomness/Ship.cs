@@ -20,7 +20,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Fun)]
         [Summary("Ask the Shipping meter")]
         public async Task Command([Summary("@User1")] IUser user1, [Summary("@User2")] IUser user2)
         {

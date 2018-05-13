@@ -20,7 +20,6 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
         }
 
         [Command("urban", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Lookup something on urban dictionary")]
         public async Task UrbanDefine([Remainder] [Summary("word")] string word)
         {

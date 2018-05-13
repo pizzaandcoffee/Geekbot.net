@@ -21,7 +21,6 @@ namespace Geekbot.net.Commands.Integrations
         }
 
         [Command("anime", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about an Anime.")]
         public async Task SearchAnime([Remainder] [Summary("AnimeName")] string animeName)
         {
@@ -70,7 +69,6 @@ namespace Geekbot.net.Commands.Integrations
         }
 
         [Command("manga", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Show Info about a Manga.")]
         public async Task SearchManga([Remainder] [Summary("MangaName")] string mangaName)
         {

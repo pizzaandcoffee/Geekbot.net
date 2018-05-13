@@ -17,7 +17,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("gdq", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Games)]
         [Summary("Get a quote from the GDQ donation generator.")]
         public async Task GetQuote()
         {

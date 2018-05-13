@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Randomness.Cat
         }
 
         [Command("cat", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Return a random image of a cat.")]
         public async Task Say()
         {

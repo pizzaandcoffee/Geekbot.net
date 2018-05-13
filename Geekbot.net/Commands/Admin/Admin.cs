@@ -30,7 +30,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("welcome", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
         {
@@ -40,7 +39,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("modchannel", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Set a channel for moderation purposes")]
         public async Task SelectModChannel([Summary("#Channel")] ISocketMessageChannel channel)
         {
@@ -61,7 +59,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("showleave", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone leaves")]
         public async Task ShowLeave([Summary("true/false")] bool enabled)
         {
@@ -88,7 +85,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("showdel", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Notify modchannel when someone deletes a message")]
         public async Task ShowDelete([Summary("true/false")] bool enabled)
         {
@@ -117,7 +113,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("setlang", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]
         public async Task SetLanguage([Summary("language")] string languageRaw)
         {
@@ -142,7 +137,6 @@ namespace Geekbot.net.Commands.Admin
         }
         
         [Command("wiki", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Change the wikipedia instance (use lang code in xx.wikipedia.org)")]
         public async Task SetWikiLanguage([Summary("language")] string languageRaw)
         {
@@ -160,7 +154,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("lang", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Change the bots language")]
         public async Task GetLanguage()
         {
@@ -176,7 +169,6 @@ namespace Geekbot.net.Commands.Admin
         }
         
         [Command("ping", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Enable the ping reply.")]
         public async Task TogglePing()
         {

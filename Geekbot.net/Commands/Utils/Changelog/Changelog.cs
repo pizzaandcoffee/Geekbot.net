@@ -25,9 +25,7 @@ namespace Geekbot.net.Commands.Utils.Changelog
         }
 
         [Command("changelog", RunMode = RunMode.Async)]
-        [Alias("updates")]
-        [Remarks(CommandCategories.Helpers)]
-        [Summary("Show the latest 5 updates")]
+        [Summary("Show the latest 10 updates")]
         public async Task GetChangelog()
         {
             try

@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Randomness.Chuck
         }
         
         [Command("chuck", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("A random chuck norris joke")]
         public async Task Say()
         {

@@ -26,7 +26,6 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
 
         [Command]
-        [Remarks(CommandCategories.Quotes)]
         [Summary("Return a random quoute from the database")]
         public async Task GetRandomQuote()
         {
@@ -53,7 +52,6 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
 
         [Command("save")]
-        [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from the last sent message by @user")]
         public async Task SaveQuote([Summary("@user")] IUser user)
         {
@@ -89,7 +87,6 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
 
         [Command("save")]
-        [Remarks(CommandCategories.Quotes)]
         [Summary("Save a quote from a message id")]
         public async Task SaveQuote([Summary("messageId")] ulong messageId)
         {
@@ -123,7 +120,6 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
 
         [Command("make")]
-        [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from the last sent message by @user")]
         public async Task ReturnSpecifiedQuote([Summary("@user")] IUser user)
         {
@@ -143,7 +139,6 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
 
         [Command("make")]
-        [Remarks(CommandCategories.Quotes)]
         [Summary("Create a quote from a message id")]
         public async Task ReturnSpecifiedQuote([Summary("messageId")] ulong messageId)
         {
@@ -165,7 +160,6 @@ namespace Geekbot.net.Commands.Utils.Quote
        [RequireUserPermission(GuildPermission.KickMembers)]
        [RequireUserPermission(GuildPermission.ManageMessages)]
        [RequireUserPermission(GuildPermission.ManageRoles)]
-       [Remarks(CommandCategories.Quotes)]
        [Summary("Remove a quote (required mod permissions)")]
        public async Task RemoveQuote([Summary("quoteId")] int id)
        {

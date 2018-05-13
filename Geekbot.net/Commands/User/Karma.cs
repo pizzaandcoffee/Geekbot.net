@@ -26,7 +26,6 @@ namespace Geekbot.net.Commands.User
         }
 
         [Command("good", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Karma)]
         [Summary("Increase Someones Karma")]
         public async Task Good([Summary("@someone")] IUser user)
         {
@@ -74,7 +73,6 @@ namespace Geekbot.net.Commands.User
         }
 
         [Command("bad", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Karma)]
         [Summary("Decrease Someones Karma")]
         public async Task Bad([Summary("@someone")] IUser user)
         {

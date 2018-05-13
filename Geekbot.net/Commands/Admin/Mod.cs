@@ -32,7 +32,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("namehistory", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("See past usernames of an user")]
         public async Task UsernameHistory([Summary("@user")] IUser user)
         {
@@ -52,7 +51,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("kick", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Ban a user")]
         public async Task Kick([Summary("@user")] IUser userNormal,
             [Summary("reason")] [Remainder] string reason = "none")

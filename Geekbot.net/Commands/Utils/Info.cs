@@ -27,7 +27,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("info", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Get Information about the bot")]
         public async Task BotInfo()
         {
@@ -59,7 +58,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("uptime", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Get the Bot Uptime")]
         public async Task BotUptime()
         {

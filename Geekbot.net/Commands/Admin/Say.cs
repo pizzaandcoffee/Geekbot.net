@@ -18,7 +18,6 @@ namespace Geekbot.net.Commands.Admin
 
         [RequireUserPermission(GuildPermission.Administrator)]
         [Command("say", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Say Something.")]
         public async Task Echo([Remainder] [Summary("What?")] string echo)
         {

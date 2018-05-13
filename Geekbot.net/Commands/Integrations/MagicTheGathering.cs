@@ -23,7 +23,6 @@ namespace Geekbot.net.Commands.Integrations
         }
 
         [Command("mtg", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Games)]
         [Summary("Find a Magic The Gathering Card.")]
         public async Task GetCard([Remainder] [Summary("name")] string cardName)
         {

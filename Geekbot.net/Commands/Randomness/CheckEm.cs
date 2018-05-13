@@ -21,7 +21,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("checkem", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Check for dubs")]
         public async Task MuhDubs()
         {

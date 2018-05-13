@@ -18,7 +18,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("help", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("List all Commands")]
         public async Task GetHelp()
         {

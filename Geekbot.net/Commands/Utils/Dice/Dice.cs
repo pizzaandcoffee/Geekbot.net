@@ -11,7 +11,6 @@ namespace Geekbot.net.Commands.Utils.Dice
     public class Dice : ModuleBase
     {
         [Command("dice", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Roll a dice.")]
         public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d20")
         {

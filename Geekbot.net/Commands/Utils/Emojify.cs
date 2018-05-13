@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("emojify", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Emojify text")]
         public async Task Dflt([Remainder] [Summary("text")] string text)
         {

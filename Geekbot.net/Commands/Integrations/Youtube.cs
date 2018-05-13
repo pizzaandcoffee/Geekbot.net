@@ -21,7 +21,6 @@ namespace Geekbot.net.Commands.Integrations
         }
 
         [Command("yt", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Search for something on youtube.")]
         public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
         {

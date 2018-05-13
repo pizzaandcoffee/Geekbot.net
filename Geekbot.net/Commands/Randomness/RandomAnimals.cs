@@ -16,7 +16,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("panda", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random panda image")]
         public async Task Panda()
         {
@@ -25,7 +24,6 @@ namespace Geekbot.net.Commands.Randomness
 
         [Command("croissant", RunMode = RunMode.Async)]
         [Alias("gipfeli")]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random croissant image")]
         public async Task Croissant()
         {
@@ -33,7 +31,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("pumpkin", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random pumpkin image")]
         public async Task Pumpkin()
         {
@@ -41,7 +38,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("squirrel", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random squirrel image")]
         public async Task Squirrel()
         {
@@ -49,7 +45,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("turtle", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random turtle image")]
         public async Task Turtle()
         {
@@ -58,7 +53,6 @@ namespace Geekbot.net.Commands.Randomness
         
         [Command("pinguin", RunMode = RunMode.Async)]
         [Alias("pingu")]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random pinguin image")]
         public async Task Pinguin()
         {
@@ -66,7 +60,6 @@ namespace Geekbot.net.Commands.Randomness
         }
         
         [Command("fox", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random fox image")]
         public async Task Fox()
         {

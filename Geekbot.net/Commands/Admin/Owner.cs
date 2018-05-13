@@ -52,7 +52,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("youtubekey", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
@@ -61,7 +60,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("game", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Set the game that the bot is playing")]
         public async Task SetGame([Remainder] [Summary("Game")] string key)
         {
@@ -72,7 +70,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("popuserrepo", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Populate user cache")]
         public async Task PopUserRepoCommand()
         {
@@ -104,7 +101,6 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("error", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Admin)]
         [Summary("Throw an error un purpose")]
         public void PurposefulError()
         {

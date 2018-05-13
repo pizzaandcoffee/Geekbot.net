@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Randomness.Dad
         }
         
         [Command("dad", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("A random dad joke")]
         public async Task Say()
         {

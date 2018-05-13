@@ -36,7 +36,6 @@ namespace Geekbot.net.Commands.User.Ranking
         }
 
         [Command("rank", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Statistics)]
         [Summary("get user top 10 in messages or karma")]
         public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
         {

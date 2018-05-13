@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("choose", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Let the bot choose for you, seperate options with a semicolon.")]
         public async Task Command([Remainder] [Summary("option1;option2")]
             string choices)

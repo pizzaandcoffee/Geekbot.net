@@ -19,7 +19,6 @@ namespace Geekbot.net.Commands.Games
         }
 
         [Command("pokedex", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("A Pokedex Tool")]
         public async Task GetPokemon([Summary("pokemonName")] string pokemonName)
         {

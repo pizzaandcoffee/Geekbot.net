@@ -21,7 +21,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("slap", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Fun)]
         [Summary("slap someone")]
         public async Task Slapper([Summary("@user")] IUser user)
         {

@@ -17,7 +17,6 @@ namespace Geekbot.net.Commands.Utils
         }
 
         [Command("avatar", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Get someones avatar")]
         public async Task GetAvatar([Remainder] [Summary("user")] IUser user = null)
         {

@@ -15,7 +15,6 @@ namespace Geekbot.net.Commands.Randomness
         }
 
         [Command("fortune", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Randomness)]
         [Summary("Get a random fortune")]
         public async Task GetAFortune()
         {

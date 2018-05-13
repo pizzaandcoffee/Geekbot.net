@@ -28,7 +28,6 @@ namespace Geekbot.net.WebApi.Help
                     {
                         Name = cmd.Name,
                         Summary = cmd.Summary,
-                        Category = cmd.Remarks ?? CommandCategories.Uncategorized,
                         IsAdminCommand = (param.Contains("admin")),
                         Aliases = cmd.Aliases.ToArray(),
                         Params = cmdParamsObj

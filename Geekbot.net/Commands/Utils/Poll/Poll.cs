@@ -32,7 +32,6 @@ namespace Geekbot.net.Commands.Utils.Poll
         }
 
         [Command(RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Check status of the current poll")]
         public async Task Dflt()
         {
@@ -55,7 +54,6 @@ namespace Geekbot.net.Commands.Utils.Poll
         }
 
         [Command("create", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("Create a poll")]
         public async Task Create([Remainder] [Summary("question;option1;option2")]
             string rawPollString)
@@ -113,7 +111,6 @@ namespace Geekbot.net.Commands.Utils.Poll
         }
 
         [Command("end", RunMode = RunMode.Async)]
-        [Remarks(CommandCategories.Helpers)]
         [Summary("End the current poll")]
         public async Task End()
         {
