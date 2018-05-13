@@ -63,7 +63,7 @@ namespace Geekbot.net.Lib
          * WebApi                           *
          ************************************/
      
-        [Option("api-host", Default = "127.0.0.1", HelpText = "Host on which the WebApi listens")]
+        [Option("api-host", Default = "localhost", HelpText = "Host on which the WebApi listens")]
         public string ApiHost { get; set; }
         
         [Option("api-port", Default = "12995", HelpText = "Port on which the WebApi listens")]

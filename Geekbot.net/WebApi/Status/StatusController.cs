@@ -3,7 +3,7 @@ using Nancy;
 
 namespace Geekbot.net.WebApi.Status
 {
-    public class StatusController : NancyModule
+    public sealed class StatusController : NancyModule
     {
         public StatusController()
         {

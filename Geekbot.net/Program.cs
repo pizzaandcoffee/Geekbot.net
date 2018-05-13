@@ -19,6 +19,7 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Geekbot.net.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy.Hosting.Self;
 using StackExchange.Redis;
@@ -202,7 +203,8 @@ namespace Geekbot.net
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
             var webApiUrl = new Uri($"http://{_runParameters.ApiHost}:{_runParameters.ApiPort}");
-            new NancyHost(webApiUrl).Start();
+            var webConfig = new WebConfig(_logger, _commands);
+            new NancyHost(webConfig, webApiUrl).Start();
             _logger.Information(LogSource.Api, $"Webserver now running on {webApiUrl}");
         }
     }

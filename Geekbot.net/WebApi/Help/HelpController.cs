@@ -2,19 +2,16 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Nancy;
 
 namespace Geekbot.net.WebApi.Help
 {
-    public class HelpController : NancyModule
+    public sealed class HelpController : NancyModule
     {
-        public HelpController()
+        public HelpController(CommandService commands)
         {
             Get("/v1/commands", args =>
             {
-                var commands = GetCommands().Result;
-
                 var commandList = (from cmd in commands.Commands
                     let cmdParamsObj = cmd.Parameters.Select(cmdParam => new CommandParamDto
                         {
