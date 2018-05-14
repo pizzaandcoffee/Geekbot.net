@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Geekbot.net.WebApi.Help
+namespace Geekbot.net.WebApi.Controllers.Commands
 {
     public class CommandDto
     {

@@ -1,4 +1,4 @@
-﻿namespace Geekbot.net.WebApi.Status
+﻿namespace Geekbot.net.WebApi.Controllers.Status
 {
     public class ApiStatusDto
     {

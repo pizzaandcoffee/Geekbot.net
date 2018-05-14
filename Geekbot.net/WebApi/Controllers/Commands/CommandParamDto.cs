@@ -1,4 +1,4 @@
-﻿namespace Geekbot.net.WebApi.Help
+﻿namespace Geekbot.net.WebApi.Controllers.Commands
 {
     public class CommandParamDto
     {
