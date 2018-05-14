@@ -25,7 +25,9 @@ namespace Geekbot.net
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
         
-        public Handlers(DatabaseContext database, IDiscordClient client,  IGeekbotLogger logger, IDatabase redis, IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository, IReactionListener reactionListener)
+        public Handlers(DatabaseContext database, IDiscordClient client,  IGeekbotLogger logger, IDatabase redis,
+            IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
+            IReactionListener reactionListener)
         {
             _database = database;
             _client = client;

@@ -8,7 +8,6 @@ using Geekbot.net.Commands.Utils.Quote;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
-using MtgApiManager.Lib.Model;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 

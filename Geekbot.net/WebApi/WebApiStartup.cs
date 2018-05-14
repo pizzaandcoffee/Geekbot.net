@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Reflection;
 using Discord.Commands;
+using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.WebApi.Logging;
@@ -13,9 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Geekbot.net.WebApi
 {
-    public class WebApiStartup
+    public static class WebApiStartup
     {
-        public static void StartWebApi(IGeekbotLogger logger, RunParameters runParameters, CommandService commandService)
+        public static void StartWebApi(IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
+            DatabaseContext databaseContext)
         {
             WebHost.CreateDefaultBuilder()
                 .UseKestrel(options =>
@@ -26,6 +27,7 @@ namespace Geekbot.net.WebApi
                 {
                     services.AddMvc();
                     services.AddSingleton<CommandService>(commandService);
+                    services.AddSingleton<DatabaseContext>(databaseContext);
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowSpecificOrigin",

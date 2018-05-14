@@ -1,45 +1,38 @@
 ﻿using System.Threading.Tasks;
+using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Logger;
 using MyAnimeListSharp.Auth;
 using MyAnimeListSharp.Core;
 using MyAnimeListSharp.Facade.Async;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Lib.Clients
 {
     public class MalClient : IMalClient
     {
-        private readonly IDatabase _redis;
+        private readonly IGlobalSettings _globalSettings;
         private readonly IGeekbotLogger _logger;
         private ICredentialContext _credentials;
         private AnimeSearchMethodsAsync _animeSearch;
         private MangaSearchMethodsAsync _mangaSearch;
         
-        public MalClient(IDatabase redis, IGeekbotLogger logger)
+        public MalClient(IGlobalSettings globalSettings, IGeekbotLogger logger)
         {
-            _redis = redis;
+            _globalSettings = globalSettings;
             _logger = logger;
             ReloadClient();
         }
 
         public bool ReloadClient()
         {
-            var malCredentials = _redis.HashGetAll("malCredentials");
-            if (malCredentials.Length != 0)
+            var malCredentials = _globalSettings.GetKey("MalCredentials");
+            if (!string.IsNullOrEmpty(malCredentials))
             {
-                _credentials = new CredentialContext();
-                foreach (var c in malCredentials)
+                var credSplit = malCredentials.Split('|');
+                _credentials = new CredentialContext()
                 {
-                    switch (c.Name)
-                    {
-                        case "Username":
-                            _credentials.UserName = c.Value;
-                            break;
-                        case "Password":
-                            _credentials.Password = c.Value;
-                            break;
-                    }
-                }
+                    UserName = credSplit[0],
+                    Password = credSplit[1]
+                };
                 _animeSearch = new AnimeSearchMethodsAsync(_credentials);
                 _mangaSearch = new MangaSearchMethodsAsync(_credentials);
                 _logger.Debug(LogSource.Geekbot, "Logged in to MAL");

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.ErrorHandling;
 

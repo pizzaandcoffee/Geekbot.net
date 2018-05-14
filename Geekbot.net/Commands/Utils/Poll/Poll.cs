@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.UserRepository;
@@ -167,7 +166,10 @@ namespace Geekbot.net.Commands.Utils.Poll
                     };
                     results.Add(result);
                 }
-                catch {}
+                catch
+                {
+                    // ignored
+                }
 
             results.Sort((x, y) => y.VoteCount.CompareTo(x.VoteCount));
             return results;

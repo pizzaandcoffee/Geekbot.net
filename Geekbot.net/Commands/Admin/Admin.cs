@@ -10,7 +10,6 @@ using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Admin
 {

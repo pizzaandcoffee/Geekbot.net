@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
@@ -42,7 +41,7 @@ namespace Geekbot.net.Commands.User
                 var messages = _database.Messages
                     .Where(e => e.GuildId == Context.Guild.Id.AsLong())
                     .Sum(e => e.MessageCount);
-                var level = _levelCalc.GetLevel((int) messages);
+                var level = _levelCalc.GetLevel(messages);
 
                 eb.AddField("Server Age", $"{created.Day}/{created.Month}/{created.Year} ({age} days)");
                 eb.AddInlineField("Level", level)

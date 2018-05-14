@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
-using Geekbot.net.Commands.Randomness.Cat;
 
 namespace Geekbot.net.Lib.Logger
 {

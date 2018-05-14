@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Media;
 
 namespace Geekbot.net.Commands.Randomness

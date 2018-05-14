@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Converters;
 using Xunit;
 

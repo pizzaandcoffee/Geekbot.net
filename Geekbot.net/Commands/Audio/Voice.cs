@@ -65,7 +65,7 @@ namespace Geekbot.net.Commands.Audio
         }
 
 //        [Command("ytplay")]
-        public async Task ytplay(string url)
+        public async Task Ytplay(string url)
         {
             try
             {

@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Newtonsoft.Json;
 

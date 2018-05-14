@@ -5,11 +5,9 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Polyfills;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Utils.Quote
 {

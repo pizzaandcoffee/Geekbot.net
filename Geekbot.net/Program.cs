@@ -53,6 +53,7 @@ namespace Geekbot.net
             logo.AppendLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             logo.AppendLine("=========================================");
+            logo.AppendLine($"Version {Constants.BotVersion()}");
             Console.WriteLine(logo.ToString());
             var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
             var logger = new GeekbotLogger(runParameters, sumologicActive);
@@ -112,7 +113,7 @@ namespace Geekbot.net
             _userRepository = new UserRepository(_database, logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
-            var malClient = new MalClient(_redis, logger);
+            var malClient = new MalClient(_globalSettings, logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
@@ -174,13 +175,12 @@ namespace Geekbot.net
                     _client.UserLeft += handlers.UserLeft;
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
-                    
-                    if (!_runParameters.DisableApi)
-                    {
-                        StartWebApi();
-                    }
+
+                    var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
                     
                     _logger.Information(LogSource.Geekbot, "Done and ready for use");
+
+                    await webserver;
                 }
             }
             catch (Exception e)
@@ -197,12 +197,11 @@ namespace Geekbot.net
             return true;
         }
 
-        private void StartWebApi()
+        private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            var webApiUrl = new Uri($"http://{_runParameters.ApiHost}:{_runParameters.ApiPort}");
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands);
-            _logger.Information(LogSource.Api, $"Webserver now running on {webApiUrl}");
+            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _database);
+            return Task.CompletedTask;
         }
     }
 }

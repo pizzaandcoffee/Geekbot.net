@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Geekbot.net.WebApi.Controllers.Commands
 {
     [EnableCors("AllowSpecificOrigin")]
-    public class HelpController : Controller
+    public class CommandController : Controller
     {
         private readonly CommandService _commands;
 
-        public HelpController(CommandService commands)
+        public CommandController(CommandService commands)
         {
             _commands = commands;
         }
@@ -22,7 +22,7 @@ namespace Geekbot.net.WebApi.Controllers.Commands
                 let cmdParamsObj = cmd.Parameters.Select(cmdParam => new CommandParamDto
                     {
                         Summary = cmdParam.Summary,
-                        Default = cmdParam.DefaultValue?.ToString() ?? null,
+                        Default = cmdParam.DefaultValue?.ToString(),
                         Type = cmdParam.Type?.ToString()
                     })
                     .ToList()
@@ -31,7 +31,7 @@ namespace Geekbot.net.WebApi.Controllers.Commands
                 {
                     Name = cmd.Name,
                     Summary = cmd.Summary,
-                    IsAdminCommand = (param.Contains("admin")),
+                    IsAdminCommand = param.Contains("admin") || param.Contains("owner"),
                     Aliases = cmd.Aliases.ToArray(),
                     Params = cmdParamsObj
                 }).ToList();

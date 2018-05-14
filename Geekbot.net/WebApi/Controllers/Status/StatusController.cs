@@ -1,4 +1,5 @@
-﻿using Geekbot.net.Lib;
+﻿using System.Globalization;
+using Geekbot.net.Lib;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ namespace Geekbot.net.WebApi.Controllers.Status
             var responseBody = new ApiStatusDto
             {
                 GeekbotVersion = Constants.BotVersion(),
-                ApiVersion = Constants.ApiVersion.ToString(),
+                ApiVersion = Constants.ApiVersion.ToString(CultureInfo.InvariantCulture),
                 Status = "Online"
             };
             return Ok(responseBody);

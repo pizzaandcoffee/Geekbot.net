@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using MtgApiManager.Lib.Service;

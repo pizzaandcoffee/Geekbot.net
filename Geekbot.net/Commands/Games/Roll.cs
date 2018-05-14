@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Localization;
 using StackExchange.Redis;

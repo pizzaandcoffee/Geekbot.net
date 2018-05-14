@@ -36,6 +36,8 @@ namespace Geekbot.net.WebApi.Logging
                 case LogLevel.Critical:
                     _geekbotLogger.Error(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}", exception);
                     break;
+                case LogLevel.None:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(logLevel));
             }
@@ -67,6 +69,9 @@ namespace Geekbot.net.WebApi.Logging
                     return NLog.LogLevel.Error;
                 case LogLevel.Critical:
                     return NLog.LogLevel.Fatal;
+                case LogLevel.None:
+                    return NLog.LogLevel.Off;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level));
             }

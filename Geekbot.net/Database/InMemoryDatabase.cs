@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Geekbot.net.Database
 {
@@ -13,6 +12,6 @@ namespace Geekbot.net.Database
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseInMemoryDatabase(databaseName: _name);
+            => optionsBuilder.UseInMemoryDatabase(_name);
     }
 }

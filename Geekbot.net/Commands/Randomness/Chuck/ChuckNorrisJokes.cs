@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Newtonsoft.Json;
 
