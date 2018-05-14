@@ -29,7 +29,7 @@ namespace Geekbot.net.Database
             _client = client;
         }
 
-        public Task Migrate()
+        public async Task Migrate()
         {
             _logger.Information(LogSource.Geekbot, "Starting migration process");
             foreach (var guild in _client.Guilds)
@@ -49,7 +49,7 @@ namespace Geekbot.net.Database
                             var qd = JsonConvert.DeserializeObject<QuoteObjectDto>(q);
                             var quote = CreateQuoteObject(guild.Id, qd);
                             _database.Quotes.Add(quote);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -82,7 +82,7 @@ namespace Geekbot.net.Database
                                 TimeOut = DateTimeOffset.MinValue
                             };
                             _database.Karma.Add(user);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -114,7 +114,7 @@ namespace Geekbot.net.Database
                                 Rolls = int.Parse(q.Value)
                             };
                             _database.Rolls.Add(user);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -148,7 +148,7 @@ namespace Geekbot.net.Database
                                 Recieved= int.Parse(gotten[int.Parse(q.Name)].Value)
                             };
                             _database.Slaps.Add(user);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -180,7 +180,7 @@ namespace Geekbot.net.Database
                                 MessageCount= int.Parse(q.Value)
                             };
                             _database.Messages.Add(user);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -215,7 +215,7 @@ namespace Geekbot.net.Database
                                 Strength = int.Parse(q.Value)
                             };
                             _database.Ships.Add(user);
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                             done.Add(q.Name);
                         }
                         catch
@@ -309,7 +309,7 @@ namespace Geekbot.net.Database
                                 Joined = user.CreatedAt,
                                 UsedNames = names
                             }, model => model.UserId.Equals(user.Id.AsLong()));
-                            _database.SaveChanges();
+                            await _database.SaveChangesAsync();
                         }
                         catch
                         {
@@ -333,14 +333,12 @@ namespace Geekbot.net.Database
                     Name = guild.Name,
                     Owner = guild.Owner.Id.AsLong()
                 });
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
 
                 #endregion
                 _logger.Information(LogSource.Geekbot, $"Finished Migration for {guild.Name}");
             }
             _logger.Information(LogSource.Geekbot, "Finished migration process");
-            
-            return Task.CompletedTask;;
         }
         
         private QuoteModel CreateQuoteObject(ulong guild, QuoteObjectDto quote)

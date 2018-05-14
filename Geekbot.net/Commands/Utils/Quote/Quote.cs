@@ -74,7 +74,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                 
                 var quote = CreateQuoteObject(lastMessage);
                 _database.Quotes.Add(quote);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
 
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
@@ -107,7 +107,7 @@ namespace Geekbot.net.Commands.Utils.Quote
 
                 var quote = CreateQuoteObject(message);
                 _database.Quotes.Add(quote);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 
                 var embed = QuoteBuilder(quote);
                 await ReplyAsync("**Quote Added**", false, embed.Build());
@@ -169,7 +169,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                if (quote != null)
                {
                    _database.Quotes.Remove(quote);
-                   _database.SaveChanges();
+                   await _database.SaveChangesAsync();
                    var embed = QuoteBuilder(quote);
                    await ReplyAsync($"**Removed #{id}**", false, embed.Build());
                }

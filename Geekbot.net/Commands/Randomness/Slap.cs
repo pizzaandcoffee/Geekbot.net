@@ -83,7 +83,7 @@ namespace Geekbot.net.Commands.Randomness
                 
                 UpdateRecieved(user.Id);
                 UpdateGiven(Context.User.Id);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
             }
             catch (Exception e)
             {

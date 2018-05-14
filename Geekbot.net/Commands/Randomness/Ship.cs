@@ -45,7 +45,7 @@ namespace Geekbot.net.Commands.Randomness
                         SecondUserId = userKeys.Item2,
                         Strength = shippingRate
                     });
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
                 }
                 else
                 {

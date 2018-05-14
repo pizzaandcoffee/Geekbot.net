@@ -125,7 +125,7 @@ namespace Geekbot.net.Commands.Admin
                     RoleId = role.Id.AsLong(),
                     WhiteListName = roleName
                 });
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 await ReplyAsync($"Added {role.Name} to the whitelist");
             }
             catch (Exception e)
@@ -146,7 +146,7 @@ namespace Geekbot.net.Commands.Admin
                 if (roleFromDb != null)
                 {
                     _database.RoleSelfService.Remove(roleFromDb);
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
                     await ReplyAsync($"Removed {roleName} from the whitelist");
                     return;
                 }

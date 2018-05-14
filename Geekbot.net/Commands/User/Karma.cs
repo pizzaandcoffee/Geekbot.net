@@ -51,7 +51,7 @@ namespace Geekbot.net.Commands.User
                     actor.TimeOut = DateTimeOffset.Now;
                     SetUser(actor);
 
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()
@@ -98,7 +98,7 @@ namespace Geekbot.net.Commands.User
                     actor.TimeOut = DateTimeOffset.Now;
                     SetUser(actor);
 
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
 
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder()

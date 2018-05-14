@@ -39,7 +39,7 @@ namespace Geekbot.net.Commands.Admin
             var guild = GetGuildSettings(Context.Guild.Id);
             guild.WelcomeMessage = welcomeMessage;
             _database.GuildSettings.Update(guild);
-            _database.SaveChanges();
+            await _database.SaveChangesAsync();
             
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
             await ReplyAsync($"Welcome message has been changed\r\nHere is an example of how it would look:\r\n{formatedMessage}");
@@ -56,7 +56,7 @@ namespace Geekbot.net.Commands.Admin
                 var guild = GetGuildSettings(Context.Guild.Id);
                 guild.ModChannel = channel.Id.AsLong();
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 
                 var sb = new StringBuilder();
                 sb.AppendLine("Successfully saved mod channel, you can now do the following");
@@ -82,7 +82,7 @@ namespace Geekbot.net.Commands.Admin
                 
                 guild.ShowLeave = !guild.ShowLeave;
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 await modChannel.SendMessageAsync(guild.ShowLeave
                     ? "Saved - now sending messages here when someone leaves"
                     : "Saved - stopping sending messages here when someone leaves"
@@ -106,7 +106,7 @@ namespace Geekbot.net.Commands.Admin
                 
                 guild.ShowDelete = !guild.ShowDelete;
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 await modChannel.SendMessageAsync(guild.ShowDelete
                     ? "Saved - now sending messages here when someone deletes a message"
                     : "Saved - stopping sending messages here when someone deletes a message"
@@ -131,7 +131,7 @@ namespace Geekbot.net.Commands.Admin
                     var guild = GetGuildSettings(Context.Guild.Id);
                     guild.Language = language;
                     _database.GuildSettings.Update(guild);
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
                     
                     var trans = _translation.GetDict(Context);
                     await ReplyAsync(trans["NewLanguageSet"]);
@@ -157,7 +157,7 @@ namespace Geekbot.net.Commands.Admin
                 var guild = GetGuildSettings(Context.Guild.Id);
                 guild.WikiLang = language;
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 
                 await ReplyAsync($"Now using the {language} wikipedia");
             }
@@ -176,7 +176,7 @@ namespace Geekbot.net.Commands.Admin
                 var guild = GetGuildSettings(Context.Guild.Id);
                 guild.Ping = !guild.Ping;
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 await ReplyAsync(guild.Ping ? "i will reply to ping now" : "No more pongs...");
             }
             catch (Exception e)
@@ -194,7 +194,7 @@ namespace Geekbot.net.Commands.Admin
                 var guild = GetGuildSettings(Context.Guild.Id);
                 guild.Hui = !guild.Hui;
                 _database.GuildSettings.Update(guild);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 await ReplyAsync(guild.Hui ? "i will reply to hui now" : "No more hui's...");
             }
             catch (Exception e)
