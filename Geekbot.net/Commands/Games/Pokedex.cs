@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using PokeAPI;
 
 namespace Geekbot.net.Commands.Games

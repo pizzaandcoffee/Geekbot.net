@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Integrations.UbranDictionary

@@ -65,11 +65,9 @@ namespace Geekbot.net.Commands.Randomness
             await ReplyAsync("", false, Eb(_mediaProvider.GetFox()));
         }
 
-        private EmbedBuilder Eb(string image)
+        private static Embed Eb(string image)
         {
-            var eb = new EmbedBuilder();
-            eb.ImageUrl = image;
-            return eb;
+            return new EmbedBuilder {ImageUrl = image}.Build();
         }
     }
 }

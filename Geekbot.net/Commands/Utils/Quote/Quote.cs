@@ -187,12 +187,11 @@ namespace Geekbot.net.Commands.Utils.Quote
             try
             {
                 var list = Context.Channel.GetMessagesAsync().Flatten();
-                await list;
-                return list.Result
-                    .First(msg => msg.Author.Id == user.Id
-                                  && msg.Embeds.Count == 0
-                                  && msg.Id != Context.Message.Id
-                                  && !msg.Content.ToLower().StartsWith("!"));
+                return await list.FirstOrDefault(msg => 
+                    msg.Author.Id == user.Id &&
+                    msg.Embeds.Count == 0 &&
+                    msg.Id != Context.Message.Id &&
+                    !msg.Content.ToLower().StartsWith("!"));
             }
             catch
             {

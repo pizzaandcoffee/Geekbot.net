@@ -7,6 +7,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Commands.Utils
 {

@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib.Polyfills
         public ulong Id { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public string Mention { get; set; }
-        public Game? Game { get; set; }
+        public IActivity Activity { get; }
         public UserStatus Status { get; set; }
         public string AvatarId { get; set; }
         public string Discriminator { get; set; }

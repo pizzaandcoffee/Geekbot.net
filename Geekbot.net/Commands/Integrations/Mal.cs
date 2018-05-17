@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Commands.Integrations
 {

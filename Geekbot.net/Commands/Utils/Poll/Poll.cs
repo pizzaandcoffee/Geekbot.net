@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.UserRepository;
 using Newtonsoft.Json;
 using StackExchange.Redis;

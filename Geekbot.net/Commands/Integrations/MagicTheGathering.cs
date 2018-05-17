@@ -6,16 +6,17 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using MtgApiManager.Lib.Service;
 
 namespace Geekbot.net.Commands.Integrations
 {
-    public class Magicthegathering : ModuleBase
+    public class MagicTheGathering : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IMtgManaConverter _manaConverter;
 
-        public Magicthegathering(IErrorHandler errorHandler, IMtgManaConverter manaConverter)
+        public MagicTheGathering(IErrorHandler errorHandler, IMtgManaConverter manaConverter)
         {
             _errorHandler = errorHandler;
             _manaConverter = manaConverter;
