@@ -32,19 +32,19 @@ namespace Geekbot.net.Commands.Utils
             {
                 var eb = new EmbedBuilder();
 
+                var appInfo = await _client.GetApplicationInfoAsync();
+                
                 eb.WithAuthor(new EmbedAuthorBuilder()
-                    .WithIconUrl(_client.CurrentUser.GetAvatarUrl())
+                    .WithIconUrl(appInfo.IconUrl)
                     .WithName($"{Constants.Name} V{Constants.BotVersion()}"));
-                var botOwner = (await _client.GetApplicationInfoAsync()).Owner;
                 var uptime = DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime);
 
                 eb.AddInlineField("Bot Name", _client.CurrentUser.Username);
-                eb.AddInlineField("Bot Owner", $"{botOwner.Username}#{botOwner.Discriminator}");
-                eb.AddInlineField("Library", "Discord.NET V1.0.2");
+                eb.AddInlineField("Bot Owner", $"{appInfo.Owner.Username}#{appInfo.Owner.Discriminator}");
+                eb.AddInlineField("Library", $"Discord.NET {Constants.LibraryVersion()}");
                 eb.AddInlineField("Uptime", $"{uptime.Days}D {uptime.Hours}H {uptime.Minutes}M {uptime.Seconds}S");
                 eb.AddInlineField("Servers", Context.Client.GetGuildsAsync().Result.Count);
                 eb.AddInlineField("Total Commands", _commands.Commands.Count());
-
                 eb.AddField("Website", "https://geekbot.pizzaandcoffee.rocks/");
 
                 await ReplyAsync("", false, eb.Build());
