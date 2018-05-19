@@ -40,7 +40,7 @@ namespace Geekbot.net.Database
                     });
                 }
                 database.Database.EnsureCreated();
-                database.Database.Migrate();
+                if(!_runParameters.InMemory) database.Database.Migrate();
             }
             catch (Exception e)
             {

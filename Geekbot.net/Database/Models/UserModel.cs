@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Geekbot.net.Database.Models
@@ -24,6 +25,6 @@ namespace Geekbot.net.Database.Models
         
         public DateTimeOffset Joined { get; set; }
         
-        public string[] UsedNames { get; set; }
+        public List<UserUsedNamesModel> UsedNames { get; set; }
     }
 }

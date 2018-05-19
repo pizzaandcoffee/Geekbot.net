@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -36,10 +37,10 @@ namespace Geekbot.net.Lib.UserRepository
                 savedUser.AvatarUrl = user.GetAvatarUrl() ?? "";
                 savedUser.IsBot = user.IsBot;
                 savedUser.Joined = user.CreatedAt;
-                if (savedUser.UsedNames == null)  savedUser.UsedNames = Enumerable.Empty<string>().ToArray();
-                if (!savedUser.UsedNames.Contains(user.Username))
+                if (savedUser.UsedNames == null) savedUser.UsedNames = new List<UserUsedNamesModel>();
+                if (!savedUser.UsedNames.Any(e => e.Name.Equals(user.Username)))
                 {
-                    savedUser.UsedNames = savedUser.UsedNames.Concat(new[] {user.Username}).ToArray();
+                    savedUser.UsedNames.Add(new UserUsedNamesModel { Name = user.Username, FirstSeen = DateTimeOffset.Now });
                 }
 
                 if (isNew)

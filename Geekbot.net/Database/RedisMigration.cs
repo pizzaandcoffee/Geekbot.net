@@ -250,7 +250,7 @@ namespace Geekbot.net.Database
                                 case "ShowLeave":
                                     settings.ShowLeave = setting.Value.ToString() == "1";
                                     break;
-                                case "WikiDel":
+                                case "ShowDelete":
                                     settings.ShowDelete = setting.Value.ToString() == "1";
                                     break;
                                 case "WikiLang":
@@ -272,9 +272,9 @@ namespace Geekbot.net.Database
                                     throw new NotImplementedException();
                             }
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Setting failed: {setting.Name} - {guild.Id}");
+                            _logger.Warning(LogSource.Geekbot, $"Setting failed: {setting.Name} - {guild.Id}", e);
                         }
                     }
                 }
@@ -297,7 +297,9 @@ namespace Geekbot.net.Database
                         try
                         {
                             var namesSerialized = _redis.HashGet($"User:{user.Id}", "UsedNames").ToString();
-                            var names = Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized);
+                            var names = namesSerialized != null
+                                ? Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized)
+                                : new string[] {user.Username};
                             _database.Users.AddIfNotExists(new UserModel()
                             {
                                 UserId = user.Id.AsLong(),
@@ -306,13 +308,13 @@ namespace Geekbot.net.Database
                                 AvatarUrl = user.GetAvatarUrl(ImageFormat.Auto, 1024),
                                 IsBot = user.IsBot,
                                 Joined = user.CreatedAt,
-                                UsedNames = names
+                                UsedNames = names.Select(name => new UserUsedNamesModel() {Name = name, FirstSeen = DateTimeOffset.Now}).ToList()
                             }, model => model.UserId.Equals(user.Id.AsLong()));
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"User failed: {user.Username}");
+                            _logger.Warning(LogSource.Geekbot, $"User failed: {user.Username}", e);
                         }
                     }
                 }

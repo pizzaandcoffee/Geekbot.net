@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands.Admin
                 var userRepo = _userRepository.Get(user.Id);
                 var sb = new StringBuilder();
                 sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
-                foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name}`");
+                foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name.Name}`");
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)

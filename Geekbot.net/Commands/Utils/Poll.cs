@@ -5,28 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.UserRepository;
-using Newtonsoft.Json;
-using StackExchange.Redis;
 
-namespace Geekbot.net.Commands.Utils.Poll
+namespace Geekbot.net.Commands.Utils
 {
     [Group("poll")]
     public class Poll : ModuleBase
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;
-        private readonly IDatabase _redis;
+        private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
 
-        public Poll(IErrorHandler errorHandler, IDatabase redis, IEmojiConverter emojiConverter,
-            IUserRepository userRepository)
+        public Poll(IErrorHandler errorHandler, DatabaseContext database, IEmojiConverter emojiConverter, IUserRepository userRepository)
         {
             _errorHandler = errorHandler;
-            _redis = redis;
+            _database = database;
             _emojiConverter = emojiConverter;
             _userRepository = userRepository;
         }
@@ -38,7 +37,7 @@ namespace Geekbot.net.Commands.Utils.Poll
             try
             {
                 var currentPoll = GetCurrentPoll();
-                if (currentPoll.Question == null || currentPoll.IsFinshed)
+                if (currentPoll.Question == null)
                 {
                     await ReplyAsync(
                         "There is no poll in this channel ongoing at the moment\r\nYou can create one with `!poll create question;option1;option2;option3`");
@@ -60,6 +59,9 @@ namespace Geekbot.net.Commands.Utils.Poll
         {
             try
             {
+                await ReplyAsync("Poll creation currently disabled");
+                return;
+                
                 var currentPoll = GetCurrentPoll();
                 if (currentPoll.Question != null && !currentPoll.IsFinshed)
                 {
@@ -75,34 +77,46 @@ namespace Geekbot.net.Commands.Utils.Poll
                     return;
                 }
 
-                var eb = new EmbedBuilder();
-                eb.Title = $"Poll by {Context.User.Username}";
                 var question = pollList[0];
-                eb.Description = question;
                 pollList.RemoveAt(0);
+                
+                var eb = new EmbedBuilder
+                {
+                    Title = $"Poll by {Context.User.Username}",
+                    Description = question
+                };
+
+                var options = new List<PollQuestionModel>();
                 var i = 1;
                 pollList.ForEach(option =>
                 {
+                    options.Add(new PollQuestionModel()
+                    {
+                        OptionId = i,
+                        OptionText = option
+                    });
                     eb.AddInlineField($"Option {_emojiConverter.NumberToEmoji(i)}", option);
                     i++;
                 });
                 var pollMessage = await ReplyAsync("", false, eb.Build());
+                
+                var poll = new PollModel()
+                {
+                    Creator = Context.User.Id.AsLong(),
+                    MessageId = pollMessage.Id.AsLong(),
+                    IsFinshed = false,
+                    Question = question,
+                    Options = options
+                };
+                _database.Polls.Add(poll);
+
                 i = 1;
                 pollList.ForEach(option =>
                 {
                     pollMessage.AddReactionAsync(new Emoji(_emojiConverter.NumberToEmoji(i)));
+                    Task.Delay(500);
                     i++;
                 });
-                var poll = new PollDataDto
-                {
-                    Creator = Context.User.Id,
-                    MessageId = pollMessage.Id,
-                    IsFinshed = false,
-                    Question = question,
-                    Options = pollList
-                };
-                var pollJson = JsonConvert.SerializeObject(poll);
-                _redis.HashSet($"{Context.Guild.Id}:Polls", new[] {new HashEntry(Context.Channel.Id, pollJson)});
             }
             catch (Exception e)
             {
@@ -123,15 +137,14 @@ namespace Geekbot.net.Commands.Utils.Poll
                     return;
                 }
 
-                var results = await GetPollResults(currentPoll);
+                currentPoll = await GetPollResults(currentPoll);
                 var sb = new StringBuilder();
                 sb.AppendLine("**Poll Results**");
                 sb.AppendLine(currentPoll.Question);
-                foreach (var result in results) sb.AppendLine($"{result.VoteCount} - {result.Option}");
+                foreach (var result in currentPoll.Options) sb.AppendLine($"{result.Votes} - {result.OptionText}");
                 await ReplyAsync(sb.ToString());
                 currentPoll.IsFinshed = true;
-                var pollJson = JsonConvert.SerializeObject(currentPoll);
-                _redis.HashSet($"{Context.Guild.Id}:Polls", new[] {new HashEntry(Context.Channel.Id, pollJson)});
+                _database.Polls.Update(currentPoll);
             }
             catch (Exception e)
             {
@@ -139,41 +152,49 @@ namespace Geekbot.net.Commands.Utils.Poll
             }
         }
 
-        private PollDataDto GetCurrentPoll()
+        private PollModel GetCurrentPoll()
         {
             try
             {
-                var currentPoll = _redis.HashGet($"{Context.Guild.Id}:Polls", Context.Channel.Id);
-                return JsonConvert.DeserializeObject<PollDataDto>(currentPoll.ToString());
+                var currentPoll = _database.Polls.FirstOrDefault(poll =>
+                    poll.ChannelId.Equals(Context.Channel.Id.AsLong()) &&
+                    poll.GuildId.Equals(Context.Guild.Id.AsLong())
+                );
+                return currentPoll ?? new PollModel();
+
             }
             catch
             {
-                return new PollDataDto();
+                return new PollModel();
             }
         }
 
-        private async Task<List<PollResultDto>> GetPollResults(PollDataDto poll)
+        private async Task<PollModel> GetPollResults(PollModel poll)
         {
-            var message = (IUserMessage) await Context.Channel.GetMessageAsync(poll.MessageId);
-            var results = new List<PollResultDto>();
+            var message = (IUserMessage) await Context.Channel.GetMessageAsync(poll.MessageId.AsUlong());
+            
+            var results = new Dictionary<int, int>();
             foreach (var r in message.Reactions)
+            {
                 try
                 {
-                    var option = int.Parse(r.Key.Name.ToCharArray()[0].ToString());
-                    var result = new PollResultDto
-                    {
-                        Option = poll.Options[option - 1],
-                        VoteCount = r.Value.ReactionCount
-                    };
-                    results.Add(result);
+                    results.Add(r.Key.Name.ToCharArray()[0], r.Value.ReactionCount);
                 }
                 catch
                 {
                     // ignored
                 }
+            }
+            
+            foreach (var q in poll.Options)
+            {
+                q.Votes = results.FirstOrDefault(e => e.Key.Equals(q.OptionId)).Value;
+            }
 
-            results.Sort((x, y) => y.VoteCount.CompareTo(x.VoteCount));
-            return results;
+            return poll;
+
+//            var sortedValues = results.OrderBy(e => e.Value);
+//            return sortedValues;
         }
     }
 }
