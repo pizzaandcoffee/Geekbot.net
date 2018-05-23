@@ -33,6 +33,12 @@ namespace Geekbot.net.Database
             _logger.Information(LogSource.Geekbot, "Starting migration process");
             foreach (var guild in _client.Guilds)
             {
+                if (guild.MemberCount > 10000)
+                {
+                    _logger.Information(LogSource.Geekbot, $"Skipping {guild.Name} because server size is to big ({guild.MemberCount})");
+                    break;
+                }
+                
                 _logger.Information(LogSource.Geekbot, $"Start Migration for {guild.Name}");
                 #region Quotes
                 /**
@@ -50,15 +56,15 @@ namespace Geekbot.net.Database
                             _database.Quotes.Add(quote);
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"quote failed: {q}");
+                            _logger.Error(LogSource.Geekbot, $"quote failed: {q}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "quote migration failed");
+                    _logger.Error(LogSource.Geekbot, "quote migration failed", e);
                 }
                 #endregion
                 
@@ -83,15 +89,15 @@ namespace Geekbot.net.Database
                             _database.Karma.Add(user);
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"karma failed for: {q.Name}");
+                            _logger.Error(LogSource.Geekbot, $"karma failed for: {q.Name}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "karma migration failed");
+                    _logger.Error(LogSource.Geekbot, "karma migration failed", e);
                 }
                 #endregion
                 
@@ -115,15 +121,15 @@ namespace Geekbot.net.Database
                             _database.Rolls.Add(user);
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Rolls failed for: {q.Name}");
+                            _logger.Error(LogSource.Geekbot, $"Rolls failed for: {q.Name}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "rolls migration failed");
+                    _logger.Error(LogSource.Geekbot, "rolls migration failed", e);
                 }
                 #endregion
                 
@@ -144,20 +150,20 @@ namespace Geekbot.net.Database
                                 GuildId = guild.Id.AsLong(),
                                 UserId = ulong.Parse(q.Name).AsLong(),
                                 Given = int.Parse(q.Value),
-                                Recieved= int.Parse(gotten[int.Parse(q.Name)].Value)
+                                Recieved= int.Parse(gotten[long.Parse(q.Name)].Value)
                             };
                             _database.Slaps.Add(user);
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Slaps failed for: {q.Name}");
+                            _logger.Error(LogSource.Geekbot, $"Slaps failed for: {q.Name}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "Slaps migration failed");
+                    _logger.Error(LogSource.Geekbot, "Slaps migration failed", e);
                 }
                 #endregion
                 
@@ -181,15 +187,15 @@ namespace Geekbot.net.Database
                             _database.Messages.Add(user);
                             await _database.SaveChangesAsync();
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Messages failed for: {q.Name}");
+                            _logger.Error(LogSource.Geekbot, $"Messages failed for: {q.Name}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "Messages migration failed");
+                    _logger.Error(LogSource.Geekbot, "Messages migration failed", e);
                 }
                 #endregion
                 
@@ -217,15 +223,15 @@ namespace Geekbot.net.Database
                             await _database.SaveChangesAsync();
                             done.Add(q.Name);
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Ships failed for: {q.Name}");
+                            _logger.Error(LogSource.Geekbot, $"Ships failed for: {q.Name}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "Ships migration failed");
+                    _logger.Error(LogSource.Geekbot, "Ships migration failed", e);
                 }
                 #endregion
                 
@@ -268,19 +274,17 @@ namespace Geekbot.net.Database
                                 case "ModChannel":
                                     settings.ModChannel = long.Parse(setting.Value);
                                     break;
-                                default:
-                                    throw new NotImplementedException();
                             }
                         }
                         catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"Setting failed: {setting.Name} - {guild.Id}", e);
+                            _logger.Error(LogSource.Geekbot, $"Setting failed: {setting.Name} - {guild.Id}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "Settings migration failed");
+                    _logger.Error(LogSource.Geekbot, "Settings migration failed", e);
                 }
 
                 #endregion
@@ -296,6 +300,11 @@ namespace Geekbot.net.Database
                     {
                         try
                         {
+                            if (user.Username == null)
+                            {
+                                await Task.Delay(100);
+                                if (user.Username == null) break;
+                            }
                             var namesSerialized = _redis.HashGet($"User:{user.Id}", "UsedNames").ToString();
                             var names = namesSerialized != null
                                 ? Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized)
@@ -314,30 +323,38 @@ namespace Geekbot.net.Database
                         }
                         catch (Exception e)
                         {
-                            _logger.Warning(LogSource.Geekbot, $"User failed: {user.Username}", e);
+                            _logger.Error(LogSource.Geekbot, $"User failed: {user.Username}", e);
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    _logger.Warning(LogSource.Geekbot, "User migration failed");
+                    _logger.Error(LogSource.Geekbot, "User migration failed", e);
                 }
                 #endregion
                 
                 #region Guilds
 
-                _database.Guilds.Add(new GuildsModel
+                try
                 {
-                    CreatedAt = guild.CreatedAt,
-                    GuildId = guild.Id.AsLong(),
-                    IconUrl = guild.IconUrl,
-                    Name = guild.Name,
-                    Owner = guild.Owner.Id.AsLong()
-                });
-                await _database.SaveChangesAsync();
+                    _database.Guilds.Add(new GuildsModel
+                    {
+                        CreatedAt = guild.CreatedAt,
+                        GuildId = guild.Id.AsLong(),
+                        IconUrl = guild?.IconUrl,
+                        Name = guild.Name,
+                        Owner = guild.Owner.Id.AsLong()
+                    });
+                    await _database.SaveChangesAsync();
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(LogSource.Geekbot, $"Guild migration failed: {guild.Name}", e);
+                }
 
                 #endregion
                 _logger.Information(LogSource.Geekbot, $"Finished Migration for {guild.Name}");
+                await Task.Delay(1000);
             }
             _logger.Information(LogSource.Geekbot, "Finished migration process");
         }

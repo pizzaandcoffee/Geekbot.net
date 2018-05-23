@@ -35,14 +35,27 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("migrate", RunMode = RunMode.Async)]
-        public async Task Migrate()
+        public async Task Migrate(string force = "")
         {
-            await ReplyAsync("starting migration");
-            
             try
             {
+                var status = _globalSettings.GetKey("MigrationStatus");
+                if (status.Equals("Running"))
+                {
+                    await ReplyAsync("Migration already running");
+                    return;
+                }
+                if (status.Equals("Done") && !force.Equals("force"))
+                {
+                    await ReplyAsync("Migration already ran, write `!owner migrate force` to run again");
+                    return;                  
+                }
+
+                await ReplyAsync("starting migration");
+                _globalSettings.SetKey("MigrationStatus", "Running");
                 var redisMigration = new RedisMigration(_database, _redis, _logger, _client);
                 await redisMigration.Migrate();
+                _globalSettings.SetKey("MigrationStatus", "Done");
             }
             catch (Exception e)
             {

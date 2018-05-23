@@ -50,6 +50,10 @@ namespace Geekbot.net
                 if (!(messageParam is SocketUserMessage message)) return Task.CompletedTask;
                 if (message.Author.IsBot) return Task.CompletedTask;
                 var argPos = 0;
+                
+                // ToDo: remove
+//                if (!message.Author.Id.Equals(93061333972455424)) return Task.CompletedTask;
+                
                 var lowCaseMsg = message.ToString().ToLower();
                 if (lowCaseMsg.StartsWith("hui"))
                 {
