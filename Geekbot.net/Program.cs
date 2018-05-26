@@ -152,7 +152,7 @@ namespace Geekbot.net
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
-                    var translationHandler = new TranslationHandler(_client.Guilds, _database, _logger);
+                    var translationHandler = new TranslationHandler(_database, _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly());

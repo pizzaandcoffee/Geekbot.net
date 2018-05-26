@@ -9,9 +9,6 @@ namespace Geekbot.net.Lib.AlmostRedis
     {
         private readonly GeekbotLogger _logger;
         private readonly RunParameters _runParameters;
-        private IDatabase _database;
-        private ConnectionMultiplexer _connection;
-        private IAlmostRedis _almostRedisImplementation;
 
         public AlmostRedis(GeekbotLogger logger, RunParameters runParameters)
         {
@@ -21,24 +18,18 @@ namespace Geekbot.net.Lib.AlmostRedis
 
         public void Connect()
         {
-            _connection = ConnectionMultiplexer.Connect($"{_runParameters.RedisHost}:{_runParameters.RedisPort}");
-            _database = _connection.GetDatabase(int.Parse(_runParameters.RedisDatabase));
-            _logger.Information(LogSource.Redis, $"Connected to Redis on {_connection.Configuration} at {_database.Database}");
+            Connection = ConnectionMultiplexer.Connect($"{_runParameters.RedisHost}:{_runParameters.RedisPort}");
+            Db = Connection.GetDatabase(int.Parse(_runParameters.RedisDatabase));
+            _logger.Information(LogSource.Redis, $"Connected to Redis on {Connection.Configuration} at {Db.Database}");
         }
 
-        public IDatabase Db
-        {
-            get { return _database; }
-        }
+        public IDatabase Db { get; private set; }
 
-        public ConnectionMultiplexer Connection
-        {
-            get { return _connection; }
-        }
-        
+        public ConnectionMultiplexer Connection { get; private set; }
+
         public IEnumerable<RedisKey> GetAllKeys()
         {
-            return _connection.GetServer($"{_runParameters.RedisHost}:{_runParameters.RedisPort}", int.Parse(_runParameters.RedisDatabase)).Keys();
+            return Connection.GetServer($"{_runParameters.RedisHost}:{_runParameters.RedisPort}", int.Parse(_runParameters.RedisDatabase)).Keys();
         }
     }
 }

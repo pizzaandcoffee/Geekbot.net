@@ -138,7 +138,7 @@ namespace Geekbot.net.Commands.Admin
                 }
 
                 await ReplyAsync(
-                    $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.GetSupportedLanguages())}");
+                    $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.SupportedLanguages)}");
             }
             catch (Exception e)
             {

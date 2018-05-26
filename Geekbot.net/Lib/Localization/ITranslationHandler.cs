@@ -9,6 +9,6 @@ namespace Geekbot.net.Lib.Localization
         Dictionary<string, string> GetDict(ICommandContext context);
         Dictionary<string, string> GetDict(ICommandContext context, string command);
         bool SetLanguage(ulong guildId, string language);
-        List<string> GetSupportedLanguages();
+        List<string> SupportedLanguages { get; }
     }
 }

@@ -16,17 +16,17 @@ namespace Geekbot.net.Lib.Localization
     {
         private readonly DatabaseContext _database;
         private readonly IGeekbotLogger _logger;
+        private readonly Dictionary<ulong, string> _serverLanguages;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
-        private Dictionary<ulong, string> _serverLanguages;
         private List<string> _supportedLanguages;
         
-        public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, DatabaseContext database, IGeekbotLogger logger)
+        public TranslationHandler(DatabaseContext database, IGeekbotLogger logger)
         {
             _database = database;
             _logger = logger;
             _logger.Information(LogSource.Geekbot, "Loading Translations");
             LoadTranslations();
-            LoadServerLanguages(clientGuilds);
+            _serverLanguages = new Dictionary<ulong, string>();
         }
 
         private void LoadTranslations()
@@ -78,28 +78,37 @@ namespace Geekbot.net.Lib.Localization
             }
         }
         
-        private void LoadServerLanguages(IReadOnlyCollection<SocketGuild> clientGuilds)
+        private string GetServerLanguage(ulong guildId)
         {
-            _serverLanguages = new Dictionary<ulong, string>();
-            foreach (var guild in clientGuilds)
+            try
             {
-                var language = _database.GuildSettings
-                                   .FirstOrDefault(g => g.GuildId.Equals(guild.Id.AsLong()))
-                                   ?.Language ?? "EN";
-                if (string.IsNullOrEmpty(language) || !_supportedLanguages.Contains(language))
+                string lang;
+                try
                 {
-                    _serverLanguages[guild.Id] = "EN";
+                    lang = _serverLanguages[guildId];
+                    if (!string.IsNullOrEmpty(lang))
+                    {
+                        return lang;
+                    }
+                    throw new Exception();
                 }
-                else
+                catch
                 {
-                    _serverLanguages[guild.Id] = language;
+                    lang = GetGuild(guildId).Language ?? "EN";
+                    _serverLanguages[guildId] = lang;
+                    return lang;
                 }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(LogSource.Geekbot, "Could not get guild langage", e);
+                return "EN";
             }
         }
 
         public string GetString(ulong guildId, string command, string stringName)
         {
-            var translation = _translations[_serverLanguages[guildId]][command][stringName];
+            var translation = _translations[GetServerLanguage(guildId)][command][stringName];
             if (!string.IsNullOrWhiteSpace(translation)) return translation;
             translation = _translations[command][stringName]["EN"];
             if (string.IsNullOrWhiteSpace(translation))
@@ -114,7 +123,7 @@ namespace Geekbot.net.Lib.Localization
             try
             {
                 var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
-                return _translations[_serverLanguages[context.Guild.Id]][command];
+                return _translations[GetServerLanguage(context.Guild.Id)][command];
             }
             catch (Exception e)
             {
@@ -127,7 +136,7 @@ namespace Geekbot.net.Lib.Localization
         {
             try
             {
-                return _translations[_serverLanguages[context.Guild.Id]][command];
+                return _translations[GetServerLanguage(context.Guild.Id)][command];
             }
             catch (Exception e)
             {
@@ -154,10 +163,7 @@ namespace Geekbot.net.Lib.Localization
             }
         }
 
-        public List<string> GetSupportedLanguages()
-        {
-            return _supportedLanguages;
-        }
+        public List<string> SupportedLanguages => _supportedLanguages;
 
         private GuildSettingsModel GetGuild(ulong guildId)
         {
