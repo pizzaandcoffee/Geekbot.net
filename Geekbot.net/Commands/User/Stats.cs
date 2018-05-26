@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.User
 {
@@ -15,10 +15,10 @@ namespace Geekbot.net.Commands.User
     {
         private readonly IErrorHandler _errorHandler;
         private readonly ILevelCalc _levelCalc;
-        private readonly IDatabase _redis;
+        private readonly IAlmostRedis _redis;
         private readonly DatabaseContext _database;
 
-        public Stats(IDatabase redis, DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
+        public Stats(IAlmostRedis redis, DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
         {
             _redis = redis;
             _database = database;
@@ -39,8 +39,8 @@ namespace Geekbot.net.Commands.User
                 var age = Math.Floor((DateTime.Now - createdAt).TotalDays);
                 var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
-                var messages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
-                var guildMessages = (int) _redis.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                var messages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
+                var guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
                 var level = _levelCalc.GetLevel(messages);
 
                 var percent = Math.Round((double) (100 * messages) / guildMessages, 2);

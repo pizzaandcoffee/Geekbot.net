@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
@@ -19,10 +20,10 @@ namespace Geekbot.net.Commands.User.Ranking
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
-        private readonly IDatabase _redis;
+        private readonly IAlmostRedis _redis;
 
         public Rank(DatabaseContext database, IErrorHandler errorHandler, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, IDatabase redis)
+            IEmojiConverter emojiConverter, IAlmostRedis redis)
         {
             _database = database;
             _errorHandler = errorHandler;
@@ -138,7 +139,7 @@ namespace Geekbot.net.Commands.User.Ranking
 
         private Dictionary<ulong, int> GetMessageList(int amount)
         {
-            return _redis
+            return _redis.Db
                 .HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1)
                 .Where(user => !user.Key.Equals(0))
                 .ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));

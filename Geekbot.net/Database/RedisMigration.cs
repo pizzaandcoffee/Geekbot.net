@@ -6,21 +6,21 @@ using Discord;
 using Discord.WebSocket;
 using Geekbot.net.Commands.Utils.Quote;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Database
 {
     public class RedisMigration
     {
         private readonly DatabaseContext _database;
-        private readonly IDatabase _redis;
+        private readonly IAlmostRedis _redis;
         private readonly IGeekbotLogger _logger;
         private readonly DiscordSocketClient _client;
 
-        public RedisMigration(DatabaseContext database, IDatabase redis, IGeekbotLogger logger, DiscordSocketClient client)
+        public RedisMigration(DatabaseContext database, IAlmostRedis redis, IGeekbotLogger logger, DiscordSocketClient client)
         {
             _database = database;
             _redis = redis;
@@ -46,7 +46,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = _redis.SetScan($"{guild.Id}:Quotes");
+                    var data = _redis.Db.SetScan($"{guild.Id}:Quotes");
                     foreach (var q in data)
                     {
                         try
@@ -74,7 +74,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = _redis.HashGetAll($"{guild.Id}:Karma");
+                    var data = _redis.Db.HashGetAll($"{guild.Id}:Karma");
                     foreach (var q in data)
                     {
                         try
@@ -107,7 +107,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = _redis.HashGetAll($"{guild.Id}:Rolls");
+                    var data = _redis.Db.HashGetAll($"{guild.Id}:Rolls");
                     foreach (var q in data)
                     {
                         try
@@ -139,8 +139,8 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var given = _redis.HashGetAll($"{guild.Id}:SlapsGiven");
-                    var gotten = _redis.HashGetAll($"{guild.Id}:SlapsGiven");
+                    var given = _redis.Db.HashGetAll($"{guild.Id}:SlapsGiven");
+                    var gotten = _redis.Db.HashGetAll($"{guild.Id}:SlapsGiven");
                     foreach (var q in given)
                     {
                         try
@@ -171,32 +171,32 @@ namespace Geekbot.net.Database
                 /**
                  * Messages
                  */
-                try
-                {
-                    var data = _redis.HashGetAll($"{guild.Id}:Messages");
-                    foreach (var q in data)
-                    {
-                        try
-                        {
-                            var user = new MessagesModel()
-                            {
-                                GuildId = guild.Id.AsLong(),
-                                UserId = ulong.Parse(q.Name).AsLong(),
-                                MessageCount= int.Parse(q.Value)
-                            };
-                            _database.Messages.Add(user);
-                            await _database.SaveChangesAsync();
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.Error(LogSource.Geekbot, $"Messages failed for: {q.Name}", e);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(LogSource.Geekbot, "Messages migration failed", e);
-                }
+//                try
+//                {
+//                    var data = _redis.Db.HashGetAll($"{guild.Id}:Messages");
+//                    foreach (var q in data)
+//                    {
+//                        try
+//                        {
+//                            var user = new MessagesModel()
+//                            {
+//                                GuildId = guild.Id.AsLong(),
+//                                UserId = ulong.Parse(q.Name).AsLong(),
+//                                MessageCount= int.Parse(q.Value)
+//                            };
+//                            _database.Messages.Add(user);
+//                            await _database.SaveChangesAsync();
+//                        }
+//                        catch (Exception e)
+//                        {
+//                            _logger.Error(LogSource.Geekbot, $"Messages failed for: {q.Name}", e);
+//                        }
+//                    }
+//                }
+//                catch (Exception e)
+//                {
+//                    _logger.Error(LogSource.Geekbot, "Messages migration failed", e);
+//                }
                 #endregion
                 
                 #region Ships
@@ -205,7 +205,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = _redis.HashGetAll($"{guild.Id}:Ships");
+                    var data = _redis.Db.HashGetAll($"{guild.Id}:Ships");
                     var done = new List<string>();
                     foreach (var q in data)
                     {
@@ -241,7 +241,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = _redis.HashGetAll($"{guild.Id}:Settings");
+                    var data = _redis.Db.HashGetAll($"{guild.Id}:Settings");
                     var settings = new GuildSettingsModel()
                     {
                         GuildId = guild.Id.AsLong(),
@@ -305,7 +305,7 @@ namespace Geekbot.net.Database
                                 await Task.Delay(100);
                                 if (user.Username == null) break;
                             }
-                            var namesSerialized = _redis.HashGet($"User:{user.Id}", "UsedNames").ToString();
+                            var namesSerialized = _redis.Db.HashGet($"User:{user.Id}", "UsedNames").ToString();
                             var names = namesSerialized != null
                                 ? Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized)
                                 : new string[] {user.Username};

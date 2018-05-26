@@ -6,11 +6,11 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
-using StackExchange.Redis;
 
 namespace Geekbot.net
 {
@@ -19,13 +19,13 @@ namespace Geekbot.net
         private readonly DatabaseContext _database;
         private readonly IDiscordClient _client;
         private readonly IGeekbotLogger _logger;
-        private readonly IDatabase _redis;
+        private readonly IAlmostRedis _redis;
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
         
-        public Handlers(DatabaseContext database, IDiscordClient client,  IGeekbotLogger logger, IDatabase redis,
+        public Handlers(DatabaseContext database, IDiscordClient client,  IGeekbotLogger logger, IAlmostRedis redis,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
             IReactionListener reactionListener)
         {
@@ -105,8 +105,8 @@ namespace Geekbot.net
                 }
                 var channel = (SocketGuildChannel) message.Channel;
 
-                _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-                _redis.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
+                _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
+                _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
                 if (message.Author.IsBot) return Task.CompletedTask;
                 _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));

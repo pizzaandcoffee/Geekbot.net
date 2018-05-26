@@ -4,24 +4,26 @@ using System.IO;
 using System.Linq;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
-using StackExchange.Redis;
 using Utf8Json;
 
 namespace Geekbot.net.Lib.Localization
 {
     public class TranslationHandler : ITranslationHandler
     {
+        private readonly DatabaseContext _database;
         private readonly IGeekbotLogger _logger;
-        private readonly IDatabase _redis;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
         private Dictionary<ulong, string> _serverLanguages;
         private List<string> _supportedLanguages;
         
-        public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, IDatabase redis, IGeekbotLogger logger)
+        public TranslationHandler(IReadOnlyCollection<SocketGuild> clientGuilds, DatabaseContext database, IGeekbotLogger logger)
         {
+            _database = database;
             _logger = logger;
-            _redis = redis;
             _logger.Information(LogSource.Geekbot, "Loading Translations");
             LoadTranslations();
             LoadServerLanguages(clientGuilds);
@@ -81,14 +83,16 @@ namespace Geekbot.net.Lib.Localization
             _serverLanguages = new Dictionary<ulong, string>();
             foreach (var guild in clientGuilds)
             {
-                var language = _redis.HashGet($"{guild.Id}:Settings", "Language");
+                var language = _database.GuildSettings
+                                   .FirstOrDefault(g => g.GuildId.Equals(guild.Id.AsLong()))
+                                   ?.Language ?? "EN";
                 if (string.IsNullOrEmpty(language) || !_supportedLanguages.Contains(language))
                 {
                     _serverLanguages[guild.Id] = "EN";
                 }
                 else
                 {
-                    _serverLanguages[guild.Id] = language.ToString();
+                    _serverLanguages[guild.Id] = language;
                 }
             }
         }
@@ -137,7 +141,9 @@ namespace Geekbot.net.Lib.Localization
             try
             {
                 if (!_supportedLanguages.Contains(language)) return false;
-                _redis.HashSet($"{guildId}:Settings", new[]{ new HashEntry("Language", language) });
+                var guild = GetGuild(guildId);
+                guild.Language = language;
+                _database.GuildSettings.Update(guild);
                 _serverLanguages[guildId] = language;
                 return true;
             }
@@ -151,6 +157,18 @@ namespace Geekbot.net.Lib.Localization
         public List<string> GetSupportedLanguages()
         {
             return _supportedLanguages;
+        }
+
+        private GuildSettingsModel GetGuild(ulong guildId)
+        {
+            var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
+            if (guild != null) return guild;
+            _database.GuildSettings.Add(new GuildSettingsModel
+            {
+                GuildId = guildId.AsLong()
+            });
+            _database.SaveChanges();
+            return _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
         }
     }
 }

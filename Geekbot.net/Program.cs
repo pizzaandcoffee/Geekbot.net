@@ -8,6 +8,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Lib;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Audio;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
@@ -20,7 +21,6 @@ using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 using WikipediaApi;
 
 namespace Geekbot.net
@@ -29,15 +29,15 @@ namespace Geekbot.net
     {
         private DiscordSocketClient _client;
         private CommandService _commands;
-        private IDatabase _redis;
         private DatabaseContext _database;
         private IGlobalSettings _globalSettings;
         private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
-        private RedisValue _token;
+        private string _token;
         private GeekbotLogger _logger;
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
+        private IAlmostRedis _redis;
 
         private static void Main(string[] args)
         {
@@ -52,8 +52,7 @@ namespace Geekbot.net
             logo.AppendLine(@"| |  _|  _| |  _| | ' /|  _ \| | | || |");
             logo.AppendLine(@"| |_| | |___| |___| . \| |_) | |_| || |");
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
-            logo.AppendLine("=========================================");
-            logo.AppendLine($"Version {Constants.BotVersion()}");
+            logo.AppendLine($"Version {Constants.BotVersion()} ".PadRight(41, '='));
             Console.WriteLine(logo.ToString());
             var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
             var logger = new GeekbotLogger(runParameters, sumologicActive);
@@ -88,9 +87,8 @@ namespace Geekbot.net
             
             try
             {
-                var redisMultiplexer = ConnectionMultiplexer.Connect($"{runParameters.RedisHost}:{runParameters.RedisPort}");
-                _redis = redisMultiplexer.GetDatabase(int.Parse(runParameters.RedisDatabase));
-                logger.Information(LogSource.Redis, $"Connected to db {_redis.Database}");
+                _redis = new AlmostRedis(logger, runParameters);
+                _redis.Connect();
             }
             catch (Exception e)
             {
@@ -99,7 +97,7 @@ namespace Geekbot.net
             }
             
             _token = runParameters.Token ?? _globalSettings.GetKey("DiscordToken");
-            if (_token.IsNullOrEmpty)
+            if (string.IsNullOrEmpty(_token))
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
@@ -120,7 +118,7 @@ namespace Geekbot.net
             var wikipediaClient = new WikipediaClient();
             var audioUtils = new AudioUtils();
             
-            _services.AddSingleton<IDatabase>(_redis);
+            _services.AddSingleton<IAlmostRedis>(_redis);
             _services.AddSingleton<IUserRepository>(_userRepository);
             _services.AddSingleton<IGeekbotLogger>(logger);
             _services.AddSingleton<ILevelCalc>(levelCalc);
@@ -154,9 +152,9 @@ namespace Geekbot.net
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
-                    var translationHandler = new TranslationHandler(_client.Guilds, _redis, _logger);
+                    var translationHandler = new TranslationHandler(_client.Guilds, _database, _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
-                    var reactionListener = new ReactionListener(_redis);
+                    var reactionListener = new ReactionListener(_redis.Db);
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
                     _services.AddSingleton(_commands);
                     _services.AddSingleton<IErrorHandler>(errorHandler);
@@ -185,7 +183,7 @@ namespace Geekbot.net
             }
             catch (Exception e)
             {
-                _logger.Error(LogSource.Geekbot, "Could not connect...", e);
+                _logger.Error(LogSource.Geekbot, "Could not connect to Discord", e);
                 Environment.Exit(GeekbotExitCode.CouldNotLogin.GetHashCode());
             }
         }

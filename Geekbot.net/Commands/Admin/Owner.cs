@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Admin
 {
@@ -20,10 +20,10 @@ namespace Geekbot.net.Commands.Admin
         private readonly DatabaseContext _database;
         private readonly IGlobalSettings _globalSettings;
         private readonly IGeekbotLogger _logger;
-        private readonly IDatabase _redis;
+        private readonly IAlmostRedis _redis;
         private readonly IUserRepository _userRepository;
 
-        public Owner(IDatabase redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database, IGlobalSettings globalSettings)
+        public Owner(IAlmostRedis redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database, IGlobalSettings globalSettings)
         {
             _redis = redis;
             _client = client;
