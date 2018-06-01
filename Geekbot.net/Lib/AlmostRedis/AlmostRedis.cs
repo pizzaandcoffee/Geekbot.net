@@ -29,7 +29,7 @@ namespace Geekbot.net.Lib.AlmostRedis
 
         public IEnumerable<RedisKey> GetAllKeys()
         {
-            return Connection.GetServer($"{_runParameters.RedisHost}:{_runParameters.RedisPort}", int.Parse(_runParameters.RedisDatabase)).Keys();
+            return Connection.GetServer($"{_runParameters.RedisHost}:{_runParameters.RedisPort}").Keys(int.Parse(_runParameters.RedisDatabase));
         }
     }
 }

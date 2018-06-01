@@ -31,7 +31,27 @@ namespace Geekbot.net.Database
         public async Task Migrate()
         {
             _logger.Information(LogSource.Geekbot, "Starting migration process");
-            foreach (var guild in _client.Guilds)
+
+            var keys = _redis.GetAllKeys().Where(e => e.ToString().EndsWith("Messages"));
+            var guilds = new List<SocketGuild>();
+
+            foreach (var key in keys)
+            {
+                try
+                {
+                    var g = _client.GetGuild(ulong.Parse(key.ToString().Split(':').First()));
+                    Console.WriteLine(g.Name);
+                    guilds.Add(g);
+                }
+                catch (Exception e)
+                {
+                    // ignore
+                }
+            }
+            
+            _logger.Information(LogSource.Geekbot, $"Found {guilds.Count} guilds in redis");
+
+            foreach (var guild in guilds)
             {
                 if (guild.MemberCount > 10000)
                 {
