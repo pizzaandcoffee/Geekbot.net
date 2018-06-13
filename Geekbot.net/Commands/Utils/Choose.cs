@@ -24,14 +24,14 @@ namespace Geekbot.net.Commands.Utils
         {
             try
             {
-                var transDict = _translation.GetDict(Context);
+                var transDict = await _translation.GetDict(Context);
                 var choicesArray = choices.Split(';');
                 var choice = new Random().Next(choicesArray.Length);
                 await ReplyAsync(string.Format(transDict["Choice"], choicesArray[choice]));
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

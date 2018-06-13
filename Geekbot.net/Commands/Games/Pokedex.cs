@@ -41,7 +41,7 @@ namespace Geekbot.net.Commands.Games
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 

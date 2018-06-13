@@ -2,6 +2,6 @@
 {
     public interface ILevelCalc
     {
-        int GetLevel(int experience);
+        int GetLevel(int? experience);
     }
 }

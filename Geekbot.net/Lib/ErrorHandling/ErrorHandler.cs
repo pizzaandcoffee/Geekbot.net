@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.Net;
 using Geekbot.net.Lib.Localization;
@@ -34,11 +35,11 @@ namespace Geekbot.net.Lib.ErrorHandling
             }
         }
 
-        public void HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def")
+        public async Task HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def")
         {
             try
             {
-                var errorString = errorMessage == "def" ? _translation.GetString(context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
+                var errorString = errorMessage == "def" ? await _translation.GetString(context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
                 var errorObj = SimpleConextConverter.ConvertContext(context);
                 if (e.Message.Contains("50007")) return;
                 if (e.Message.Contains("50013")) return;
@@ -86,9 +87,9 @@ namespace Geekbot.net.Lib.ErrorHandling
             }
         }
 
-        public async void HandleHttpException(HttpException e, ICommandContext context)
+        public async Task HandleHttpException(HttpException e, ICommandContext context)
         {
-            var errorStrings = _translation.GetDict(context, "httpErrors");
+            var errorStrings = await _translation.GetDict(context, "httpErrors");
             switch(e.HttpCode)
             {
                 case HttpStatusCode.Forbidden:

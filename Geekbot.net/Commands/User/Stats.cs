@@ -39,11 +39,18 @@ namespace Geekbot.net.Commands.User
                 var age = Math.Floor((DateTime.Now - createdAt).TotalDays);
                 var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
-                var messages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
-                var guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                var messages = _database.Messages.FirstOrDefault(e =>
+                    e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
+                    e.UserId.Equals(userInfo.Id.AsLong()))?.MessageCount;
+
+                var guildMessages = _database.Messages
+                    .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+                    .Select(e => e.MessageCount)
+                    .Sum();
+                
                 var level = _levelCalc.GetLevel(messages);
 
-                var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
+                var percent = Math.Round((double) (100 * messages) / guildMessages, digits: 2);
 
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()

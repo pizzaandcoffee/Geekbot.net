@@ -30,7 +30,7 @@ namespace Geekbot.net.Commands.Games
                 var number = new Random().Next(1, 100);
                 var guess = 1000;
                 int.TryParse(stuff, out guess);
-                var transDict = _translation.GetDict(Context);
+                var transDict = await _translation.GetDict(Context);
                 if (guess <= 100 && guess > 0)
                 {
                     var prevRoll = _redis.Db.HashGet($"{Context.Guild.Id}:RollsPrevious", Context.Message.Author.Id);

@@ -30,8 +30,8 @@ namespace Geekbot.net.Commands.User
         {
             try
             {
-                var transDict = _translation.GetDict(Context);
-                var actor = GetUser(Context.User.Id);
+                var transDict = await _translation.GetDict(Context);
+                var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
                     await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
@@ -43,7 +43,7 @@ namespace Geekbot.net.Commands.User
                 }
                 else
                 {
-                    var target = GetUser(user.Id);
+                    var target = await GetUser(user.Id);
                     target.Karma = target.Karma + 1;
                     SetUser(target);
                     
@@ -77,8 +77,8 @@ namespace Geekbot.net.Commands.User
         {
             try
             {
-                var transDict = _translation.GetDict(Context);
-                var actor = GetUser(Context.User.Id);
+                var transDict = await _translation.GetDict(Context);
+                var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
                     await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
@@ -90,7 +90,7 @@ namespace Geekbot.net.Commands.User
                 }
                 else
                 {
-                    var target = GetUser(user.Id);
+                    var target = await GetUser(user.Id);
                     target.Karma = target.Karma - 1;
                     SetUser(target);
                     
@@ -129,19 +129,18 @@ namespace Geekbot.net.Commands.User
             return $"{dt.Minutes} Minutes and {dt.Seconds} Seconds";
         }
 
-        private KarmaModel GetUser(ulong userId)
+        private async Task<KarmaModel> GetUser(ulong userId)
         {
-            var user = _database.Karma.FirstOrDefault(u =>u.GuildId.Equals(Context.Guild.Id.AsLong()) && u.UserId.Equals(userId.AsLong())) ?? CreateNewRow(userId);
+            var user = _database.Karma.FirstOrDefault(u =>u.GuildId.Equals(Context.Guild.Id.AsLong()) && u.UserId.Equals(userId.AsLong())) ?? await CreateNewRow(userId);
             return user;
         }
         
-        private bool SetUser(KarmaModel user)
+        private void SetUser(KarmaModel user)
         {
             _database.Karma.Update(user);
-            return true;
         }
         
-        private KarmaModel CreateNewRow(ulong userId)
+        private async Task<KarmaModel> CreateNewRow(ulong userId)
         {
             var user = new KarmaModel()
             {
@@ -151,7 +150,7 @@ namespace Geekbot.net.Commands.User
                 TimeOut = DateTimeOffset.MinValue
             };
             var newUser = _database.Karma.Add(user).Entity;
-            _database.SaveChanges();
+            await _database.SaveChangesAsync();
             return newUser;
         }
     }

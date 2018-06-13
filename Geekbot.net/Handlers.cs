@@ -11,6 +11,7 @@ using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Geekbot.net
 {
@@ -93,29 +94,33 @@ namespace Geekbot.net
             }
         }
 
-        public Task UpdateStats(SocketMessage message)
+        public async Task UpdateStats(SocketMessage message)
         {
             try
             {
-                if (message == null) return Task.CompletedTask;
+                if (message == null) return;
                 if (message.Channel.Name.StartsWith('@'))
                 {
                     _logger.Information(LogSource.Message, $"[DM-Channel] {message.Content}", SimpleConextConverter.ConvertSocketMessage(message));
-                    return Task.CompletedTask;
+                    return;
                 }
                 var channel = (SocketGuildChannel) message.Channel;
+                
+//                await _database.Database.ExecuteSqlCommandAsync("UPDATE \"Messages\" " +
+//                                                     $"SET \"MessageCount\" = \"MessageCount\" + {1} " +
+//                                                     $"WHERE \"GuildId\" = '{channel.Guild.Id.AsLong()}' " +
+//                                                     $"AND \"UserId\" = '{message.Author.Id.AsLong()}'");
+//                
+                await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
+                await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
-                _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-                _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
-
-                if (message.Author.IsBot) return Task.CompletedTask;
+                if (message.Author.IsBot) return;
                 _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Message, "Could not process message stats", e);
             }
-            return Task.CompletedTask;
         }
         
         //

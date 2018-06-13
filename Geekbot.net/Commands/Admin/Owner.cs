@@ -52,14 +52,14 @@ namespace Geekbot.net.Commands.Admin
                 }
 
                 await ReplyAsync("starting migration");
-                _globalSettings.SetKey("MigrationStatus", "Running");
+                await _globalSettings.SetKey("MigrationStatus", "Running");
                 var redisMigration = new RedisMigration(_database, _redis, _logger, _client);
                 await redisMigration.Migrate();
-                _globalSettings.SetKey("MigrationStatus", "Done");
+                await _globalSettings.SetKey("MigrationStatus", "Done");
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
 
             await ReplyAsync("done");
@@ -69,7 +69,7 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set the youtube api key")]
         public async Task SetYoutubeKey([Summary("API Key")] string key)
         {
-            _globalSettings.SetKey("YoutubeKey", key);
+            await _globalSettings.SetKey("YoutubeKey", key);
             await ReplyAsync("Apikey has been set");
         }
 
@@ -77,7 +77,7 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set the game that the bot is playing")]
         public async Task SetGame([Remainder] [Summary("Game")] string key)
         {
-            _globalSettings.SetKey("Game", key);
+            await _globalSettings.SetKey("Game", key);
             await _client.SetGameAsync(key);
             _logger.Information(LogSource.Geekbot, $"Changed game to {key}");
             await ReplyAsync($"Now Playing {key}");
@@ -109,14 +109,14 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
+                await _errorHandler.HandleCommandException(e, Context,
                     "Couldn't complete User Repository, see console for more info");
             }
         }
 
         [Command("error", RunMode = RunMode.Async)]
         [Summary("Throw an error un purpose")]
-        public void PurposefulError()
+        public async Task PurposefulError()
         {
             try
             {
@@ -124,7 +124,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.Net;
 
@@ -6,7 +7,7 @@ namespace Geekbot.net.Lib.ErrorHandling
 {
     public interface IErrorHandler
     {
-        void HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def");
-        void HandleHttpException(HttpException e, ICommandContext context);
+        Task HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def");
+        Task HandleHttpException(HttpException e, ICommandContext context);
     }
 }

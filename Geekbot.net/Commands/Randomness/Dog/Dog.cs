@@ -45,7 +45,7 @@ namespace Geekbot.net.Commands.Randomness.Dog
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

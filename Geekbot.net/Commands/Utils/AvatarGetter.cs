@@ -27,7 +27,7 @@ namespace Geekbot.net.Commands.Utils
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

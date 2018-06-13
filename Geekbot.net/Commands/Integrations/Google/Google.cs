@@ -61,7 +61,7 @@ namespace Geekbot.net.Commands.Integrations.Google
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Discord.Commands;
-using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Extensions;
@@ -78,7 +78,7 @@ namespace Geekbot.net.Lib.Localization
             }
         }
         
-        private string GetServerLanguage(ulong guildId)
+        private async Task<string> GetServerLanguage(ulong guildId)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace Geekbot.net.Lib.Localization
                 }
                 catch
                 {
-                    lang = GetGuild(guildId).Language ?? "EN";
+                    lang = (await GetGuild(guildId)).Language ?? "EN";
                     _serverLanguages[guildId] = lang;
                     return lang;
                 }
@@ -106,9 +106,9 @@ namespace Geekbot.net.Lib.Localization
             }
         }
 
-        public string GetString(ulong guildId, string command, string stringName)
+        public async Task<string> GetString(ulong guildId, string command, string stringName)
         {
-            var translation = _translations[GetServerLanguage(guildId)][command][stringName];
+            var translation = _translations[await GetServerLanguage(guildId)][command][stringName];
             if (!string.IsNullOrWhiteSpace(translation)) return translation;
             translation = _translations[command][stringName]["EN"];
             if (string.IsNullOrWhiteSpace(translation))
@@ -118,12 +118,12 @@ namespace Geekbot.net.Lib.Localization
             return translation;
         }
 
-        public Dictionary<string, string> GetDict(ICommandContext context)
+        public async Task<Dictionary<string, string>> GetDict(ICommandContext context)
         {
             try
             {
                 var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
-                return _translations[GetServerLanguage(context.Guild.Id)][command];
+                return _translations[await GetServerLanguage(context.Guild.Id)][command];
             }
             catch (Exception e)
             {
@@ -132,11 +132,11 @@ namespace Geekbot.net.Lib.Localization
             }
         }
         
-        public Dictionary<string, string> GetDict(ICommandContext context, string command)
+        public async Task<Dictionary<string, string>> GetDict(ICommandContext context, string command)
         {
             try
             {
-                return _translations[GetServerLanguage(context.Guild.Id)][command];
+                return _translations[await GetServerLanguage(context.Guild.Id)][command];
             }
             catch (Exception e)
             {
@@ -145,12 +145,12 @@ namespace Geekbot.net.Lib.Localization
             }
         }
 
-        public bool SetLanguage(ulong guildId, string language)
+        public async Task<bool> SetLanguage(ulong guildId, string language)
         {
             try
             {
                 if (!_supportedLanguages.Contains(language)) return false;
-                var guild = GetGuild(guildId);
+                var guild = await GetGuild(guildId);
                 guild.Language = language;
                 _database.GuildSettings.Update(guild);
                 _serverLanguages[guildId] = language;
@@ -165,7 +165,7 @@ namespace Geekbot.net.Lib.Localization
 
         public List<string> SupportedLanguages => _supportedLanguages;
 
-        private GuildSettingsModel GetGuild(ulong guildId)
+        private async Task<GuildSettingsModel> GetGuild(ulong guildId)
         {
             var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
             if (guild != null) return guild;
@@ -173,7 +173,7 @@ namespace Geekbot.net.Lib.Localization
             {
                 GuildId = guildId.AsLong()
             });
-            _database.SaveChanges();
+            await _database.SaveChangesAsync();
             return _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
         }
     }

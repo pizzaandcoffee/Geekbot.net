@@ -44,7 +44,7 @@ namespace Geekbot.net.Commands.Randomness.Chuck
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

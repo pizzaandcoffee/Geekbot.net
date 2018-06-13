@@ -44,7 +44,7 @@ namespace Geekbot.net.Commands.Randomness.Dad
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

@@ -45,7 +45,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
+                await _errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
             }
         }
 
@@ -79,7 +79,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
+                await _errorHandler.HandleCommandException(e, Context,
                     "I counldn't find a quote from that user :disappointed:");
             }
         }
@@ -112,7 +112,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
+                await _errorHandler.HandleCommandException(e, Context,
                     "I couldn't find a message with that id :disappointed:");
             }
         }
@@ -131,7 +131,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
+                await _errorHandler.HandleCommandException(e, Context,
                     "I counldn't find a quote from that user :disappointed:");
             }
         }
@@ -149,7 +149,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context,
+                await _errorHandler.HandleCommandException(e, Context,
                     "I couldn't find a message with that id :disappointed:");
             }
         }
@@ -178,7 +178,7 @@ namespace Geekbot.net.Commands.Utils.Quote
            }
            catch (Exception e)
            {
-               _errorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
+               await _errorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
            }
        }
 

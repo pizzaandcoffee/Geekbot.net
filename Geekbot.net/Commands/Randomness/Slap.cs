@@ -81,8 +81,8 @@ namespace Geekbot.net.Commands.Randomness
 
                 await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[new Random().Next(things.Count - 1)]}");
                 
-                UpdateRecieved(user.Id);
-                UpdateGiven(Context.User.Id);
+                await UpdateRecieved(user.Id);
+                await UpdateGiven(Context.User.Id);
                 await _database.SaveChangesAsync();
             }
             catch (Exception e)
@@ -91,21 +91,21 @@ namespace Geekbot.net.Commands.Randomness
             }
         }
 
-        private void UpdateGiven(ulong userId)
+        private async Task UpdateGiven(ulong userId)
         {
-            var user = GetUser(userId);
+            var user = await GetUser(userId);
             user.Given++;
             _database.Slaps.Update(user);
         }
         
-        private void UpdateRecieved(ulong userId)
+        private async Task UpdateRecieved(ulong userId)
         {
-            var user = GetUser(userId);
+            var user = await GetUser(userId);
             user.Recieved++;
             _database.Slaps.Update(user);
         }
 
-        private SlapsModel GetUser(ulong userId)
+        private async Task<SlapsModel> GetUser(ulong userId)
         {
             var user = _database.Slaps.FirstOrDefault(e => 
                 e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
@@ -121,7 +121,7 @@ namespace Geekbot.net.Commands.Randomness
                 Recieved = 0,
                 Given = 0
             });
-            _database.SaveChanges();
+            await _database.SaveChangesAsync();
             return _database.Slaps.FirstOrDefault(e =>
                 e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
                 e.UserId.Equals(userId.AsLong()));

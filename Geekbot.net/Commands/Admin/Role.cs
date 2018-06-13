@@ -48,7 +48,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -87,11 +87,11 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (HttpException e)
             {
-                _errorHandler.HandleHttpException(e, Context);
+                await _errorHandler.HandleHttpException(e, Context);
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
         

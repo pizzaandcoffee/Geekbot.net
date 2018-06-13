@@ -81,6 +81,15 @@ namespace Geekbot.net.Commands.User.Ranking
                     return;
                 }
 
+                int guildMessages = 0;
+                if (type == RankType.messages)
+                {
+                    guildMessages = _database.Messages
+                        .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+                        .Select(e => e.MessageCount)
+                        .Sum();
+                }
+
                 var highscoreUsers = new Dictionary<RankUserDto, int>();
                 var failedToRetrieveUser = false;
                 foreach (var user in list)
@@ -112,7 +121,7 @@ namespace Geekbot.net.Commands.User.Ranking
                 }
 
                 if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: Couldn't get all userdata\n");
-                replyBuilder.AppendLine($":bar_chart: **{type} Highscore for {Context.Guild.Name}**");
+                replyBuilder.AppendLine($":bar_chart: **{type.ToString().CapitalizeFirst()} Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
                 {
@@ -123,8 +132,10 @@ namespace Geekbot.net.Commands.User.Ranking
                     replyBuilder.Append(user.Key.Username != null
                         ? $"**{user.Key.Username}#{user.Key.Discriminator}**"
                         : $"**{user.Key.Id}**");
-
-                    replyBuilder.Append($" - {user.Value} {type}\n");
+                    
+                    replyBuilder.Append(type == RankType.messages
+                        ? $" - {user.Value} {type} - {Math.Round((double) (100 * user.Value) / guildMessages, digits: 2)}%\n"
+                        : $" - {user.Value} {type}\n");
 
                     highscorePlace++;
                 }
@@ -133,12 +144,17 @@ namespace Geekbot.net.Commands.User.Ranking
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
         private Dictionary<ulong, int> GetMessageList(int amount)
         {
+//            return _database.Messages
+//                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
+//                .OrderByDescending(o => o.MessageCount)
+//                .Take(amount)
+//                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
             return _redis.Db
                 .HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1)
                 .Where(user => !user.Key.Equals(0))

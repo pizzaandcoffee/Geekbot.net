@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
 
@@ -13,7 +14,7 @@ namespace Geekbot.net.Lib.GlobalSettings
             _database = database;
         }
 
-        public bool SetKey(string keyName, string value)
+        public async Task<bool> SetKey(string keyName, string value)
         {
             try
             {
@@ -25,13 +26,13 @@ namespace Geekbot.net.Lib.GlobalSettings
                         Name = keyName,
                         Value = value
                     });
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
                     return true;
                 }
 
                 key.Value = value;
                 _database.Globals.Update(key);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
                 return true;
             }
             catch

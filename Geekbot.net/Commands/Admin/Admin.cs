@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands.Admin
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
         {
-            var guild = GetGuildSettings(Context.Guild.Id);
+            var guild = await GetGuildSettings(Context.Guild.Id);
             guild.WelcomeMessage = welcomeMessage;
             _database.GuildSettings.Update(guild);
             await _database.SaveChangesAsync();
@@ -52,7 +52,7 @@ namespace Geekbot.net.Commands.Admin
             {
                 var m = await channel.SendMessageAsync("verifying...");
 
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 guild.ModChannel = channel.Id.AsLong();
                 _database.GuildSettings.Update(guild);
                 await _database.SaveChangesAsync();
@@ -65,7 +65,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to be valid");
+                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to be valid");
             }
         }
 
@@ -75,7 +75,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
                 if (modChannel == null) return;
                 
@@ -89,7 +89,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -99,7 +99,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
                 if (modChannel == null) return;
                 
@@ -113,7 +113,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -124,15 +124,15 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var language = languageRaw.ToUpper();
-                var success = _translation.SetLanguage(Context.Guild.Id, language);
+                var success = await _translation.SetLanguage(Context.Guild.Id, language);
                 if (success)
                 {
-                    var guild = GetGuildSettings(Context.Guild.Id);
+                    var guild = await GetGuildSettings(Context.Guild.Id);
                     guild.Language = language;
                     _database.GuildSettings.Update(guild);
                     await _database.SaveChangesAsync();
                     
-                    var trans = _translation.GetDict(Context);
+                    var trans = await _translation.GetDict(Context);
                     await ReplyAsync(trans["NewLanguageSet"]);
                     return;
                 }
@@ -142,7 +142,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -153,7 +153,7 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var language = languageRaw.ToLower();
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 guild.WikiLang = language;
                 _database.GuildSettings.Update(guild);
                 await _database.SaveChangesAsync();
@@ -162,7 +162,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -172,7 +172,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 guild.Ping = !guild.Ping;
                 _database.GuildSettings.Update(guild);
                 await _database.SaveChangesAsync();
@@ -180,7 +180,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -190,7 +190,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var guild = GetGuildSettings(Context.Guild.Id);
+                var guild = await GetGuildSettings(Context.Guild.Id);
                 guild.Hui = !guild.Hui;
                 _database.GuildSettings.Update(guild);
                 await _database.SaveChangesAsync();
@@ -198,11 +198,11 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
-        private GuildSettingsModel GetGuildSettings(ulong guildId)
+        private async Task<GuildSettingsModel> GetGuildSettings(ulong guildId)
         {
             var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
             if (guild != null) return guild;
@@ -212,12 +212,12 @@ namespace Geekbot.net.Commands.Admin
                 GuildId = guildId.AsLong(),
                 Hui = false,
                 Ping = false,
-                Language = "en",
+                Language = "EN",
                 ShowDelete = false,
                 ShowLeave = false,
                 WikiLang = "en"
             });
-            _database.SaveChanges();
+            await _database.SaveChangesAsync();
             return _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
         }
 

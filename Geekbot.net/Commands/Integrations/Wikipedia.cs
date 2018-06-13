@@ -87,7 +87,7 @@ namespace Geekbot.net.Commands.Integrations
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 

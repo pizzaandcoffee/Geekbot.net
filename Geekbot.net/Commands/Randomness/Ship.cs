@@ -59,7 +59,7 @@ namespace Geekbot.net.Commands.Randomness
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 

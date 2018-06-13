@@ -19,7 +19,7 @@ namespace Geekbot.net.Lib.Levels
             _levels = levels.ToArray();
         }
 
-        public int GetLevel(int messages)
+        public int GetLevel(int? messages)
         {
             var returnVal = 1;
             foreach (var level in _levels)
