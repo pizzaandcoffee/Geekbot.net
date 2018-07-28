@@ -16,6 +16,7 @@ namespace Geekbot.net.Lib.Logger
         UserRepository,
         Command,
         Api,
+        Migration,
         Other
     }
 }
