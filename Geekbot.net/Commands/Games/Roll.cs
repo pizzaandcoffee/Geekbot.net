@@ -33,15 +33,18 @@ namespace Geekbot.net.Commands.Games
                 var transDict = await _translation.GetDict(Context);
                 if (guess <= 100 && guess > 0)
                 {
-                    var prevRoll = _redis.Db.HashGet($"{Context.Guild.Id}:RollsPrevious", Context.Message.Author.Id);
-                    if (!prevRoll.IsNullOrEmpty && prevRoll.ToString() == guess.ToString())
+                    var prevRoll = _redis.Db.HashGet($"{Context.Guild.Id}:RollsPrevious2", Context.Message.Author.Id).ToString()?.Split('|');
+                    if (prevRoll?.Length == 2)
                     {
-                        await ReplyAsync(string.Format(transDict["NoPrevGuess"], Context.Message.Author.Mention));
-                        return;
+                        if (prevRoll[0] == guess.ToString() && DateTime.Parse(prevRoll[1]) > DateTime.Now.AddDays(-1))
+                        {
+                            await ReplyAsync(string.Format(transDict["NoPrevGuess"], Context.Message.Author.Mention));
+                            return;
+                        }
                     }
 
-                    _redis.Db.HashSet($"{Context.Guild.Id}:RollsPrevious",
-                        new[] {new HashEntry(Context.Message.Author.Id, guess)});
+                    _redis.Db.HashSet($"{Context.Guild.Id}:RollsPrevious2", new[] {new HashEntry(Context.Message.Author.Id, $"{guess}|{DateTime.Now}")});
+
                     await ReplyAsync(string.Format(transDict["Rolled"], Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
@@ -56,7 +59,7 @@ namespace Geekbot.net.Commands.Games
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

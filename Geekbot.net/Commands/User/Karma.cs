@@ -67,7 +67,7 @@ namespace Geekbot.net.Commands.User
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -114,7 +114,7 @@ namespace Geekbot.net.Commands.User
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 

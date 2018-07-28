@@ -101,8 +101,8 @@ namespace Geekbot.net
             {
                 Console.Write("Your bot Token: ");
                 var newToken = Console.ReadLine();
-                _globalSettings.SetKey("DiscordToken", newToken);
-                _globalSettings.SetKey("Game", "Ping Pong");
+                await _globalSettings.SetKey("DiscordToken", newToken);
+                await _globalSettings.SetKey("Game", "Ping Pong");
                 _token = newToken;
             }
 

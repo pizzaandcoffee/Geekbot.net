@@ -37,7 +37,7 @@ namespace Geekbot.net.Commands.Audio
             }
             catch (Exception e)
             {
-                _errorHandler.HandleCommandException(e, Context);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 

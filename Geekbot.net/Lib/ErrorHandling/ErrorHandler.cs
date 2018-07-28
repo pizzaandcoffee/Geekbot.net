@@ -52,16 +52,16 @@ namespace Geekbot.net.Lib.ErrorHandling
                         if (!string.IsNullOrEmpty(resStackTrace))
                         {
                             var maxLen = Math.Min(resStackTrace.Length, 1850);
-                            context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace.Substring(0, maxLen)}\r\n```");
+                            await context.Channel.SendMessageAsync($"{e.Message}\r\n```\r\n{resStackTrace.Substring(0, maxLen)}\r\n```");
                         }
                         else
                         {
-                            context.Channel.SendMessageAsync(e.Message);
+                            await context.Channel.SendMessageAsync(e.Message);
                         }
                     }
                     else
                     {
-                        context.Channel.SendMessageAsync(errorString);
+                        await context.Channel.SendMessageAsync(errorString);
                     }
                     
                 }
@@ -82,7 +82,7 @@ namespace Geekbot.net.Lib.ErrorHandling
             }
             catch (Exception ex)
             {
-                context.Channel.SendMessageAsync("Something went really really wrong here");
+                await context.Channel.SendMessageAsync("Something went really really wrong here");
                 _logger.Error(LogSource.Geekbot, "Errorception", ex);
             }
         }
