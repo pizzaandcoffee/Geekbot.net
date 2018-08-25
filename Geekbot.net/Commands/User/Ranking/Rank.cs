@@ -84,10 +84,11 @@ namespace Geekbot.net.Commands.User.Ranking
                 int guildMessages = 0;
                 if (type == RankType.messages)
                 {
-                    guildMessages = _database.Messages
-                        .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
-                        .Select(e => e.MessageCount)
-                        .Sum();
+//                    guildMessages = _database.Messages
+//                        .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+//                        .Select(e => e.MessageCount)
+//                        .Sum();
+                    guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
                 }
 
                 var highscoreUsers = new Dictionary<RankUserDto, int>();
@@ -158,6 +159,7 @@ namespace Geekbot.net.Commands.User.Ranking
             return _redis.Db
                 .HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1)
                 .Where(user => !user.Key.Equals(0))
+                .OrderByDescending(s => s.Value)
                 .ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
         }
         
