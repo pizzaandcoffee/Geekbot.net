@@ -41,8 +41,8 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
     - chmod 700 ~/.ssh
   script:
-    - rsync -rav -e "ssh -p 65432" ./Geekbot.net/Binaries/* www-data@31.220.42.224:$DEPPATH
-    - ssh -p 65432 www-data@31.220.42.224 "sudo systemctl restart geekbot.service"
+    - rsync -rav -e "ssh -p 65432" ./Geekbot.net/Binaries/* geekbot@172.104.156.220:$DEPPATH
+    - ssh -p 65432 geekbot@172.104.156.220 "sudo systemctl restart geekbot.service"
 
 mirror:
   stage: deploy
