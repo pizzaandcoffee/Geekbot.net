@@ -183,8 +183,7 @@ namespace Geekbot.net
             try
             {
                 var guildSocketData = ((IGuildChannel) channel).Guild;
-                var guild = _database.GuildSettings.FirstOrDefault(g =>
-                    g.GuildId.Equals(guildSocketData.Id.AsLong()));
+                var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildSocketData.Id.AsLong()));
                 if (guild?.ShowDelete ?? false)
                 {
                     var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(guild.ModChannel.AsUlong());

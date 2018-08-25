@@ -33,7 +33,7 @@ namespace Geekbot.net.Database
             _logger.Information(LogSource.Migration, "Starting migration process");
 
             var keys = _redis.GetAllKeys().Where(e => e.ToString().EndsWith("Messages"));
-            var guilds = new List<SocketGuild>();
+            var allGuilds = new List<SocketGuild>();
 
             foreach (var key in keys)
             {
@@ -41,7 +41,7 @@ namespace Geekbot.net.Database
                 {
                     var g = _client.GetGuild(ulong.Parse(key.ToString().Split(':').First()));
                     Console.WriteLine(g.Name);
-                    guilds.Add(g);
+                    allGuilds.Add(g);
                 }
                 catch (Exception e)
                 {
@@ -49,16 +49,12 @@ namespace Geekbot.net.Database
                 }
             }
             
-            _logger.Information(LogSource.Migration, $"Found {guilds.Count} guilds in redis");
+            _logger.Information(LogSource.Migration, $"Found {allGuilds.Count} guilds in redis");
 
+            var guilds = allGuilds.FindAll(e => e.MemberCount < 10000);
+            
             foreach (var guild in guilds)
             {
-                if (guild.MemberCount > 10000)
-                {
-                    _logger.Information(LogSource.Migration, $"Skipping {guild.Name} because server size is to big ({guild.MemberCount})");
-                    break;
-                }
-                
                 _logger.Information(LogSource.Migration, $"Start Migration for {guild.Name}");
                 #region Quotes
                 /**
@@ -315,7 +311,7 @@ namespace Geekbot.net.Database
                  */
                 try
                 {
-                    var data = guild.Users;
+                    var data = guild.Users.ToList().FindAll(e => !e.IsBot);
                     foreach (var user in data)
                     {
                         try
@@ -325,6 +321,7 @@ namespace Geekbot.net.Database
                                 await Task.Delay(100);
                                 if (user.Username == null) break;
                             }
+                            
                             var namesSerialized = _redis.Db.HashGet($"User:{user.Id}", "UsedNames").ToString();
                             var names = namesSerialized != null
                                 ? Utf8Json.JsonSerializer.Deserialize<string[]>(namesSerialized)
