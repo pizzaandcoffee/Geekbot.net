@@ -18,8 +18,7 @@ namespace Geekbot.net.Lib.Localization
         private readonly IGeekbotLogger _logger;
         private readonly Dictionary<ulong, string> _serverLanguages;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
-        private List<string> _supportedLanguages;
-        
+
         public TranslationHandler(DatabaseContext database, IGeekbotLogger logger)
         {
             _database = database;
@@ -45,30 +44,27 @@ namespace Geekbot.net.Lib.Localization
                             if (!sortedPerLanguage.ContainsKey(lang.Key))
                             {
                                 var commandDict = new Dictionary<string, Dictionary<string, string>>();
-                                var strDict = new Dictionary<string, string>();
-                                strDict.Add(str.Key, lang.Value);
+                                var strDict = new Dictionary<string, string> {{str.Key, lang.Value}};
                                 commandDict.Add(command.Key, strDict);
                                 sortedPerLanguage.Add(lang.Key, commandDict);
+                                break;
                             }
                             if (!sortedPerLanguage[lang.Key].ContainsKey(command.Key))
                             {
-                                var strDict = new Dictionary<string, string>();
-                                strDict.Add(str.Key, lang.Value);
+                                var strDict = new Dictionary<string, string> {{str.Key, lang.Value}};
                                 sortedPerLanguage[lang.Key].Add(command.Key, strDict);
+                                break;
                             }
-                            if (!sortedPerLanguage[lang.Key][command.Key].ContainsKey(str.Key))
-                            {
-                                sortedPerLanguage[lang.Key][command.Key].Add(str.Key, lang.Value);
-                            }
+                            sortedPerLanguage[lang.Key][command.Key].Add(str.Key, lang.Value);                            
                         }
                     }
                 }
                 _translations = sortedPerLanguage;
 
-                _supportedLanguages = new List<string>();
+                SupportedLanguages = new List<string>();
                 foreach (var lang in sortedPerLanguage)
                 {
-                    _supportedLanguages.Add(lang.Key);
+                    SupportedLanguages.Add(lang.Key);
                 }
             }
             catch (Exception e)
@@ -101,7 +97,7 @@ namespace Geekbot.net.Lib.Localization
             }
             catch (Exception e)
             {
-                _logger.Error(LogSource.Geekbot, "Could not get guild langage", e);
+                _logger.Error(LogSource.Geekbot, "Could not get guild language", e);
                 return "EN";
             }
         }
@@ -149,7 +145,7 @@ namespace Geekbot.net.Lib.Localization
         {
             try
             {
-                if (!_supportedLanguages.Contains(language)) return false;
+                if (!SupportedLanguages.Contains(language)) return false;
                 var guild = await GetGuild(guildId);
                 guild.Language = language;
                 _database.GuildSettings.Update(guild);
@@ -163,7 +159,7 @@ namespace Geekbot.net.Lib.Localization
             }
         }
 
-        public List<string> SupportedLanguages => _supportedLanguages;
+        public List<string> SupportedLanguages { get; private set; }
 
         private async Task<GuildSettingsModel> GetGuild(ulong guildId)
         {
