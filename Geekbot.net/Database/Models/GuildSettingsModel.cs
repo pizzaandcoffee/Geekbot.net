@@ -9,21 +9,21 @@ namespace Geekbot.net.Database.Models
         
         [Required]
         public long GuildId { get; set; }
-        
-        public bool Ping { get; set; }
-        
-        public bool Hui { get; set; }
-        
-        public long ModChannel { get; set; }
+
+        public bool Ping { get; set; } = false;
+
+        public bool Hui { get; set; } = false;
+
+        public long ModChannel { get; set; } = 0;
         
         public string WelcomeMessage { get; set; }
-        
-        public bool ShowDelete { get; set; }
-        
-        public bool ShowLeave { get; set; }
-        
-        public string WikiLang { get; set; }
-        
-        public string Language { get; set; }
+
+        public bool ShowDelete { get; set; } = false;
+
+        public bool ShowLeave { get; set; } = false;
+
+        public string WikiLang { get; set; } = "en";
+
+        public string Language { get; set; } = "EN";
     }
 }
