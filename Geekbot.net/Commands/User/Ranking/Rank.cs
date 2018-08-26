@@ -121,7 +121,7 @@ namespace Geekbot.net.Commands.User.Ranking
                     }
                 }
 
-                if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: Couldn't get all userdata\n");
+                if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: I couldn't find all usernames. Maybe they left the server?\n");
                 replyBuilder.AppendLine($":bar_chart: **{type.ToString().CapitalizeFirst()} Highscore for {Context.Guild.Name}**");
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
