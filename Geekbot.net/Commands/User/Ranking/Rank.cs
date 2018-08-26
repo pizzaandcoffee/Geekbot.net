@@ -157,9 +157,10 @@ namespace Geekbot.net.Commands.User.Ranking
 //                .Take(amount)
 //                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
             return _redis.Db
-                .HashGetAll($"{Context.Guild.Id}:Messages").ToDictionary().Take(amount + 1)
+                .HashGetAll($"{Context.Guild.Id}:Messages")
                 .Where(user => !user.Key.Equals(0))
                 .OrderByDescending(s => s.Value)
+                .Take(amount)
                 .ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
         }
         
