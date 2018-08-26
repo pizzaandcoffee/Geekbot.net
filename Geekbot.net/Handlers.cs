@@ -99,7 +99,7 @@ namespace Geekbot.net
                 if (message == null) return;
                 if (message.Channel.Name.StartsWith('@'))
                 {
-                    _logger.Information(LogSource.Message, $"[DM-Channel] {message.Content}", SimpleConextConverter.ConvertSocketMessage(message));
+                    _logger.Information(LogSource.Message, $"[DM-Channel] {message.Content}", SimpleConextConverter.ConvertSocketMessage(message, true));
                     return;
                 }
 
