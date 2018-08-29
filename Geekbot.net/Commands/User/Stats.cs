@@ -39,6 +39,13 @@ namespace Geekbot.net.Commands.User
                 var age = Math.Floor((DateTime.Now - createdAt).TotalDays);
                 var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
+//                var messages = _database.Messages
+//                    .First(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(Context.User.Id.AsLong()))
+//                    .MessageCount;
+//                var guildMessages = _database.Messages
+//                    .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+//                    .Select(e => e.MessageCount)
+//                    .Sum();
                 var messages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
                 var guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
                 var level = _levelCalc.GetLevel(messages);

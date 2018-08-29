@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
+using Geekbot.net.Database.LoggingAdapter;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Audio;
@@ -20,6 +21,7 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WikipediaApi;
 
@@ -29,7 +31,7 @@ namespace Geekbot.net
     {
         private DiscordSocketClient _client;
         private CommandService _commands;
-        private DatabaseContext _database;
+        private DatabaseInitializer _databaseInitializer;
         private IGlobalSettings _globalSettings;
         private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
@@ -82,8 +84,12 @@ namespace Geekbot.net
             _client.Log += discordLogger.Log;
             _commands = new CommandService();
 
-            _database = new DatabaseInitializer(runParameters, logger).Initzialize();
-            _globalSettings = new GlobalSettings(_database);
+            _databaseInitializer = new DatabaseInitializer(runParameters, logger);
+            var database = _databaseInitializer.Initialize();
+            database.Database.EnsureCreated();
+            if(!_runParameters.InMemory) database.Database.Migrate();
+            
+            _globalSettings = new GlobalSettings(database);
             
             try
             {
@@ -108,7 +114,7 @@ namespace Geekbot.net
 
             _services = new ServiceCollection();
             
-            _userRepository = new UserRepository(_database, logger);
+            _userRepository = new UserRepository(_databaseInitializer.Initialize(), logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
             var malClient = new MalClient(_globalSettings, logger);
@@ -129,8 +135,8 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
-            _services.AddSingleton<DatabaseContext>(_database);
             _services.AddSingleton<IGlobalSettings>(_globalSettings);
+            _services.AddTransient<DatabaseContext>((e) => _databaseInitializer.Initialize());
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
 
@@ -152,7 +158,7 @@ namespace Geekbot.net
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
-                    var translationHandler = new TranslationHandler(_database, _logger);
+                    var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -163,7 +169,7 @@ namespace Geekbot.net
                     _services.AddSingleton<IReactionListener>(reactionListener);
                     _servicesProvider = _services.BuildServiceProvider();
                     
-                    var handlers = new Handlers(_database, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
+                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
                     
                     _client.MessageReceived += handlers.RunCommand;
                     _client.MessageReceived += handlers.UpdateStats;
@@ -198,7 +204,7 @@ namespace Geekbot.net
         private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _database);
+            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize());
             return Task.CompletedTask;
         }
     }

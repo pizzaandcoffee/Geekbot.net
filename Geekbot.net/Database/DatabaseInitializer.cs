@@ -16,9 +16,10 @@ namespace Geekbot.net.Database
         {
             _runParameters = runParameters;
             _logger = logger;
+            NpgsqlLogManager.Provider = new NpgsqlLoggingProviderAdapter(_logger);
         }
 
-        public DatabaseContext Initzialize()
+        public DatabaseContext Initialize()
         {
             DatabaseContext database = null;
             try
@@ -29,7 +30,6 @@ namespace Geekbot.net.Database
                 }
                 else
                 {
-                    NpgsqlLogManager.Provider = new NpgsqlLoggingProviderAdapter(_logger);
                     database = new SqlDatabase(new SqlConnectionString
                     {
                         Host = _runParameters.DbHost,
@@ -39,8 +39,6 @@ namespace Geekbot.net.Database
                         Password = _runParameters.DbPassword
                     });
                 }
-                database.Database.EnsureCreated();
-                if(!_runParameters.InMemory) database.Database.Migrate();
             }
             catch (Exception e)
             {

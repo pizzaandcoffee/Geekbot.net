@@ -158,10 +158,10 @@ namespace Geekbot.net.Commands.User.Ranking
 //                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
             return _redis.Db
                 .HashGetAll($"{Context.Guild.Id}:Messages")
-                .Where(user => !user.Key.Equals(0))
+                .Where(user => !user.Name.Equals(0))
                 .OrderByDescending(s => s.Value)
                 .Take(amount)
-                .ToDictionary(user => ulong.Parse(user.Key), user => int.Parse(user.Value));
+                .ToDictionary(user => ulong.Parse(user.Name), user => int.Parse(user.Value));
         }
         
         private Dictionary<ulong, int> GetKarmaList(int amount)

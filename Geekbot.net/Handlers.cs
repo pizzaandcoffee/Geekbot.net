@@ -6,6 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
@@ -25,12 +26,14 @@ namespace Geekbot.net
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
+        private readonly DatabaseContext _messageCounterDatabaseContext;
 
-        public Handlers(DatabaseContext database, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
+        public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
             IReactionListener reactionListener)
         {
-            _database = database;
+            _database = databaseInitializer.Initialize();
+            _messageCounterDatabaseContext = databaseInitializer.Initialize();
             _client = client;
             _logger = logger;
             _redis = redis;
@@ -51,9 +54,6 @@ namespace Geekbot.net
                 if (!(messageParam is SocketUserMessage message)) return Task.CompletedTask;
                 if (message.Author.IsBot) return Task.CompletedTask;
                 var argPos = 0;
-
-                // ToDo: remove
-//                if (!message.Author.Id.Equals(93061333972455424)) return Task.CompletedTask;
 
                 var lowCaseMsg = message.ToString().ToLower();
                 if (lowCaseMsg.StartsWith("hui"))
@@ -105,11 +105,23 @@ namespace Geekbot.net
 
                 var channel = (SocketGuildChannel) message.Channel;
 
-//                await _database.Database.ExecuteSqlCommandAsync("UPDATE \"Messages\" " +
-//                                                     $"SET \"MessageCount\" = \"MessageCount\" + {1} " +
-//                                                     $"WHERE \"GuildId\" = '{channel.Guild.Id.AsLong()}' " +
-//                                                     $"AND \"UserId\" = '{message.Author.Id.AsLong()}'");
-//                
+//                var rowId = await _messageCounterDatabaseContext.Database.ExecuteSqlCommandAsync(
+//                    "UPDATE \"Messages\" SET \"MessageCount\" = \"MessageCount\" + 1 WHERE \"GuildId\" = {0} AND \"UserId\" = {1}",
+//                    channel.Guild.Id.AsLong(),
+//                    message.Author.Id.AsLong()
+//                    );
+//
+//                if (rowId == 0)
+//                {
+//                    _messageCounterDatabaseContext.Messages.Add(new MessagesModel
+//                    {
+//                        UserId = message.Author.Id.AsLong(),
+//                        GuildId = channel.Guild.Id.AsLong(),
+//                        MessageCount = 1
+//                    });
+//                    _messageCounterDatabaseContext.SaveChanges();
+//                }
+     
                 await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
                 await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
