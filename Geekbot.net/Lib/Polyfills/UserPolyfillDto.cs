@@ -23,6 +23,11 @@ namespace Geekbot.net.Lib.Polyfills
             return "https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png";
         }
 
+        public string GetDefaultAvatarUrl()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IDMChannel> GetOrCreateDMChannelAsync(RequestOptions options = null)
         {
             throw new NotImplementedException();

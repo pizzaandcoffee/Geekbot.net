@@ -161,14 +161,13 @@ namespace Geekbot.net
                     var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
-                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
-                    _services.AddSingleton(_commands);
                     _services.AddSingleton<IErrorHandler>(errorHandler);
                     _services.AddSingleton<ITranslationHandler>(translationHandler);
                     _services.AddSingleton(_client);
                     _services.AddSingleton<IReactionListener>(reactionListener);
                     _servicesProvider = _services.BuildServiceProvider();
-                    
+                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
+
                     var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
                     
                     _client.MessageReceived += handlers.RunCommand;
