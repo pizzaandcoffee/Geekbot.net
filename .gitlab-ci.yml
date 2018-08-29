@@ -9,7 +9,7 @@ before_script:
 
 build:
   stage: build
-  image: microsoft/dotnet:2.1.300-sdk-stretch
+  image: microsoft/dotnet:2.1.401-sdk-stretch
   artifacts:
     expire_in: 1h
     paths:
@@ -21,7 +21,7 @@ build:
 
 deploy:
   stage: deploy
-  image: instrumentisto/rsync-ssh
+  image: runebaas/rsync-ssh-git
   only:
     - master
   dependencies:
@@ -41,7 +41,7 @@ deploy:
 
 mirror:
   stage: deploy
-  image: bravissimolabs/alpine-git:latest
+  image: runebaas/rsync-ssh-git
   only:
     - master
   script:
