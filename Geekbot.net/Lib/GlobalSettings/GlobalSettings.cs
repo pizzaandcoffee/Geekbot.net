@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
@@ -8,10 +9,12 @@ namespace Geekbot.net.Lib.GlobalSettings
     public class GlobalSettings : IGlobalSettings
     {
         private readonly DatabaseContext _database;
+        private Dictionary<string, string> _cache;
         
         public GlobalSettings(DatabaseContext database)
         {
             _database = database;
+            _cache = new Dictionary<string, string>();
         }
 
         public async Task<bool> SetKey(string keyName, string value)
@@ -29,9 +32,9 @@ namespace Geekbot.net.Lib.GlobalSettings
                     await _database.SaveChangesAsync();
                     return true;
                 }
-
                 key.Value = value;
                 _database.Globals.Update(key);
+                _cache[keyName] = value;
                 await _database.SaveChangesAsync();
                 return true;
             }
@@ -43,8 +46,17 @@ namespace Geekbot.net.Lib.GlobalSettings
 
         public string GetKey(string keyName)
         {
-            var key = _database.Globals.FirstOrDefault(k => k.Name.Equals(keyName));
-            return key?.Value ?? string.Empty;
+            var keyValue = "";
+            if (string.IsNullOrEmpty(_cache[keyName]))
+            {
+                keyValue = _database.Globals.FirstOrDefault(k => k.Name.Equals(keyName))?.Value ?? string.Empty;
+                _cache[keyName] = keyValue;
+            }
+            else
+            {
+                keyValue = _cache[keyName];
+            }
+            return keyValue ;
         }
 
         public GlobalsModel GetKeyFull(string keyName)
