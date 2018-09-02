@@ -203,7 +203,7 @@ namespace Geekbot.net
         private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize());
+            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings);
             return Task.CompletedTask;
         }
     }
