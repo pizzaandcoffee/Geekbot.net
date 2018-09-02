@@ -52,7 +52,7 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
                     if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
                     if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
                     if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
-                    if (definitions.Tags.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
+                    if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
 
                     await ReplyAsync("", false, eb.Build());
                 }

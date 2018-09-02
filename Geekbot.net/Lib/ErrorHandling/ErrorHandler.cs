@@ -39,7 +39,7 @@ namespace Geekbot.net.Lib.ErrorHandling
         {
             try
             {
-                var errorString = errorMessage == "def" ? await _translation.GetString(context.Guild.Id, "errorHandler", "SomethingWentWrong") : errorMessage;
+                var errorString = errorMessage == "def" ? await _translation.GetString(context.Guild?.Id ?? 0, "errorHandler", "SomethingWentWrong") : errorMessage;
                 var errorObj = SimpleConextConverter.ConvertContext(context);
                 if (e.Message.Contains("50007")) return;
                 if (e.Message.Contains("50013")) return;

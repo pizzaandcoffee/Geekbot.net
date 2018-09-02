@@ -25,13 +25,13 @@ namespace Geekbot.net.Lib.Logger
                 },
                 Guild = new MessageDto.IdAndName
                 {
-                    Id = context.Guild.Id.ToString(),
-                    Name = context.Guild.Name
+                    Id = context.Guild?.Id.ToString(),
+                    Name = context.Guild?.Name
                 },
                 Channel = new MessageDto.IdAndName
                 {
-                    Id = context.Channel.Id.ToString(),
-                    Name = context.Channel.Name
+                    Id = context.Channel?.Id.ToString() ?? context.User.Id.ToString(),
+                    Name = context.Channel?.Name ?? "DM-Channel"
                 }
             };
         }
@@ -61,8 +61,8 @@ namespace Geekbot.net.Lib.Logger
                 },
                 Channel = new MessageDto.IdAndName
                 {
-                    Id = channel?.Id.ToString(),
-                    Name = channel?.Name
+                    Id = channel?.Id.ToString() ?? message.Author.Id.ToString(),
+                    Name = channel?.Name  ?? "DM-Channel"
                 }
             };
         }
