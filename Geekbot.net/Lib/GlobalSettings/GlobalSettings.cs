@@ -9,7 +9,7 @@ namespace Geekbot.net.Lib.GlobalSettings
     public class GlobalSettings : IGlobalSettings
     {
         private readonly DatabaseContext _database;
-        private Dictionary<string, string> _cache;
+        private readonly Dictionary<string, string> _cache;
         
         public GlobalSettings(DatabaseContext database)
         {
@@ -47,7 +47,7 @@ namespace Geekbot.net.Lib.GlobalSettings
         public string GetKey(string keyName)
         {
             var keyValue = "";
-            if (string.IsNullOrEmpty(_cache[keyName]))
+            if (string.IsNullOrEmpty(_cache.GetValueOrDefault(keyName)))
             {
                 keyValue = _database.Globals.FirstOrDefault(k => k.Name.Equals(keyName))?.Value ?? string.Empty;
                 _cache[keyName] = keyValue;
