@@ -32,10 +32,10 @@ namespace Geekbot.net.WebApi.Controllers.Commands
                     Name = cmd.Name,
                     Summary = cmd.Summary,
                     IsAdminCommand = param.Contains("admin") || param.Contains("owner"),
-                    Aliases = cmd.Aliases.ToArray(),
+                    Aliases = cmd.Aliases.ToList(),
                     Params = cmdParamsObj
                 }).ToList();
-            return Ok(commandList);
+            return Ok(commandList.FindAll(e => !e.Aliases[0].StartsWith("owner")));
         }
     }
 }
