@@ -9,7 +9,7 @@ using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
 
-namespace Geekbot.net.Commands.Admin
+namespace Geekbot.net.Commands.Admin.Owner
 {
     [Group("owner")]
     [RequireOwner]
@@ -35,27 +35,42 @@ namespace Geekbot.net.Commands.Admin
         }
 
         [Command("migrate", RunMode = RunMode.Async)]
-        public async Task Migrate(string force = "")
+        public async Task Migrate(MigrationMethods method, string force = "")
         {
             try
             {
-                var status = _globalSettings.GetKey("MigrationStatus");
-                if (status.Equals("Running"))
+                switch (method)
                 {
-                    await ReplyAsync("Migration already running");
-                    return;
-                }
-                if (status.Equals("Done") && !force.Equals("force"))
-                {
-                    await ReplyAsync("Migration already ran, write `!owner migrate force` to run again");
-                    return;                  
-                }
+                    case MigrationMethods.redis:
+                        var status = _globalSettings.GetKey("MigrationStatus");
+                        if (status.Equals("Running"))
+                        {
+                            await ReplyAsync("Migration already running");
+                            return;
+                        }
+                        if (status.Equals("Done") && !force.Equals("force"))
+                        {
+                            await ReplyAsync("Migration already ran, write `!owner migrate redis force` to run again");
+                            return;                  
+                        }
 
-                await ReplyAsync("starting migration");
-                await _globalSettings.SetKey("MigrationStatus", "Running");
-                var redisMigration = new RedisMigration(_database, _redis, _logger, _client);
-                await redisMigration.Migrate();
-                await _globalSettings.SetKey("MigrationStatus", "Done");
+                        await ReplyAsync("starting migration");
+                        await _globalSettings.SetKey("MigrationStatus", "Running");
+                        var redisMigration = new RedisMigration(_database, _redis, _logger, _client);
+                        await redisMigration.Migrate();
+                        await _globalSettings.SetKey("MigrationStatus", "Done");
+                        break;
+                    
+                    case MigrationMethods.messages:
+                        await ReplyAsync("Migrating Messages to postgres...");
+                        var messageMigration = new MessageMigration(_database, _redis, _logger);
+                        await messageMigration.Migrate();
+                        break;
+                    
+                    default:
+                        await ReplyAsync("No Migration Method specified...");
+                        break;
+                }
             }
             catch (Exception e)
             {

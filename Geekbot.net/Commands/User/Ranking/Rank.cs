@@ -151,17 +151,17 @@ namespace Geekbot.net.Commands.User.Ranking
 
         private Dictionary<ulong, int> GetMessageList(int amount)
         {
-//            return _database.Messages
-//                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
-//                .OrderByDescending(o => o.MessageCount)
-//                .Take(amount)
-//                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
-            return _redis.Db
-                .HashGetAll($"{Context.Guild.Id}:Messages")
-                .Where(user => !user.Name.Equals(0))
-                .OrderByDescending(s => s.Value)
+            return _database.Messages
+                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
+                .OrderByDescending(o => o.MessageCount)
                 .Take(amount)
-                .ToDictionary(user => ulong.Parse(user.Name), user => int.Parse(user.Value));
+                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
+//            return _redis.Db
+//                .HashGetAll($"{Context.Guild.Id}:Messages")
+//                .Where(user => !user.Name.Equals(0))
+//                .OrderByDescending(s => s.Value)
+//                .Take(amount)
+//                .ToDictionary(user => ulong.Parse(user.Name), user => int.Parse(user.Value));
         }
         
         private Dictionary<ulong, int> GetKarmaList(int amount)
