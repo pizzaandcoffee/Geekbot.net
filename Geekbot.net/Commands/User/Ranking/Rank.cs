@@ -5,31 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Database;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.Highscores;
 using Geekbot.net.Lib.UserRepository;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.User.Ranking
 {
     public class Rank : ModuleBase
     {
         private readonly IEmojiConverter _emojiConverter;
+        private readonly IHighscoreManager _highscoreManager;
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
-        private readonly IAlmostRedis _redis;
 
         public Rank(DatabaseContext database, IErrorHandler errorHandler, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, IAlmostRedis redis)
+            IEmojiConverter emojiConverter, IHighscoreManager highscoreManager)
         {
             _database = database;
             _errorHandler = errorHandler;
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
-            _redis = redis;
+            _highscoreManager = highscoreManager;
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -38,10 +37,10 @@ namespace Geekbot.net.Commands.User.Ranking
         {
             try
             {
-                RankType type;
+                HighscoreTypes type;
                 try
                 {
-                    type = Enum.Parse<RankType>(typeUnformated.ToLower());
+                    type = Enum.Parse<HighscoreTypes>(typeUnformated.ToLower());
                 }
                 catch
                 {
@@ -49,7 +48,6 @@ namespace Geekbot.net.Commands.User.Ranking
                     return;
                 }
 
-                
                 var replyBuilder = new StringBuilder();
                 if (amount > 20)
                 {
@@ -57,69 +55,28 @@ namespace Geekbot.net.Commands.User.Ranking
                     amount = 20;
                 }
                 
-                Dictionary<ulong, int> list;
-
-                switch (type)
+                var guildId = Context.Guild.Id;
+                Dictionary<HighscoreUserDto, int> highscoreUsers;
+                try
                 {
-                    case RankType.messages:
-                        list = GetMessageList(amount);
-                        break;
-                    case RankType.karma:
-                        list = GetKarmaList(amount);
-                        break;
-                    case RankType.rolls:
-                        list = GetRollsList(amount);
-                        break;
-                    default:
-                        await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`'");
-                        return;
+                    highscoreUsers = _highscoreManager.GetHighscoresWithUserData(type, guildId, amount);
                 }
-
-                if (!list.Any())
+                catch (HighscoreListEmptyException)
                 {
                     await ReplyAsync($"No {type} found on this server");
                     return;
                 }
 
                 int guildMessages = 0;
-                if (type == RankType.messages)
+                if (type == HighscoreTypes.messages)
                 {
-//                    guildMessages = _database.Messages
-//                        .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
-//                        .Select(e => e.MessageCount)
-//                        .Sum();
-                    guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                    guildMessages = _database.Messages
+                        .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+                        .Select(e => e.MessageCount)
+                        .Sum();
                 }
 
-                var highscoreUsers = new Dictionary<RankUserDto, int>();
-                var failedToRetrieveUser = false;
-                foreach (var user in list)
-                {
-                    try
-                    {
-                        var guildUser = _userRepository.Get(user.Key);
-                        if (guildUser?.Username != null)
-                        {
-                            highscoreUsers.Add(new RankUserDto
-                            {
-                                Username = guildUser.Username,
-                                Discriminator = guildUser.Discriminator
-                            },  user.Value);
-                        }
-                        else
-                        {
-                            highscoreUsers.Add(new RankUserDto
-                            {
-                                Id = user.Key.ToString()
-                            },  user.Value);
-                            failedToRetrieveUser = true;
-                        }
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
-                }
+                var failedToRetrieveUser = highscoreUsers.Any(e => string.IsNullOrEmpty(e.Key.Username));
 
                 if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: I couldn't find all usernames. Maybe they left the server?\n");
                 replyBuilder.AppendLine($":bar_chart: **{type.ToString().CapitalizeFirst()} Highscore for {Context.Guild.Name}**");
@@ -134,7 +91,7 @@ namespace Geekbot.net.Commands.User.Ranking
                         ? $"**{user.Key.Username}#{user.Key.Discriminator}**"
                         : $"**{user.Key.Id}**");
                     
-                    replyBuilder.Append(type == RankType.messages
+                    replyBuilder.Append(type == HighscoreTypes.messages
                         ? $" - {user.Value} {type} - {Math.Round((double) (100 * user.Value) / guildMessages, digits: 2)}%\n"
                         : $" - {user.Value} {type}\n");
 
@@ -147,39 +104,6 @@ namespace Geekbot.net.Commands.User.Ranking
             {
                 await _errorHandler.HandleCommandException(e, Context);
             }
-        }
-
-        private Dictionary<ulong, int> GetMessageList(int amount)
-        {
-            return _database.Messages
-                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
-                .OrderByDescending(o => o.MessageCount)
-                .Take(amount)
-                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
-//            return _redis.Db
-//                .HashGetAll($"{Context.Guild.Id}:Messages")
-//                .Where(user => !user.Name.Equals(0))
-//                .OrderByDescending(s => s.Value)
-//                .Take(amount)
-//                .ToDictionary(user => ulong.Parse(user.Name), user => int.Parse(user.Value));
-        }
-        
-        private Dictionary<ulong, int> GetKarmaList(int amount)
-        {
-            return _database.Karma
-                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
-                .OrderByDescending(o => o.Karma)
-                .Take(amount)
-                .ToDictionary(key => key.UserId.AsUlong(), key => key.Karma);
-        }
-        
-        private Dictionary<ulong, int> GetRollsList(int amount)
-        {
-            return _database.Rolls
-                .Where(k => k.GuildId.Equals(Context.Guild.Id.AsLong()))
-                .OrderByDescending(o => o.Rolls)
-                .Take(amount)
-                .ToDictionary(key => key.UserId.AsUlong(), key => key.Rolls);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Geekbot.net.Lib.Logger
         Command,
         Api,
         Migration,
+        HighscoreManager,
         Other
     }
 }

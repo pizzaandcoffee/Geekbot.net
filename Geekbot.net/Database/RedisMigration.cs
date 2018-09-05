@@ -43,7 +43,7 @@ namespace Geekbot.net.Database
                     Console.WriteLine(g.Name);
                     allGuilds.Add(g);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // ignore
                 }

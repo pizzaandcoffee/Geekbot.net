@@ -7,7 +7,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
-using Geekbot.net.Database.LoggingAdapter;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Audio;
@@ -15,6 +14,7 @@ using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
+using Geekbot.net.Lib.Highscores;
 using Geekbot.net.Lib.Levels;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
@@ -40,6 +40,7 @@ namespace Geekbot.net
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
         private IAlmostRedis _redis;
+        private IHighscoreManager _highscoreManager;
 
         private static void Main(string[] args)
         {
@@ -123,6 +124,7 @@ namespace Geekbot.net
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             var audioUtils = new AudioUtils();
+            _highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             
             _services.AddSingleton<IAlmostRedis>(_redis);
             _services.AddSingleton<IUserRepository>(_userRepository);
@@ -135,6 +137,7 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
+            _services.AddSingleton<IHighscoreManager>(_highscoreManager);
             _services.AddSingleton<IGlobalSettings>(_globalSettings);
             _services.AddTransient<DatabaseContext>((e) => _databaseInitializer.Initialize());
 
@@ -203,7 +206,7 @@ namespace Geekbot.net
         private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings);
+            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, _highscoreManager);
             return Task.CompletedTask;
         }
     }

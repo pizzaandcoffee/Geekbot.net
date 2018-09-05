@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.GlobalSettings;
+using Geekbot.net.Lib.Highscores;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.WebApi.Logging;
 using Microsoft.AspNetCore;
@@ -18,7 +19,7 @@ namespace Geekbot.net.WebApi
     public static class WebApiStartup
     {
         public static void StartWebApi(IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
-            DatabaseContext databaseContext, DiscordSocketClient client, IGlobalSettings globalSettings)
+            DatabaseContext databaseContext, DiscordSocketClient client, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
         {
             WebHost.CreateDefaultBuilder()
                 .UseKestrel(options =>
@@ -32,6 +33,7 @@ namespace Geekbot.net.WebApi
                     services.AddSingleton<DatabaseContext>(databaseContext);
                     services.AddSingleton<DiscordSocketClient>(client);
                     services.AddSingleton<IGlobalSettings>(globalSettings);
+                    services.AddSingleton<IHighscoreManager>(highscoreManager);
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowSpecificOrigin",
