@@ -162,7 +162,7 @@ namespace Geekbot.net
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
                     var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
-                    var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
+                    var errorHandler = new ErrorHandler(_logger, translationHandler, _globalSettings, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
                     _services.AddSingleton<IErrorHandler>(errorHandler);
                     _services.AddSingleton<ITranslationHandler>(translationHandler);

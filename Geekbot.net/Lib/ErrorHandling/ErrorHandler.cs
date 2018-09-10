@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Bugsnag;
+using Bugsnag.Payload;
 using Discord.Commands;
 using Discord.Net;
+using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
 using SharpRaven;
 using SharpRaven.Data;
+using Exception = System.Exception;
 
 namespace Geekbot.net.Lib.ErrorHandling
 {
@@ -16,8 +21,9 @@ namespace Geekbot.net.Lib.ErrorHandling
         private readonly ITranslationHandler _translation;
         private readonly IRavenClient _raven;
         private readonly bool _errorsInChat;
+        private readonly IClient _bugsnag;
 
-        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, bool errorsInChat)
+        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, IGlobalSettings globalSettings, bool errorsInChat)
         {
             _logger = logger;
             _translation = translation;
@@ -32,6 +38,21 @@ namespace Geekbot.net.Lib.ErrorHandling
             else
             {
                 _raven = null;
+            }
+
+            var bugsnagApiKey = globalSettings.GetKey("BugsnagApiKey");
+            if (!string.IsNullOrEmpty(bugsnagApiKey))
+            {
+                _bugsnag = new Bugsnag.Client(new Bugsnag.Configuration
+                {
+                    ApiKey = bugsnagApiKey,
+                    AppVersion = Constants.BotVersion()
+                });
+                _logger.Information(LogSource.Geekbot, "Command Errors will be logged to Bugsnag");
+            }
+            else
+            {
+                _bugsnag = null;
             }
         }
 
@@ -65,20 +86,8 @@ namespace Geekbot.net.Lib.ErrorHandling
                     }
                     
                 }
-                
-                if (_raven == null) return;
-                
-                var sentryEvent = new SentryEvent(e)
-                {
-                    Tags =
-                    {
-                        ["discord_server"] = errorObj.Guild.Name,
-                        ["discord_user"] = errorObj.User.Name
-                    },
-                    Message = errorObj.Message.Content,
-                    Extra = errorObj
-                };
-                _raven.Capture(sentryEvent);
+
+                ReportExternal(e, errorObj);
             }
             catch (Exception ex)
             {
@@ -98,6 +107,48 @@ namespace Geekbot.net.Lib.ErrorHandling
             }
         }
 
-        
+        private void ReportExternal(Exception e, MessageDto errorObj)
+        {
+            if (_raven != null)
+            {
+                var sentryEvent = new SentryEvent(e)
+                {
+                    Tags =
+                    {
+                        ["discord_server"] = errorObj.Guild.Name,
+                        ["discord_user"] = errorObj.User.Name
+                    },
+                    Message = errorObj.Message.Content,
+                    Extra = errorObj
+                };
+                _raven.Capture(sentryEvent);
+            }
+
+            _bugsnag?.Notify(e, (report) =>
+            {
+                report.Event.Metadata.Add("Discord Location", new Dictionary<string, string>
+                {
+                    {"Guild Name", errorObj.Guild.Name},
+                    {"Guild Id", errorObj.Guild.Id},
+                    {"Channel Name", errorObj.Channel.Name},
+                    {"Channel Id", errorObj.Channel.Id}
+                });
+                report.Event.Metadata.Add("Message Info", new Dictionary<string, string>
+                {
+                    {"Content", errorObj.Message.Content},
+                    {"Id", errorObj.Message.Id},
+                    {"Attachments", errorObj.Message.Attachments.ToString()},
+                    {"ChannelMentions", errorObj.Message.ChannelMentions.ToString()},
+                    {"UserMentions", errorObj.Message.UserMentions.ToString()},
+                    {"RoleMentions", errorObj.Message.RoleMentions.ToString()},
+                });
+                report.Event.Severity = Severity.Error;
+                report.Event.User = new User
+                {
+                    Id = errorObj.User.Id,
+                    Name = errorObj.User.Name
+                };
+            });
+        }
     }
 }
