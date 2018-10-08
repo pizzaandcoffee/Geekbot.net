@@ -40,7 +40,7 @@ namespace Geekbot.net.Commands.User
                 var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
                 var messages = _database.Messages
-                    .First(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(Context.User.Id.AsLong()))
+                    .First(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))
                     .MessageCount;
                 var guildMessages = _database.Messages
                     .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
