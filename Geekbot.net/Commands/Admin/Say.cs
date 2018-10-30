@@ -22,8 +22,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                await Context.Message.DeleteAsync();
-                await ReplyAsync(echo);
+                await Context.User.SendMessageAsync("the `!say` command has been disabled since 2018/10/30");
             }
             catch (Exception e)
             {
