@@ -33,10 +33,17 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var userRepo = _userRepository.Get(user.Id);
-                var sb = new StringBuilder();
-                sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
-                foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name.Name}`");
-                await ReplyAsync(sb.ToString());
+                if (userRepo != null && userRepo.UsedNames != null)
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
+                    foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name.Name}`");
+                    await ReplyAsync(sb.ToString());
+                }
+                else
+                {
+                    await ReplyAsync($"No name changes found for {user.Username}");
+                }
             }
             catch (Exception e)
             {
