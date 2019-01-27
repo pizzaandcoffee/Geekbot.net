@@ -1,4 +1,5 @@
 ﻿using System;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.Logger;
 using Npgsql.Logging;
 using LogLevel = NLog.LogLevel;
@@ -9,17 +10,19 @@ namespace Geekbot.net.Database.LoggingAdapter
     {
         private readonly string _name;
         private readonly IGeekbotLogger _geekbotLogger;
+        private readonly RunParameters _runParameters;
 
-        public NpgsqlLoggingAdapter(string name, IGeekbotLogger geekbotLogger)
+        public NpgsqlLoggingAdapter(string name, IGeekbotLogger geekbotLogger, RunParameters runParameters)
         {
             _name = name.Substring(7);
             _geekbotLogger = geekbotLogger;
+            _runParameters = runParameters;
             geekbotLogger.Trace(LogSource.Database, $"Loaded Npgsql logging adapter: {name}");
         }
         
         public override bool IsEnabled(NpgsqlLogLevel level)
         {
-            return !_geekbotLogger.LogAsJson() && _geekbotLogger.GetNLogger().IsEnabled(ToGeekbotLogLevel(level));
+            return (_runParameters.DbLogging && _geekbotLogger.GetNLogger().IsEnabled(ToGeekbotLogLevel(level)));
         }
 
         public override void Log(NpgsqlLogLevel level, int connectorId, string msg, Exception exception = null)

@@ -16,7 +16,7 @@ namespace Geekbot.net.Database
         {
             _runParameters = runParameters;
             _logger = logger;
-            NpgsqlLogManager.Provider = new NpgsqlLoggingProviderAdapter(_logger);
+            NpgsqlLogManager.Provider = new NpgsqlLoggingProviderAdapter(logger, runParameters);
         }
 
         public DatabaseContext Initialize()
@@ -45,8 +45,12 @@ namespace Geekbot.net.Database
                 _logger.Error(LogSource.Geekbot, "Could not Connect to datbase", e);
                 Environment.Exit(GeekbotExitCode.DatabaseConnectionFailed.GetHashCode());
             }
-            
-            _logger.Information(LogSource.Database, $"Connected with {database.Database.ProviderName}");
+
+            if (_runParameters.DbLogging)
+            {
+                _logger.Information(LogSource.Database, $"Connected with {database.Database.ProviderName}");
+            }
+
             return database;
         }
     }

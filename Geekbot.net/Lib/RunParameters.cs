@@ -45,6 +45,10 @@ namespace Geekbot.net.Lib
 
         [Option("db-password", Default = "", HelpText = "Set a posgresql password")]
         public string DbPassword { get; set; }
+        
+        // Logging
+        [Option("db-logging", Default = false, HelpText = "Enable database logging")]
+        public bool DbLogging { get; set; }
 
         /************************************
          * Redis                            *
