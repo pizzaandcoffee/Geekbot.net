@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
+using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
 using StackExchange.Redis;
 
@@ -13,11 +17,13 @@ namespace Geekbot.net.Commands.Games
         private readonly IErrorHandler _errorHandler;
         private readonly IAlmostRedis _redis;
         private readonly ITranslationHandler _translation;
+        private readonly DatabaseContext _database;
 
-        public Roll(IAlmostRedis redis, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Roll(IAlmostRedis redis, IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database)
         {
             _redis = redis;
             _translation = translation;
+            _database = database;
             _errorHandler = errorHandler;
         }
 
@@ -50,6 +56,10 @@ namespace Geekbot.net.Commands.Games
                     {
                         await ReplyAsync(string.Format(transDict["Gratz"], Context.Message.Author));
                         _redis.Db.HashIncrement($"{Context.Guild.Id}:Rolls", Context.User.Id.ToString());
+                        var user = await GetUser(Context.User.Id);
+                        user.Rolls += 1;
+                        _database.Rolls.Update(user);
+                        await _database.SaveChangesAsync();
                     }
                 }
                 else
@@ -61,6 +71,25 @@ namespace Geekbot.net.Commands.Games
             {
                 await _errorHandler.HandleCommandException(e, Context);
             }
+        }
+        
+        private async Task<RollsModel> GetUser(ulong userId)
+        {
+            var user = _database.Rolls.FirstOrDefault(u =>u.GuildId.Equals(Context.Guild.Id.AsLong()) && u.UserId.Equals(userId.AsLong())) ?? await CreateNewRow(userId);
+            return user;
+        }
+        
+        private async Task<RollsModel> CreateNewRow(ulong userId)
+        {
+            var user = new RollsModel()
+            {
+                GuildId = Context.Guild.Id.AsLong(),
+                UserId = userId.AsLong(),
+                Rolls = 0
+            };
+            var newUser = _database.Rolls.Add(user).Entity;
+            await _database.SaveChangesAsync();
+            return newUser;
         }
     }
 }
