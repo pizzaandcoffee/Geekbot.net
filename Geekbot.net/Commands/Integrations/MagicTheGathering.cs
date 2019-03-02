@@ -57,7 +57,7 @@ namespace Geekbot.net.Commands.Integrations
                 if (!string.IsNullOrEmpty(card.ManaCost)) eb.AddInlineField("Cost", _manaConverter.ConvertMana(card.ManaCost));
                 if (!string.IsNullOrEmpty(card.Rarity)) eb.AddInlineField("Rarity", card.Rarity);
 
-                if (card.Legalities != null)
+                if (card.Legalities != null && card.Legalities.Count > 0)
                     eb.AddField("Legality", string.Join(", ", card.Legalities.Select(e => e.Format)));
 
                 await ReplyAsync("", false, eb.Build());
