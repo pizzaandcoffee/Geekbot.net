@@ -28,7 +28,7 @@ namespace Geekbot.net.Lib.ErrorHandling
             var sentryDsn = Environment.GetEnvironmentVariable("SENTRY");
             if (!string.IsNullOrEmpty(sentryDsn))
             {
-                _raven = new RavenClient(sentryDsn) { Release = Constants.BotVersion() };
+                _raven = new RavenClient(sentryDsn) { Release = Constants.BotVersion(), Environment = "Production" };
                 _logger.Information(LogSource.Geekbot, $"Command Errors will be logged to Sentry: {sentryDsn}");
             }
             else
