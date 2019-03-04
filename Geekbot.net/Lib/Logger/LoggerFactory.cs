@@ -25,8 +25,7 @@ namespace Geekbot.net.Lib.Logger
                             Layout = "${message}",
                             UseConsoleLog = false,
                             OptimizeBufferReuse = true,
-                            Name = "Geekbot",
-                            AppendException = false
+                            Name = "Geekbot"
                         })
                     );
             }
