@@ -62,61 +62,61 @@ namespace Geekbot.net.Commands.Utils
                 await ReplyAsync("Poll creation currently disabled");
                 return;
                 
-                var currentPoll = GetCurrentPoll();
-                if (currentPoll.Question != null && !currentPoll.IsFinshed)
-                {
-                    await ReplyAsync("You have not finished you last poll yet. To finish it use `!poll end`");
-                    return;
-                }
-
-                var pollList = rawPollString.Split(';').ToList();
-                if (pollList.Count <= 2)
-                {
-                    await ReplyAsync(
-                        "You need a question with atleast 2 options, a valid creation would look like this `question;option1;option2`");
-                    return;
-                }
-
-                var question = pollList[0];
-                pollList.RemoveAt(0);
-                
-                var eb = new EmbedBuilder
-                {
-                    Title = $"Poll by {Context.User.Username}",
-                    Description = question
-                };
-
-                var options = new List<PollQuestionModel>();
-                var i = 1;
-                pollList.ForEach(option =>
-                {
-                    options.Add(new PollQuestionModel()
-                    {
-                        OptionId = i,
-                        OptionText = option
-                    });
-                    eb.AddInlineField($"Option {_emojiConverter.NumberToEmoji(i)}", option);
-                    i++;
-                });
-                var pollMessage = await ReplyAsync("", false, eb.Build());
-                
-                var poll = new PollModel()
-                {
-                    Creator = Context.User.Id.AsLong(),
-                    MessageId = pollMessage.Id.AsLong(),
-                    IsFinshed = false,
-                    Question = question,
-                    Options = options
-                };
-                _database.Polls.Add(poll);
-
-                i = 1;
-                pollList.ForEach(option =>
-                {
-                    pollMessage.AddReactionAsync(new Emoji(_emojiConverter.NumberToEmoji(i)));
-                    Task.Delay(500);
-                    i++;
-                });
+//                var currentPoll = GetCurrentPoll();
+//                if (currentPoll.Question != null && !currentPoll.IsFinshed)
+//                {
+//                    await ReplyAsync("You have not finished you last poll yet. To finish it use `!poll end`");
+//                    return;
+//                }
+//
+//                var pollList = rawPollString.Split(';').ToList();
+//                if (pollList.Count <= 2)
+//                {
+//                    await ReplyAsync(
+//                        "You need a question with atleast 2 options, a valid creation would look like this `question;option1;option2`");
+//                    return;
+//                }
+//
+//                var question = pollList[0];
+//                pollList.RemoveAt(0);
+//                
+//                var eb = new EmbedBuilder
+//                {
+//                    Title = $"Poll by {Context.User.Username}",
+//                    Description = question
+//                };
+//
+//                var options = new List<PollQuestionModel>();
+//                var i = 1;
+//                pollList.ForEach(option =>
+//                {
+//                    options.Add(new PollQuestionModel()
+//                    {
+//                        OptionId = i,
+//                        OptionText = option
+//                    });
+//                    eb.AddInlineField($"Option {_emojiConverter.NumberToEmoji(i)}", option);
+//                    i++;
+//                });
+//                var pollMessage = await ReplyAsync("", false, eb.Build());
+//                
+//                var poll = new PollModel()
+//                {
+//                    Creator = Context.User.Id.AsLong(),
+//                    MessageId = pollMessage.Id.AsLong(),
+//                    IsFinshed = false,
+//                    Question = question,
+//                    Options = options
+//                };
+//                _database.Polls.Add(poll);
+//
+//                i = 1;
+//                pollList.ForEach(option =>
+//                {
+//                    pollMessage.AddReactionAsync(new Emoji(_emojiConverter.NumberToEmoji(i)));
+//                    Task.Delay(500);
+//                    i++;
+//                });
             }
             catch (Exception e)
             {
