@@ -10,7 +10,7 @@ before_script:
 
 build:
   stage: build
-  image: microsoft/dotnet:2.1.401-sdk-stretch
+  image: mcr.microsoft.com/dotnet/core/sdk:2.2
   artifacts:
     expire_in: 1h
     paths:
