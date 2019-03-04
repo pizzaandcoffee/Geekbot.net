@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Lib.Clients;
@@ -62,6 +63,10 @@ namespace Geekbot.net.Commands.Integrations
                         "Unfortunally i'm not connected to MyAnimeList.net, please tell my senpai to connect me");
                 }
             }
+            catch (XmlException e)
+            {
+                await _errorHandler.HandleCommandException(e, Context, "The MyAnimeList.net API refused to answer");
+            }
             catch (Exception e)
             {
                 await _errorHandler.HandleCommandException(e, Context);
@@ -109,6 +114,10 @@ namespace Geekbot.net.Commands.Integrations
                     await ReplyAsync(
                         "Unfortunally i'm not connected to MyAnimeList.net, please tell my senpai to connect me");
                 }
+            }
+            catch (XmlException e)
+            {
+                await _errorHandler.HandleCommandException(e, Context, "The MyAnimeList.net API refused to answer");
             }
             catch (Exception e)
             {
