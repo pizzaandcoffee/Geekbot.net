@@ -174,13 +174,13 @@ namespace Geekbot.net
                     var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
                     
                     _client.MessageReceived += handlers.RunCommand;
-                    _client.MessageReceived += handlers.UpdateStats;
                     _client.MessageDeleted += handlers.MessageDeleted;
                     _client.UserJoined += handlers.UserJoined;
                     _client.UserUpdated += handlers.UserUpdated;
                     _client.UserLeft += handlers.UserLeft;
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
+                    if (!_runParameters.InMemory) _client.MessageReceived += handlers.UpdateStats;
 
                     var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
                     
