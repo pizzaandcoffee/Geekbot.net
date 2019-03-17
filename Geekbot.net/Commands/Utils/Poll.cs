@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
@@ -15,6 +16,7 @@ using Geekbot.net.Lib.UserRepository;
 namespace Geekbot.net.Commands.Utils
 {
     [Group("poll")]
+    [DisableInDirectMessage]
     public class Poll : ModuleBase
     {
         private readonly IEmojiConverter _emojiConverter;

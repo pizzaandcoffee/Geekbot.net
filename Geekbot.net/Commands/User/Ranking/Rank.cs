@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
@@ -33,6 +34,7 @@ namespace Geekbot.net.Commands.User.Ranking
 
         [Command("rank", RunMode = RunMode.Async)]
         [Summary("get user top 10 in messages or karma")]
+        [DisableInDirectMessage]
         public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
         {
             try

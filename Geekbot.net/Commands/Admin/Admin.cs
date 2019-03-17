@@ -7,6 +7,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
@@ -15,6 +16,7 @@ namespace Geekbot.net.Commands.Admin
 {
     [Group("admin")]
     [RequireUserPermission(GuildPermission.Administrator)]
+    [DisableInDirectMessage]
     public class Admin : ModuleBase
     {
         private readonly DiscordSocketClient _client;

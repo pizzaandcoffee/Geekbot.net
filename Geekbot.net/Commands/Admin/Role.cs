@@ -7,6 +7,7 @@ using Discord.Commands;
 using Discord.Net;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.ReactionListener;
@@ -14,6 +15,7 @@ using Geekbot.net.Lib.ReactionListener;
 namespace Geekbot.net.Commands.Admin
 {
     [Group("role")]
+    [DisableInDirectMessage]
     public class Role : ModuleBase
     {
         private readonly DatabaseContext _database;

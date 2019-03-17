@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
@@ -25,6 +26,7 @@ namespace Geekbot.net.Commands.User
 
         [Command("serverstats", RunMode = RunMode.Async)]
         [Summary("Show some info about the bot.")]
+        [DisableInDirectMessage]
         public async Task GetInfo()
         {
             try

@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Lib.AlmostRedis;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Levels;
@@ -28,6 +29,7 @@ namespace Geekbot.net.Commands.User
 
         [Command("stats", RunMode = RunMode.Async)]
         [Summary("Get information about this user")]
+        [DisableInDirectMessage]
         public async Task User([Summary("@someone")] IUser user = null)
         {
             try

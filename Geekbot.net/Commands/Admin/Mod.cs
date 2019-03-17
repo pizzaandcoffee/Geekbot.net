@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.UserRepository;
 
@@ -13,6 +14,7 @@ namespace Geekbot.net.Commands.Admin
     [RequireUserPermission(GuildPermission.KickMembers)]
     [RequireUserPermission(GuildPermission.ManageMessages)]
     [RequireUserPermission(GuildPermission.ManageRoles)]
+    [DisableInDirectMessage]
     public class Mod : ModuleBase
     {
         private readonly DiscordSocketClient _client;

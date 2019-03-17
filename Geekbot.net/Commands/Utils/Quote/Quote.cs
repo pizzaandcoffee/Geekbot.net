@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Polyfills;
@@ -12,6 +13,7 @@ using Geekbot.net.Lib.Polyfills;
 namespace Geekbot.net.Commands.Utils.Quote
 {
     [Group("quote")]
+    [DisableInDirectMessage]
     public class Quote : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;

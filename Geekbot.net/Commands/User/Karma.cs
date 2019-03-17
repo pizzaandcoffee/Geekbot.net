@@ -5,12 +5,14 @@ using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
 
 namespace Geekbot.net.Commands.User
 {
+    [DisableInDirectMessage]
     public class Karma : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
