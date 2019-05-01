@@ -93,6 +93,9 @@
     <None Update="Lib\Converters\MtgManaEmojis.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Storage\dab">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WikipediaApi\WikipediaApi.csproj" />
