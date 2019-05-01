@@ -64,6 +64,13 @@ namespace Geekbot.net.Commands.Randomness
         {
             await ReplyAsync("", false, Eb(_mediaProvider.GetFox()));
         }
+        
+        [Command("dab", RunMode = RunMode.Async)]
+        [Summary("Get a random dab image")]
+        public async Task Dab()
+        {
+            await ReplyAsync("", false, Eb(_mediaProvider.GetDab()));
+        }
 
         private static Embed Eb(string image)
         {

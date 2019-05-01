@@ -16,6 +16,7 @@ namespace Geekbot.net.Lib.Media
         private string[] _turtlesImages;
         private string[] _pinguinImages;
         private string[] _foxImages;
+        private string[] _dabImages;
         
         public MediaProvider(IGeekbotLogger logger)
         {
@@ -32,6 +33,7 @@ namespace Geekbot.net.Lib.Media
             LoadTurtles();
             LoadPinguins();
             LoadFoxes();
+            LoadDab();
         }
 
         private void LoadCheckem()
@@ -90,6 +92,13 @@ namespace Geekbot.net.Lib.Media
             _logger.Trace(LogSource.Geekbot, $"Loaded {_foxImages.Length} Foxes Images");
         }
         
+        private void LoadDab()
+        {
+            var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/dab"));
+            _dabImages = rawLinks.Split("\n");
+            _logger.Trace(LogSource.Geekbot, $"Loaded {_dabImages.Length} Dab Images");
+        }
+        
         public string GetCheckem()
         {
             return _checkemImages[_random.Next(0, _checkemImages.Length)];
@@ -128,6 +137,11 @@ namespace Geekbot.net.Lib.Media
         public string GetFox()
         {
             return _foxImages[_random.Next(0, _foxImages.Length)];
+        }
+        
+        public string GetDab()
+        {
+            return _dabImages[_random.Next(0, _dabImages.Length)];
         }
     }
 }

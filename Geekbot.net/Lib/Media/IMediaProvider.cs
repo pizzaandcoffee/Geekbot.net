@@ -10,5 +10,6 @@
         string GetTurtle();
         string GetPinguin();
         string GetFox();
+        string GetDab();
     }
 }
