@@ -42,17 +42,20 @@ namespace Geekbot.net.Commands.User
                 var joinedDayAgo = Math.Floor((DateTime.Now - joinedAt).TotalDays);
 
                 var messages = _database.Messages
-                    .First(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))
-                    .MessageCount;
+                        ?.FirstOrDefault(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))
+                        ?.MessageCount ?? 0;
                 var guildMessages = _database.Messages
-                    .Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
-                    .Select(e => e.MessageCount)
-                    .Sum();
-//                var messages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", userInfo.Id.ToString());
-//                var guildMessages = (int) _redis.Db.HashGet($"{Context.Guild.Id}:Messages", 0.ToString());
+                        ?.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
+                        .Select(e => e.MessageCount)
+                        .Sum() ?? 0;
+
                 var level = _levelCalc.GetLevel(messages);
 
-                var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
+                var percent = Math.Round((double) (100 * messages) / guildMessages, digits: 2);
+
+                var cookies = _database.Cookies
+                      ?.FirstOrDefault(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))
+                      ?.Cookies ?? 0;
 
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
@@ -77,6 +80,7 @@ namespace Geekbot.net.Commands.User
                     .AddInlineField("Server Total", $"{percent}%");
 
                 if (correctRolls != null) eb.AddInlineField("Guessed Rolls", correctRolls.Rolls);
+                if (cookies > 0) eb.AddInlineField("Cookies", cookies);
 
                 await ReplyAsync("", false, eb.Build());
             }

@@ -17,5 +17,6 @@ namespace Geekbot.net.Database
         public DbSet<GlobalsModel> Globals { get; set; }
         public DbSet<RoleSelfServiceModel> RoleSelfService { get; set; }
         public DbSet<PollModel> Polls { get; set; }
+        public DbSet<CookiesModel> Cookies { get; set; }
     }
 }
