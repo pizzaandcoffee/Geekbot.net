@@ -34,6 +34,9 @@ namespace Geekbot.net.Lib.Highscores
                 case HighscoreTypes.rolls:
                     list = GetRollsList(guildId, amount);
                     break;
+                case HighscoreTypes.cookies:
+                    list = GetCookiesList(guildId, amount);
+                    break;
                 default:
                     list = new Dictionary<ulong, int>();
                     break;
@@ -101,6 +104,15 @@ namespace Geekbot.net.Lib.Highscores
                 .OrderByDescending(o => o.Rolls)
                 .Take(amount)
                 .ToDictionary(key => key.UserId.AsUlong(), key => key.Rolls);
+        }
+        
+        public Dictionary<ulong, int> GetCookiesList(ulong guildId, int amount)
+        {
+            return _database.Cookies
+                .Where(k => k.GuildId.Equals(guildId.AsLong()))
+                .OrderByDescending(o => o.Cookies)
+                .Take(amount)
+                .ToDictionary(key => key.UserId.AsUlong(), key => key.Cookies);
         }
     }
 }

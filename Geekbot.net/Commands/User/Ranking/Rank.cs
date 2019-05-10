@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands.User.Ranking
                 }
                 catch
                 {
-                    await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`'");
+                    await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'");
                     return;
                 }
 

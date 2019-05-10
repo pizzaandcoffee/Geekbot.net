@@ -4,6 +4,7 @@
     {
         messages,
         karma,
-        rolls
+        rolls,
+        cookies
     }
 }
