@@ -117,6 +117,14 @@
         "NotEnoughToGive": {
             "EN": "You don't have enough cookies",
             "CHDE": "Du hesch nid gnueg guetzli"
+        },
+        "NotEnoughCookiesToEat": {
+            "EN": "Your cookie jar looks almost empty, you should probably not eat a cookie",
+            "CHDE": "Du hesch chuum no guetzli ih dineri büchs, du sötsch warschinli keini esse"
+        },
+        "AteCookies": {
+            "EN": "You ate {0} cookies, you've only got {1} cookies left",
+            "CHDE": "Du hesch {0} guetzli gesse und hesch jezt no {1} übrig"
         }
     }
 }

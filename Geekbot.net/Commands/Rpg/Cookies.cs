@@ -70,7 +70,7 @@ namespace Geekbot.net.Commands.Rpg
         
         [Command("give", RunMode = RunMode.Async)]
         [Summary("Give cookies to someone")]
-        public async Task PeekIntoCookieJar([Summary("User")] IUser user, [Summary("amount")] int amount)
+        public async Task GiveACookie([Summary("User")] IUser user, [Summary("amount")] int amount)
         {
             try
             {
@@ -92,6 +92,34 @@ namespace Geekbot.net.Commands.Rpg
                 await SetUser(taker);
                 
                 await ReplyAsync(string.Format(transDict["Given"], amount, user.Username));
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
+        [Command("eat", RunMode = RunMode.Async)]
+        [Summary("Eat a cookie")]
+        public async Task EatACookie()
+        {
+            try
+            {
+                var transDict = await _translation.GetDict(Context);
+                var actor = await GetUser(Context.User.Id);
+
+                if (actor.Cookies < 5)
+                {
+                    await ReplyAsync(string.Format(transDict["NotEnoughCookiesToEat"]));
+                    return;
+                }
+
+                var amount = new Random().Next(1, 5);
+                actor.Cookies -= amount;
+                
+                await SetUser(actor);
+                
+                await ReplyAsync(string.Format(transDict["AteCookies"], amount, actor.Cookies));
             }
             catch (Exception e)
             {
