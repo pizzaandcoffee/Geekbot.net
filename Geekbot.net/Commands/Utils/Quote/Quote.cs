@@ -9,6 +9,7 @@ using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Polyfills;
+using Geekbot.net.Lib.RandomNumberGenerator;
 
 namespace Geekbot.net.Commands.Utils.Quote
 {
@@ -18,11 +19,13 @@ namespace Geekbot.net.Commands.Utils.Quote
     {
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Quote(IErrorHandler errorHandler, DatabaseContext database)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
         {
             _errorHandler = errorHandler;
             _database = database;
+            _randomNumberGenerator = randomNumberGenerator;
         }
 
         [Command]
@@ -39,7 +42,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                     return;
                 }
 
-                var random = new Random().Next(s.Count());
+                var random = _randomNumberGenerator.Next(0, s.Count());
                 var quote = s[random];
                 
                 var embed = QuoteBuilder(quote);

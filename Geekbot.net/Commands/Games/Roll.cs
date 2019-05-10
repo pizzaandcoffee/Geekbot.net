@@ -8,6 +8,7 @@ using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
+using Geekbot.net.Lib.RandomNumberGenerator;
 using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Games
@@ -18,12 +19,14 @@ namespace Geekbot.net.Commands.Games
         private readonly IAlmostRedis _redis;
         private readonly ITranslationHandler _translation;
         private readonly DatabaseContext _database;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Roll(IAlmostRedis redis, IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database)
+        public Roll(IAlmostRedis redis, IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
         {
             _redis = redis;
             _translation = translation;
             _database = database;
+            _randomNumberGenerator = randomNumberGenerator;
             _errorHandler = errorHandler;
         }
 
@@ -33,7 +36,7 @@ namespace Geekbot.net.Commands.Games
         {
             try
             {
-                var number = new Random().Next(1, 100);
+                var number = _randomNumberGenerator.Next(1, 100);
                 var guess = 1000;
                 int.TryParse(stuff, out guess);
                 var transDict = await _translation.GetDict(Context);

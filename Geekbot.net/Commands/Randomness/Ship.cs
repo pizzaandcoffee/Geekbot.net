@@ -7,18 +7,21 @@ using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.RandomNumberGenerator;
 
 namespace Geekbot.net.Commands.Randomness
 {
     public class Ship : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly DatabaseContext _database;
 
-        public Ship(DatabaseContext database, IErrorHandler errorHandler)
+        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator)
         {
             _database = database;
             _errorHandler = errorHandler;
+            _randomNumberGenerator = randomNumberGenerator;
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
@@ -38,7 +41,7 @@ namespace Geekbot.net.Commands.Randomness
                 var shippingRate = 0;
                 if (dbval == null)
                 {
-                    shippingRate = new Random().Next(1, 100);
+                    shippingRate = _randomNumberGenerator.Next(1, 100);
                     _database.Ships.Add(new ShipsModel()
                     {
                         FirstUserId = userKeys.Item1,

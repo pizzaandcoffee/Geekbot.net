@@ -4,11 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib.RandomNumberGenerator;
 
 namespace Geekbot.net.Commands.Utils.Dice
 {
     public class Dice : ModuleBase
     {
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
+
+        public Dice(IRandomNumberGenerator randomNumberGenerator)
+        {
+            _randomNumberGenerator = randomNumberGenerator;
+        }
+        
         [Command("dice", RunMode = RunMode.Async)]
         [Summary("Roll a dice.")]
         public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d20")
@@ -66,7 +74,7 @@ namespace Geekbot.net.Commands.Utils.Dice
                 var results = new List<int>();
                 for (var i = 0; i < dice.Times; i++)
                 {
-                    var roll = new Random().Next(1, dice.Sides);
+                    var roll = _randomNumberGenerator.Next(1, dice.Sides);
                     total += roll;
                     results.Add(roll);
                     if (roll == dice.Sides) extraText = "**Critical Hit!**";

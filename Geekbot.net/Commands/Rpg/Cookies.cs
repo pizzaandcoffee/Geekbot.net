@@ -9,6 +9,7 @@ using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Localization;
+using Geekbot.net.Lib.RandomNumberGenerator;
 
 namespace Geekbot.net.Commands.Rpg
 {
@@ -19,12 +20,14 @@ namespace Geekbot.net.Commands.Rpg
         private readonly DatabaseContext _database;
         private readonly IErrorHandler _errorHandler;
         private readonly ITranslationHandler _translation;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Cookies(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Cookies(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translation , IRandomNumberGenerator randomNumberGenerator)
         {
             _database = database;
             _errorHandler = errorHandler;
             _translation = translation;
+            _randomNumberGenerator = randomNumberGenerator;
         }
 
         [Command("get", RunMode = RunMode.Async)]
@@ -114,7 +117,7 @@ namespace Geekbot.net.Commands.Rpg
                     return;
                 }
 
-                var amount = new Random().Next(1, 5);
+                var amount = _randomNumberGenerator.Next(1, 5);
                 actor.Cookies -= amount;
                 
                 await SetUser(actor);

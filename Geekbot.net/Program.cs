@@ -19,6 +19,7 @@ using Geekbot.net.Lib.Levels;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.Media;
+using Geekbot.net.Lib.RandomNumberGenerator;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
 using Microsoft.EntityFrameworkCore;
@@ -124,6 +125,7 @@ namespace Geekbot.net
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             var audioUtils = new AudioUtils();
+            var randomNumberGenerator = new RandomNumberGenerator();
             _highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             
             _services.AddSingleton<IAlmostRedis>(_redis);
@@ -137,6 +139,7 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IAudioUtils>(audioUtils);
+            _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
             _services.AddSingleton<IHighscoreManager>(_highscoreManager);
             _services.AddSingleton<IGlobalSettings>(_globalSettings);
             _services.AddTransient<DatabaseContext>((e) => _databaseInitializer.Initialize());
