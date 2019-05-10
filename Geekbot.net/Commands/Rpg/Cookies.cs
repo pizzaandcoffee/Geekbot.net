@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
@@ -60,6 +61,37 @@ namespace Geekbot.net.Commands.Rpg
                 var transDict = await _translation.GetDict(Context);
                 var actor = await GetUser(Context.User.Id);
                 await ReplyAsync(string.Format(transDict["InYourJar"], actor.Cookies));
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context);
+            }
+        }
+        
+        [Command("give", RunMode = RunMode.Async)]
+        [Summary("Give cookies to someone")]
+        public async Task PeekIntoCookieJar([Summary("User")] IUser user, [Summary("amount")] int amount)
+        {
+            try
+            {
+                var transDict = await _translation.GetDict(Context);
+                var giver = await GetUser(Context.User.Id);
+
+                if (giver.Cookies < amount)
+                {
+                    await ReplyAsync(string.Format(transDict["NotEnoughToGive"]));
+                    return;
+                }
+
+                var taker = await GetUser(user.Id);
+
+                giver.Cookies -= amount;
+                taker.Cookies += amount;
+                
+                await SetUser(giver);
+                await SetUser(taker);
+                
+                await ReplyAsync(string.Format(transDict["Given"], amount, user.Username));
             }
             catch (Exception e)
             {

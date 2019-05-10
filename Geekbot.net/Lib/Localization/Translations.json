@@ -109,6 +109,14 @@
         "InYourJar": {
             "EN": "There are {0} cookies in you cookie jar",
             "CHDE": "Es hät {0} guetzli ih dineri büchs"
+        },
+        "Given": {
+            "EN": "You gave {0} cookies to {1}",
+            "CHDE": "Du hesch {1} {0} guetzli geh"
+        },
+        "NotEnoughToGive": {
+            "EN": "You don't have enough cookies",
+            "CHDE": "Du hesch nid gnueg guetzli"
         }
     }
 }
