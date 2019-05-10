@@ -32,16 +32,17 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
+                var transDict = await _translation.GetDict(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (actor.LastPayout.Value.AddHours(24) > DateTimeOffset.Now)
                 {
-                    await ReplyAsync($"You already got cookies in the last 24 hours, wait until {actor.LastPayout.Value.AddHours(24):HH:mm:ss} for more cookies");
+                    await ReplyAsync(string.Format(transDict["WaitForMoreCookies"], actor.LastPayout.Value.AddHours(24).ToString("HH:mm:ss")));
                     return;
                 }
                 actor.Cookies += 10;
                 actor.LastPayout = DateTimeOffset.Now;
                 await SetUser(actor);
-                await ReplyAsync($"You got 10 cookies, there are now {actor.Cookies} cookies in you cookie jar");
+                await ReplyAsync(string.Format(transDict["GetCookies"], 10, actor.Cookies));
 
             }
             catch (Exception e)
@@ -56,9 +57,9 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
+                var transDict = await _translation.GetDict(Context);
                 var actor = await GetUser(Context.User.Id);
-                await ReplyAsync($"There are {actor.Cookies} cookies in you cookie jar");
-
+                await ReplyAsync(string.Format(transDict["InYourJar"], actor.Cookies));
             }
             catch (Exception e)
             {
