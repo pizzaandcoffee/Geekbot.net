@@ -10,9 +10,9 @@ namespace Geekbot.net.Lib.Localization
     {
         public ITranslationHandler TranslationHandler { get; }
         public string Language { get; }
-        public Dictionary<string, string> Dict { get; }
+        public Dictionary<string, List<string>> Dict { get; }
         
-        public TranslationGuildContext(ITranslationHandler translationHandler, string language, Dictionary<string, string> dict)
+        public TranslationGuildContext(ITranslationHandler translationHandler, string language, Dictionary<string, List<string>> dict)
         {
             TranslationHandler = translationHandler;
             Language = language;
@@ -21,7 +21,7 @@ namespace Geekbot.net.Lib.Localization
 
         public string GetString(string stringToFormat, params object[] args)
         {
-            return string.Format(Dict[stringToFormat] ?? "", args);
+            return string.Format(Dict[stringToFormat].First() ?? "", args);
         }
         
         public string FormatDateTimeAsRemaining(DateTimeOffset dateTime)

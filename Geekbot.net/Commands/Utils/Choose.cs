@@ -27,7 +27,7 @@ namespace Geekbot.net.Commands.Utils
                 var transContext = await _translation.GetGuildContext(Context);
                 var choicesArray = choices.Split(';');
                 var choice = new Random().Next(choicesArray.Length);
-                await ReplyAsync(transContext.GetString("Choice", choicesArray[choice]));
+                await ReplyAsync(transContext.GetString("Choice", choicesArray[choice].Trim()));
             }
             catch (Exception e)
             {

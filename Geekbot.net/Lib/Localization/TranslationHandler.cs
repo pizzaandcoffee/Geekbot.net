@@ -127,19 +127,18 @@ namespace Geekbot.net.Lib.Localization
             return translation;
         }
 
-        private async Task<Dictionary<string, string>> GetDict(ICommandContext context)
+        private async Task<Dictionary<string, List<string>>> GetDict(ICommandContext context)
         {
             try
             {
                 var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
                 var serverLanguage = await GetServerLanguage(context.Guild?.Id ?? 0);
-                return _translations[serverLanguage][command]
-                    .ToDictionary(dict => dict.Key, dict => dict.Value.First());
+                return _translations[serverLanguage][command];
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "No translations for command found", e);
-                return new Dictionary<string, string>();
+                return new Dictionary<string, List<string>>();
             }
         }
 
