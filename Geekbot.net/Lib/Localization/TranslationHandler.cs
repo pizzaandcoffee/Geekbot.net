@@ -17,7 +17,7 @@ namespace Geekbot.net.Lib.Localization
         private readonly DatabaseContext _database;
         private readonly IGeekbotLogger _logger;
         private readonly Dictionary<ulong, string> _serverLanguages;
-        private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
+        private Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> _translations;
 
         public TranslationHandler(DatabaseContext database, IGeekbotLogger logger)
         {
@@ -33,8 +33,8 @@ namespace Geekbot.net.Lib.Localization
             try
             {
                 var translationFile = File.ReadAllText(Path.GetFullPath("./Lib/Localization/Translations.json"));
-                var rawTranslations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(translationFile);
-                var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+                var rawTranslations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>>(translationFile);
+                var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>();
                 foreach (var command in rawTranslations)
                 {
                     foreach (var str in command.Value)
@@ -43,8 +43,8 @@ namespace Geekbot.net.Lib.Localization
                         {
                             if (!sortedPerLanguage.ContainsKey(lang.Key))
                             {
-                                var commandDict = new Dictionary<string, Dictionary<string, string>>();
-                                var strDict = new Dictionary<string, string>
+                                var commandDict = new Dictionary<string, Dictionary<string, List<string>>>();
+                                var strDict = new Dictionary<string, List<string>>
                                 {
                                     {str.Key, lang.Value}
                                 };
@@ -53,8 +53,10 @@ namespace Geekbot.net.Lib.Localization
                             }
                             if (!sortedPerLanguage[lang.Key].ContainsKey(command.Key))
                             {
-                                var strDict = new Dictionary<string, string>();
-                                strDict.Add(str.Key, lang.Value);
+                                var strDict = new Dictionary<string, List<string>>
+                                {
+                                    {str.Key, lang.Value}
+                                };
                                 sortedPerLanguage[lang.Key].Add(command.Key, strDict);
                             }
                             if (!sortedPerLanguage[lang.Key][command.Key].ContainsKey(str.Key))
@@ -109,10 +111,16 @@ namespace Geekbot.net.Lib.Localization
 
         public async Task<string> GetString(ulong guildId, string command, string stringName)
         {
-            var translation = _translations[await GetServerLanguage(guildId)][command][stringName];
-            if (!string.IsNullOrWhiteSpace(translation)) return translation;
+            var serverLang = await GetServerLanguage(guildId);
+            return GetStrings(serverLang, command, stringName).First();
+        }
+        
+        public List<string> GetStrings(string language, string command, string stringName)
+        {
+            var translation = _translations[language][command][stringName];
+            if (!string.IsNullOrWhiteSpace(translation.First())) return translation;
             translation = _translations[command][stringName]["EN"];
-            if (string.IsNullOrWhiteSpace(translation))
+            if (string.IsNullOrWhiteSpace(translation.First()))
             {
                 _logger.Warning(LogSource.Geekbot, $"No translation found for {command} - {stringName}");
             }
@@ -125,7 +133,8 @@ namespace Geekbot.net.Lib.Localization
             {
                 var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
                 var serverLanguage = await GetServerLanguage(context.Guild?.Id ?? 0);
-                return _translations[serverLanguage][command];
+                return _translations[serverLanguage][command]
+                    .ToDictionary(dict => dict.Key, dict => dict.Value.First());
             }
             catch (Exception e)
             {
@@ -133,13 +142,21 @@ namespace Geekbot.net.Lib.Localization
                 return new Dictionary<string, string>();
             }
         }
+
+        public async Task<TranslationGuildContext> GetGuildContext(ICommandContext context)
+        {
+            var dict = await GetDict(context);
+            var language = await GetServerLanguage(context.Guild?.Id ?? 0);
+            return new TranslationGuildContext(this, language, dict);
+        }
         
         public async Task<Dictionary<string, string>> GetDict(ICommandContext context, string command)
         {
             try
             {
                 var serverLanguage = await GetServerLanguage(context.Guild?.Id ?? 0);
-                return _translations[serverLanguage][command];
+                return _translations[serverLanguage][command]
+                    .ToDictionary(dict => dict.Key, dict => dict.Value.First());
             }
             catch (Exception e)
             {

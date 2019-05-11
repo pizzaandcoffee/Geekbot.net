@@ -36,17 +36,18 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (actor.LastPayout.Value.AddHours(24) > DateTimeOffset.Now)
                 {
-                    await ReplyAsync(string.Format(transDict["WaitForMoreCookies"], actor.LastPayout.Value.AddHours(24).ToString("HH:mm:ss")));
+                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.LastPayout.Value.AddHours(24));
+                    await ReplyAsync(transContext.GetString("WaitForMoreCookies", formatedWaitTime));
                     return;
                 }
                 actor.Cookies += 10;
                 actor.LastPayout = DateTimeOffset.Now;
                 await SetUser(actor);
-                await ReplyAsync(string.Format(transDict["GetCookies"], 10, actor.Cookies));
+                await ReplyAsync(transContext.GetString("GetCookies", 10, actor.Cookies));
 
             }
             catch (Exception e)
@@ -61,9 +62,9 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
-                await ReplyAsync(string.Format(transDict["InYourJar"], actor.Cookies));
+                await ReplyAsync(transContext.GetString("InYourJar", actor.Cookies));
             }
             catch (Exception e)
             {
@@ -77,12 +78,12 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var giver = await GetUser(Context.User.Id);
 
                 if (giver.Cookies < amount)
                 {
-                    await ReplyAsync(string.Format(transDict["NotEnoughToGive"]));
+                    await ReplyAsync(transContext.GetString("NotEnoughToGive"));
                     return;
                 }
 
@@ -94,7 +95,7 @@ namespace Geekbot.net.Commands.Rpg
                 await SetUser(giver);
                 await SetUser(taker);
                 
-                await ReplyAsync(string.Format(transDict["Given"], amount, user.Username));
+                await ReplyAsync(transContext.GetString("Given", amount, user.Username));
             }
             catch (Exception e)
             {
@@ -108,12 +109,12 @@ namespace Geekbot.net.Commands.Rpg
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
 
                 if (actor.Cookies < 5)
                 {
-                    await ReplyAsync(string.Format(transDict["NotEnoughCookiesToEat"]));
+                    await ReplyAsync(transContext.GetString("NotEnoughCookiesToEat"));
                     return;
                 }
 
@@ -122,7 +123,7 @@ namespace Geekbot.net.Commands.Rpg
                 
                 await SetUser(actor);
                 
-                await ReplyAsync(string.Format(transDict["AteCookies"], amount, actor.Cookies));
+                await ReplyAsync(transContext.GetString("AteCookies", amount, actor.Cookies));
             }
             catch (Exception e)
             {
