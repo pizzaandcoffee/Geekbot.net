@@ -32,16 +32,16 @@ namespace Geekbot.net.Commands.User
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
+                    await ReplyAsync(transContext.GetString("CannotChangeOwn", Context.User.Username));
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
-                        GetTimeLeft(actor.TimeOut)));
+                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    await ReplyAsync(transContext.GetString("WaitUntill", Context.User.Username, formatedWaitTime));
                 }
                 else
                 {
@@ -60,10 +60,10 @@ namespace Geekbot.net.Commands.User
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = transDict["Increased"];
-                    eb.AddInlineField(transDict["By"], Context.User.Username);
-                    eb.AddInlineField(transDict["Amount"], "+1");
-                    eb.AddInlineField(transDict["Current"], target.Karma);
+                    eb.Title = transContext.GetString("Increased");
+                    eb.AddInlineField(transContext.GetString("By"), Context.User.Username);
+                    eb.AddInlineField(transContext.GetString("Amount"), "+1");
+                    eb.AddInlineField(transContext.GetString("Current"), target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
@@ -79,16 +79,16 @@ namespace Geekbot.net.Commands.User
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync(string.Format(transDict["CannotChangeOwn"], Context.User.Username));
+                    await ReplyAsync(transContext.GetString("CannotChangeOwn", Context.User.Username));
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    await ReplyAsync(string.Format(transDict["WaitUntill"], Context.User.Username,
-                        GetTimeLeft(actor.TimeOut)));
+                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    await ReplyAsync(transContext.GetString("WaitUntill", Context.User.Username, formatedWaitTime));
                 }
                 else
                 {
@@ -107,10 +107,10 @@ namespace Geekbot.net.Commands.User
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = transDict["Decreased"];
-                    eb.AddInlineField(transDict["By"], Context.User.Username);
-                    eb.AddInlineField(transDict["Amount"], "-1");
-                    eb.AddInlineField(transDict["Current"], target.Karma);
+                    eb.Title = transContext.GetString("Decreased");
+                    eb.AddInlineField(transContext.GetString("By"), Context.User.Username);
+                    eb.AddInlineField(transContext.GetString("Amount"), "-1");
+                    eb.AddInlineField(transContext.GetString("Current"), target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
@@ -123,12 +123,6 @@ namespace Geekbot.net.Commands.User
         private bool TimeoutFinished(DateTimeOffset lastKarma)
         {
             return lastKarma.AddMinutes(3) > DateTimeOffset.Now;
-        }
-
-        private string GetTimeLeft(DateTimeOffset lastKarma)
-        {
-            var dt = lastKarma.AddMinutes(3).Subtract(DateTimeOffset.Now);
-            return $"{dt.Minutes} Minutes and {dt.Seconds} Seconds";
         }
 
         private async Task<KarmaModel> GetUser(ulong userId)
