@@ -24,10 +24,10 @@ namespace Geekbot.net.Commands.Utils
         {
             try
             {
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 var choicesArray = choices.Split(';');
                 var choice = new Random().Next(choicesArray.Length);
-                await ReplyAsync(string.Format(transDict["Choice"], choicesArray[choice]));
+                await ReplyAsync(transContext.GetString("Choice", choicesArray[choice]));
             }
             catch (Exception e)
             {

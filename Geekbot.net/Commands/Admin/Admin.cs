@@ -134,8 +134,8 @@ namespace Geekbot.net.Commands.Admin
                     _database.GuildSettings.Update(guild);
                     await _database.SaveChangesAsync();
                     
-                    var trans = await _translation.GetDict(Context);
-                    await ReplyAsync(trans["NewLanguageSet"]);
+                    var transContext = await _translation.GetGuildContext(Context);
+                    await ReplyAsync(transContext.GetString("NewLanguageSet"));
                     return;
                 }
 

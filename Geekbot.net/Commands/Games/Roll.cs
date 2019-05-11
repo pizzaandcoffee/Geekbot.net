@@ -39,7 +39,7 @@ namespace Geekbot.net.Commands.Games
                 var number = _randomNumberGenerator.Next(1, 100);
                 var guess = 1000;
                 int.TryParse(stuff, out guess);
-                var transDict = await _translation.GetDict(Context);
+                var transContext = await _translation.GetGuildContext(Context);
                 if (guess <= 100 && guess > 0)
                 {
                     var prevRoll = _redis.Db.HashGet($"{Context.Guild.Id}:RollsPrevious2", Context.Message.Author.Id).ToString()?.Split('|');
@@ -47,17 +47,17 @@ namespace Geekbot.net.Commands.Games
                     {
                         if (prevRoll[0] == guess.ToString() && DateTime.Parse(prevRoll[1]) > DateTime.Now.AddDays(-1))
                         {
-                            await ReplyAsync(string.Format(transDict["NoPrevGuess"], Context.Message.Author.Mention));
+                            await ReplyAsync(transContext.GetString("NoPrevGuess", Context.Message.Author.Mention));
                             return;
                         }
                     }
 
                     _redis.Db.HashSet($"{Context.Guild.Id}:RollsPrevious2", new[] {new HashEntry(Context.Message.Author.Id, $"{guess}|{DateTime.Now}")});
 
-                    await ReplyAsync(string.Format(transDict["Rolled"], Context.Message.Author.Mention, number, guess));
+                    await ReplyAsync(transContext.GetString("Rolled", Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
-                        await ReplyAsync(string.Format(transDict["Gratz"], Context.Message.Author));
+                        await ReplyAsync(transContext.GetString("Gratz", Context.Message.Author));
                         _redis.Db.HashIncrement($"{Context.Guild.Id}:Rolls", Context.User.Id.ToString());
                         var user = await GetUser(Context.User.Id);
                         user.Rolls += 1;
@@ -67,7 +67,7 @@ namespace Geekbot.net.Commands.Games
                 }
                 else
                 {
-                    await ReplyAsync(string.Format(transDict["RolledNoGuess"], Context.Message.Author.Mention, number));
+                    await ReplyAsync(transContext.GetString("RolledNoGuess", Context.Message.Author.Mention, number));
                 }
             }
             catch (Exception e)
