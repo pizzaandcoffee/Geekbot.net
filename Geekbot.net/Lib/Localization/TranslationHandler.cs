@@ -127,7 +127,7 @@ namespace Geekbot.net.Lib.Localization
             return translation;
         }
 
-        public async Task<Dictionary<string, string>> GetDict(ICommandContext context)
+        private async Task<Dictionary<string, string>> GetDict(ICommandContext context)
         {
             try
             {
