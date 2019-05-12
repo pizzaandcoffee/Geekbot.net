@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,7 +63,7 @@ namespace Geekbot.net.Commands.User.Ranking
                 }
                 
                 var guildId = Context.Guild.Id;
-                SortedDictionary<HighscoreUserDto, int> highscoreUsers;
+                Dictionary<HighscoreUserDto, int> highscoreUsers;
                 try
                 {
                     highscoreUsers = _highscoreManager.GetHighscoresWithUserData(type, guildId, amount);
