@@ -9,6 +9,8 @@ using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Utf8Json;
+using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization;
 
 namespace Geekbot.net.Lib.Localization
 {
@@ -32,8 +34,15 @@ namespace Geekbot.net.Lib.Localization
         {
             try
             {
-                var translationFile = File.ReadAllText(Path.GetFullPath("./Lib/Localization/Translations.json"));
-                var rawTranslations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>>(translationFile);
+                // Read the file
+                var translationFile = File.ReadAllText(Path.GetFullPath("./Lib/Localization/Translations.yml"));
+                
+                // Deserialize
+                var input = new StringReader(translationFile);
+                var deserializer = new DeserializerBuilder().Build();
+                var rawTranslations = deserializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>>(input);
+                
+                // Sort
                 var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>();
                 foreach (var command in rawTranslations)
                 {
@@ -68,6 +77,7 @@ namespace Geekbot.net.Lib.Localization
                 }
                 _translations = sortedPerLanguage;
 
+                // Find Languages
                 SupportedLanguages = new List<string>();
                 foreach (var lang in sortedPerLanguage)
                 {
