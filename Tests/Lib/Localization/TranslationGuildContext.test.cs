@@ -48,22 +48,22 @@ namespace Tests.Lib.Localization
         {
             var translationHandlerMock = new Mock<ITranslationHandler>(MockBehavior.Loose);
             translationHandlerMock
-                .Setup(thm => thm.GetStrings("EN", "dateTime", "Days"))
-                .Returns(new List<string> {{"day"}, {"days"}});
+                .Setup(thm => thm.GetString("EN", "dateTime", "Days"))
+                .Returns("day|days");
             translationHandlerMock
-                .Setup(thm => thm.GetStrings("EN", "dateTime", "Hours"))
-                .Returns(new List<string> {{"hour"}, {"hours"}});
+                .Setup(thm => thm.GetString("EN", "dateTime", "Hours"))
+                .Returns("hour|hours");
             translationHandlerMock
-                .Setup(thm => thm.GetStrings("EN", "dateTime", "Minutes"))
-                .Returns(new List<string> {{"minute"}, {"minutes"}});
+                .Setup(thm => thm.GetString("EN", "dateTime", "Minutes"))
+                .Returns("minute|minutes");
             translationHandlerMock
-                .Setup(thm => thm.GetStrings("EN", "dateTime", "Seconds"))
-                .Returns(new List<string> {{"second"}, {"seconds"}});
+                .Setup(thm => thm.GetString("EN", "dateTime", "Seconds"))
+                .Returns("second|seconds");
             translationHandlerMock
-                .Setup(thm => thm.GetStrings("EN", "dateTime", "And"))
-                .Returns(new List<string> {{"and"}});
+                .Setup(thm => thm.GetString("EN", "dateTime", "And"))
+                .Returns("and");
             
-            var context = new TranslationGuildContext(translationHandlerMock.Object, "EN", new Dictionary<string, List<string>>());
+            var context = new TranslationGuildContext(translationHandlerMock.Object, "EN", new Dictionary<string, string>());
             var result = context.FormatDateTimeAsRemaining(testData.DateTime);
             Assert.Equal(result, testData.Expected);
         }

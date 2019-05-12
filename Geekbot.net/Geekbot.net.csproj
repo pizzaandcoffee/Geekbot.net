@@ -94,6 +94,9 @@
     <None Update="Storage\dab">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Lib\Localization\Translations.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WikipediaApi\WikipediaApi.csproj" />
