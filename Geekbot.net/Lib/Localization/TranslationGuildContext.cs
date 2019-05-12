@@ -10,9 +10,9 @@ namespace Geekbot.net.Lib.Localization
     {
         public ITranslationHandler TranslationHandler { get; }
         public string Language { get; }
-        public Dictionary<string, List<string>> Dict { get; }
+        public Dictionary<string, string> Dict { get; }
         
-        public TranslationGuildContext(ITranslationHandler translationHandler, string language, Dictionary<string, List<string>> dict)
+        public TranslationGuildContext(ITranslationHandler translationHandler, string language, Dictionary<string, string> dict)
         {
             TranslationHandler = translationHandler;
             Language = language;
@@ -21,7 +21,7 @@ namespace Geekbot.net.Lib.Localization
 
         public string GetString(string stringToFormat, params object[] args)
         {
-            return string.Format(Dict[stringToFormat].First() ?? "", args);
+            return string.Format(Dict[stringToFormat] ?? "", args);
         }
         
         public string FormatDateTimeAsRemaining(DateTimeOffset dateTime)
@@ -54,7 +54,7 @@ namespace Geekbot.net.Lib.Localization
             {
                 if (sb.Length > 0)
                 {
-                    var and = TranslationHandler.GetStrings(Language, "dateTime", "And").First();
+                    var and = TranslationHandler.GetString(Language, "dateTime", "And");
                     sb.AppendFormat(" {0} ", and);
                 }
                 var s = GetTimeString(TimeTypes.Seconds);
@@ -69,13 +69,14 @@ namespace Geekbot.net.Lib.Localization
             return TranslationHandler.SetLanguage(guildId, language);
         }
 
-        private List<string> GetTimeString(TimeTypes type)
+        private string GetTimeString(TimeTypes type)
         {
-            return TranslationHandler.GetStrings(Language, "dateTime", type.ToString());
+            return TranslationHandler.GetString(Language, "dateTime", type.ToString());
         }
 
-        private string GetSingOrPlur(int number, List<string> versions)
+        private string GetSingOrPlur(int number, string rawString)
         {
+            var versions = rawString.Split('|');
             return number == 1 ? versions[0] : versions[1];
         }
 
