@@ -10,6 +10,7 @@ using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.ReactionListener;
 
 namespace Geekbot.net.Commands.Admin
@@ -21,12 +22,14 @@ namespace Geekbot.net.Commands.Admin
         private readonly DatabaseContext _database;
         private readonly IErrorHandler _errorHandler;
         private readonly IReactionListener _reactionListener;
+        private readonly TranslationHandler _translationHandler;
 
-        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener)
+        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, TranslationHandler translationHandler)
         {
             _database = database;
             _errorHandler = errorHandler;
             _reactionListener = reactionListener;
+            _translationHandler = translationHandler;
         }
 
         [Command(RunMode = RunMode.Async)]
@@ -35,16 +38,17 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roles = _database.RoleSelfService.Where(g => g.GuildId.Equals(Context.Guild.Id.AsLong())).ToList();
                 if (roles.Count == 0)
                 {
-                    await ReplyAsync("There are no roles configured for this server");
+                    await ReplyAsync(transContext.GetString("NoRolesConfigured"));
                     return;
                 }
 
                 var sb = new StringBuilder();
-                sb.AppendLine($"**Self Service Roles on {Context.Guild.Name}**");
-                sb.AppendLine("To get a role, use `!role name`");
+                sb.AppendLine(transContext.GetString("ListHeader", Context.Guild.Name));
+                sb.AppendLine(transContext.GetString("ListInstruction"));
                 foreach (var role in roles) sb.AppendLine($"- {role.WhiteListName}");
                 await ReplyAsync(sb.ToString());
             }
@@ -60,6 +64,7 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roleName = roleNameRaw.ToLower();
                 var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
                     e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
@@ -69,23 +74,23 @@ namespace Geekbot.net.Commands.Admin
                     var role = Context.Guild.Roles.First(r => r.Id == roleFromDb.RoleId.AsUlong());
                     if (role == null)
                     {
-                        await ReplyAsync("That role doesn't seem to exist");
+                        await ReplyAsync(transContext.GetString("RoleNotFound"));
                         return;
                     }
 
                     if (guildUser.RoleIds.Contains(role.Id))
                     {
                         await guildUser.RemoveRoleAsync(role);
-                        await ReplyAsync($"Removed you from {role.Name}");
+                        await ReplyAsync(transContext.GetString("RemovedUserFromRole", role.Name));
                         return;
                     }
 
                     await guildUser.AddRoleAsync(role);
-                    await ReplyAsync($"Added you to {role.Name}");
+                    await ReplyAsync(transContext.GetString("AddedUserFromRole", role.Name));
                     return;
                 }
 
-                await ReplyAsync("That role doesn't seem to exist");
+                await ReplyAsync(transContext.GetString("RoleNotFound"));
             }
             catch (HttpException e)
             {
@@ -104,9 +109,10 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 if (role.IsManaged)
                 {
-                    await ReplyAsync("You can't add a role that is managed by discord");
+                    await ReplyAsync(transContext.GetString("CannotAddManagedRole"));
                     return;
                 }
 
@@ -116,8 +122,7 @@ namespace Geekbot.net.Commands.Admin
                     || role.Permissions.BanMembers
                     || role.Permissions.KickMembers)
                 {
-                    await ReplyAsync(
-                        "You cannot add that role to self service because it contains one or more dangerous permissions");
+                    await ReplyAsync(transContext.GetString("CannotAddDangerousRole"));
                     return;
                 }
 
@@ -128,7 +133,7 @@ namespace Geekbot.net.Commands.Admin
                     WhiteListName = roleName
                 });
                 await _database.SaveChangesAsync();
-                await ReplyAsync($"Added {role.Name} to the whitelist");
+                await ReplyAsync(transContext.GetString("CannotAddDangerousRole", role.Name));
             }
             catch (Exception e)
             {
@@ -143,17 +148,18 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
                     e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
                 if (roleFromDb != null)
                 {
                     _database.RoleSelfService.Remove(roleFromDb);
                     await _database.SaveChangesAsync();
-                    await ReplyAsync($"Removed {roleName} from the whitelist");
+                    await ReplyAsync(transContext.GetString("RemovedRoleFromWhitelist", roleName));
                     return;
                 }
 
-                await ReplyAsync("There is not whitelisted role with that name");
+                await ReplyAsync(transContext.GetString("RoleNotFound"));
             }
             catch (Exception e)
             {
