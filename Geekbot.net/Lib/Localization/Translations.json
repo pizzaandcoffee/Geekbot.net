@@ -190,5 +190,31 @@
             "EN": ["Removed {0} from the whitelist"],
             "CHDE": ["{0} isch vo dr whitelist glöscht"]
         }
+    },
+    "quote": {
+        "NoQuotesFound": {
+            "EN": ["This server doesn't seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save <messageId>`"],
+            "CHDE": ["Dä server het no kei quotes. Du chasch quotes hinzuefüege mit `!quote save @user` oder `!quote save <messageId>`"]
+        },
+        "CannotSaveOwnQuotes": {
+            "EN": ["You can't save your own quotes..."],
+            "CHDE": ["Du chasch kei quotes vo dir selber speichere..."]
+        },
+        "CannotQuoteBots": {
+            "EN": ["You can't save quotes by a bot..."],
+            "CHDE": ["Du chasch kei quotes vomne bot speichere..."]
+        },
+        "QuoteAdded": {
+            "EN": ["**Quote Added**"],
+            "CHDE": ["**Quote hinzugfüegt**"]
+        },
+        "Removed": {
+            "EN": ["**Removed #{0}**"],
+            "CHDE": ["**#{0} glöscht**"]
+        },
+        "NotFoundWithId": {
+            "EN": ["I couldn't find a quote with that ID :disappointed:"],
+            "CHDE": ["Ich chan kei quote finde mit därri ID :disappointed:"]
+        }
     }
 }

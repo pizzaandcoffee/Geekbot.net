@@ -8,6 +8,7 @@ using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Polyfills;
 using Geekbot.net.Lib.RandomNumberGenerator;
 
@@ -20,12 +21,14 @@ namespace Geekbot.net.Commands.Utils.Quote
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
+        private readonly ITranslationHandler _translationHandler;
 
-        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translationHandler)
         {
             _errorHandler = errorHandler;
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
+            _translationHandler = translationHandler;
         }
 
         [Command]
@@ -38,7 +41,8 @@ namespace Geekbot.net.Commands.Utils.Quote
                 
                 if (!s.Any())
                 {
-                    await ReplyAsync("This server doesn't seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save <messageId>`");
+                    var transContext = await _translationHandler.GetGuildContext(Context);
+                    await ReplyAsync(transContext.GetString("NoQuotesFound"));
                     return;
                 }
 
@@ -60,15 +64,16 @@ namespace Geekbot.net.Commands.Utils.Quote
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 if (user.Id == Context.Message.Author.Id)
                 {
-                    await ReplyAsync("You can't save your own quotes...");
+                    await ReplyAsync(transContext.GetString("CannotSaveOwnQuotes"));
                     return;
                 }
 
                 if (user.IsBot)
                 {
-                    await ReplyAsync("You can't save quotes by a bot...");
+                    await ReplyAsync(transContext.GetString("CannotQuoteBots"));
                     return;
                 }
 
@@ -80,7 +85,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                 await _database.SaveChangesAsync();
 
                 var embed = QuoteBuilder(quote);
-                await ReplyAsync("**Quote Added**", false, embed.Build());
+                await ReplyAsync(transContext.GetString("QuoteAdded"), false, embed.Build());
             }
             catch (Exception e)
             {
@@ -95,16 +100,17 @@ namespace Geekbot.net.Commands.Utils.Quote
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 var message = await Context.Channel.GetMessageAsync(messageId);
                 if (message.Author.Id == Context.Message.Author.Id)
                 {
-                    await ReplyAsync("You can't save your own quotes...");
+                    await ReplyAsync(transContext.GetString("CannotSaveOwnQuotes"));
                     return;
                 }
 
                 if (message.Author.IsBot)
                 {
-                    await ReplyAsync("You can't save quotes by a bot...");
+                    await ReplyAsync(transContext.GetString("CannotQuoteBots"));
                     return;
                 }
 
@@ -113,7 +119,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                 await _database.SaveChangesAsync();
                 
                 var embed = QuoteBuilder(quote);
-                await ReplyAsync("**Quote Added**", false, embed.Build());
+                await ReplyAsync(transContext.GetString("QuoteAdded"), false, embed.Build());
             }
             catch (Exception e)
             {
@@ -168,17 +174,18 @@ namespace Geekbot.net.Commands.Utils.Quote
        {
            try
            {
+               var transContext = await _translationHandler.GetGuildContext(Context);
                var quote = _database.Quotes.Where(e => e.GuildId == Context.Guild.Id.AsLong() && e.InternalId == id)?.FirstOrDefault();
                if (quote != null)
                {
                    _database.Quotes.Remove(quote);
                    await _database.SaveChangesAsync();
                    var embed = QuoteBuilder(quote);
-                   await ReplyAsync($"**Removed #{id}**", false, embed.Build());
+                   await ReplyAsync(transContext.GetString("Removed", id), false, embed.Build());
                }
                else
                {
-                   await ReplyAsync("I couldn't find a quote with that id :disappointed:");
+                   await ReplyAsync(transContext.GetString("NotFoundWithId"));
                }
            }
            catch (Exception e)

@@ -22,9 +22,9 @@ namespace Geekbot.net.Commands.Admin
         private readonly DatabaseContext _database;
         private readonly IErrorHandler _errorHandler;
         private readonly IReactionListener _reactionListener;
-        private readonly TranslationHandler _translationHandler;
+        private readonly ITranslationHandler _translationHandler;
 
-        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, TranslationHandler translationHandler)
+        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, ITranslationHandler translationHandler)
         {
             _database = database;
             _errorHandler = errorHandler;
