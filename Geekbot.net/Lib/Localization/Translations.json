@@ -119,7 +119,7 @@
             "CHDE": [":red_circle: {0}, du chasch nid nomol es gliche rate"]
         }
     },
-    "cookie": {
+    "cookies": {
         "GetCookies": {
             "EN": ["You got {0} cookies, there are now {1} cookies in you cookie jar"],
             "CHDE": ["Du häsch {0} guetzli becho, du häsch jetzt {1} guetzli ih dr büchse"]
