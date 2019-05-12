@@ -9,7 +9,6 @@ using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.AlmostRedis;
-using Geekbot.net.Lib.Audio;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
@@ -124,7 +123,6 @@ namespace Geekbot.net
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
-            var audioUtils = new AudioUtils();
             var randomNumberGenerator = new RandomNumberGenerator();
             _highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             
@@ -138,7 +136,6 @@ namespace Geekbot.net
             _services.AddSingleton<IMalClient>(malClient);
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
-            _services.AddSingleton<IAudioUtils>(audioUtils);
             _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
             _services.AddSingleton<IHighscoreManager>(_highscoreManager);
             _services.AddSingleton<IGlobalSettings>(_globalSettings);
