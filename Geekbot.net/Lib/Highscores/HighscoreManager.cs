@@ -20,7 +20,7 @@ namespace Geekbot.net.Lib.Highscores
             
         }
 
-        public Dictionary<HighscoreUserDto, int> GetHighscoresWithUserData(HighscoreTypes type, ulong guildId, int amount)
+        public SortedDictionary<HighscoreUserDto, int> GetHighscoresWithUserData(HighscoreTypes type, ulong guildId, int amount)
         {
             Dictionary<ulong, int> list;
             switch (type)
@@ -47,7 +47,7 @@ namespace Geekbot.net.Lib.Highscores
                 throw new HighscoreListEmptyException($"No {type} found for guild {guildId}");
             }
             
-            var highscoreUsers = new Dictionary<HighscoreUserDto, int>();
+            var highscoreUsers = new SortedDictionary<HighscoreUserDto, int>();
             foreach (var user in list)
             {
                 try

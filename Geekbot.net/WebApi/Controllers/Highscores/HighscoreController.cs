@@ -25,7 +25,7 @@ namespace Geekbot.net.WebApi.Controllers.Highscores
                 return BadRequest(error);
             }
 
-            Dictionary<HighscoreUserDto, int> list;
+            SortedDictionary<HighscoreUserDto, int> list;
             try
             {
                 list = _highscoreManager.GetHighscoresWithUserData(body.Type, body.GuildId, body.Amount);
