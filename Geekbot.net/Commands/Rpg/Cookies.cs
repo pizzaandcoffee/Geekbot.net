@@ -74,7 +74,7 @@ namespace Geekbot.net.Commands.Rpg
         
         [Command("give", RunMode = RunMode.Async)]
         [Summary("Give cookies to someone")]
-        public async Task GiveACookie([Summary("User")] IUser user, [Summary("amount")] int amount)
+        public async Task GiveACookie([Summary("User")] IUser user, [Summary("amount")] int amount = 1)
         {
             try
             {

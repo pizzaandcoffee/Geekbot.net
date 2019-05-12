@@ -157,3 +157,19 @@ quote:
   NotFoundWithId:
     EN: "I couldn't find a quote with that ID :disappointed:"
     CHDE: "Ich chan kei quote finde mit därri ID :disappointed:"
+rank:
+  InvalidType:
+    EN: "Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'"
+    CHDE: "Gültigi paramenter sind '`messages`' '`karma`', '`rolls`' und '`cookies`'"
+  LimitingTo20Warning:
+    EN: ":warning: Limiting to 20\n"
+    CHDE: ":warning: Limitiert uf 20\n"
+  NoTypeFoundForServer:
+    EN: "No {0} found on this server"
+    CHDE: "Kei {0} gfunde für dä server"
+  FailedToResolveAllUsernames:
+    EN: ":warning: I couldn't find all usernames. Maybe they left the server?\n"
+    CHDE: ":warning: Ich han nid alli benutzername gfunde. villiicht hend sie de server verlah?\n"
+  HighscoresFor:
+    EN: ":bar_chart: **{0} Highscore for {1}**"
+    CHDE: ":bar_chart: **{0} Highscore für {1}**"

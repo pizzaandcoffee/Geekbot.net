@@ -10,6 +10,7 @@ using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Highscores;
+using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.UserRepository;
 
 namespace Geekbot.net.Commands.User.Ranking
@@ -18,18 +19,20 @@ namespace Geekbot.net.Commands.User.Ranking
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IHighscoreManager _highscoreManager;
+        private readonly ITranslationHandler _translationHandler;
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
         private readonly IUserRepository _userRepository;
 
         public Rank(DatabaseContext database, IErrorHandler errorHandler, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, IHighscoreManager highscoreManager)
+            IEmojiConverter emojiConverter, IHighscoreManager highscoreManager, ITranslationHandler translationHandler)
         {
             _database = database;
             _errorHandler = errorHandler;
             _userRepository = userRepository;
             _emojiConverter = emojiConverter;
             _highscoreManager = highscoreManager;
+            _translationHandler = translationHandler;
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -39,6 +42,7 @@ namespace Geekbot.net.Commands.User.Ranking
         {
             try
             {
+                var transContext = await _translationHandler.GetGuildContext(Context);
                 HighscoreTypes type;
                 try
                 {
@@ -46,14 +50,14 @@ namespace Geekbot.net.Commands.User.Ranking
                 }
                 catch
                 {
-                    await ReplyAsync("Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'");
+                    await ReplyAsync(transContext.GetString("InvalidType"));
                     return;
                 }
 
                 var replyBuilder = new StringBuilder();
                 if (amount > 20)
                 {
-                    replyBuilder.AppendLine(":warning: Limiting to 20\n");
+                    await ReplyAsync(transContext.GetString("LimitingTo20Warning"));
                     amount = 20;
                 }
                 
@@ -65,7 +69,7 @@ namespace Geekbot.net.Commands.User.Ranking
                 }
                 catch (HighscoreListEmptyException)
                 {
-                    await ReplyAsync($"No {type} found on this server");
+                    await ReplyAsync(transContext.GetString("NoTypeFoundForServer", type));
                     return;
                 }
 
@@ -80,8 +84,8 @@ namespace Geekbot.net.Commands.User.Ranking
 
                 var failedToRetrieveUser = highscoreUsers.Any(e => string.IsNullOrEmpty(e.Key.Username));
 
-                if (failedToRetrieveUser) replyBuilder.AppendLine(":warning: I couldn't find all usernames. Maybe they left the server?\n");
-                replyBuilder.AppendLine($":bar_chart: **{type.ToString().CapitalizeFirst()} Highscore for {Context.Guild.Name}**");
+                if (failedToRetrieveUser) replyBuilder.AppendLine(transContext.GetString("FailedToResolveAllUsernames"));
+                replyBuilder.AppendLine(transContext.GetString("HighscoresFor", type.ToString().CapitalizeFirst(), Context.Guild.Name));
                 var highscorePlace = 1;
                 foreach (var user in highscoreUsers)
                 {
