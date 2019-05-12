@@ -40,7 +40,6 @@ namespace Geekbot.net
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
         private IAlmostRedis _redis;
-        private IHighscoreManager _highscoreManager;
 
         private static void Main(string[] args)
         {
@@ -124,7 +123,6 @@ namespace Geekbot.net
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             var randomNumberGenerator = new RandomNumberGenerator();
-            _highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             
             _services.AddSingleton<IAlmostRedis>(_redis);
             _services.AddSingleton<IUserRepository>(_userRepository);
@@ -137,8 +135,8 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
-            _services.AddSingleton<IHighscoreManager>(_highscoreManager);
             _services.AddSingleton<IGlobalSettings>(_globalSettings);
+            _services.AddTransient<IHighscoreManager>((e) => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
             _services.AddTransient<DatabaseContext>((e) => _databaseInitializer.Initialize());
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
@@ -206,7 +204,8 @@ namespace Geekbot.net
         private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, _highscoreManager);
+            var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
+            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
             return Task.CompletedTask;
         }
     }
