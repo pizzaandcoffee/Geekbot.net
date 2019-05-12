@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +46,8 @@ namespace Geekbot.net.Commands.User.Ranking
                 HighscoreTypes type;
                 try
                 {
-                    type = Enum.Parse<HighscoreTypes>(typeUnformated.ToLower());
+                    type = Enum.Parse<HighscoreTypes>(typeUnformated, true);
+                    if (!Enum.IsDefined(typeof(HighscoreTypes), type)) throw new Exception();
                 }
                 catch
                 {
