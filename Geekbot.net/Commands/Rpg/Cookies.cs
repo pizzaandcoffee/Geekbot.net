@@ -14,7 +14,7 @@ using Geekbot.net.Lib.RandomNumberGenerator;
 namespace Geekbot.net.Commands.Rpg
 {
     [DisableInDirectMessage]
-    [Group("cookie")]
+    [Group("cookies")]
     public class Cookies : ModuleBase
     {
         private readonly DatabaseContext _database;
