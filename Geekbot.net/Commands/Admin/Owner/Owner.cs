@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -75,6 +75,21 @@ namespace Geekbot.net.Commands.Admin.Owner
             {
                 await _errorHandler.HandleCommandException(e, Context,
                     "Couldn't complete User Repository, see console for more info");
+            }
+        }
+
+        [Command("refreshuser", RunMode = RunMode.Async)]
+        [Summary("Refresh a user in the user cache")]
+        public async Task PopUserRepoCommand([Summary("@user")] IUser user)
+        {
+            try
+            {
+                await _userRepository.Update(user as SocketUser);
+                await ReplyAsync($"Refreshed: {user.Username}#{user.Discriminator}");
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
 
