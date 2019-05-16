@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Geekbot.net.Database;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Logger;
@@ -17,67 +16,17 @@ namespace Geekbot.net.Commands.Admin.Owner
     {
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
-        private readonly DatabaseContext _database;
         private readonly IGlobalSettings _globalSettings;
         private readonly IGeekbotLogger _logger;
-        private readonly IAlmostRedis _redis;
         private readonly IUserRepository _userRepository;
 
-        public Owner(IAlmostRedis redis, DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, DatabaseContext database, IGlobalSettings globalSettings)
+        public Owner(DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, IGlobalSettings globalSettings)
         {
-            _redis = redis;
             _client = client;
             _logger = logger;
             _userRepository = userRepositry;
             _errorHandler = errorHandler;
-            _database = database;
             _globalSettings = globalSettings;
-        }
-
-        [Command("migrate", RunMode = RunMode.Async)]
-        public async Task Migrate(MigrationMethods method, string force = "")
-        {
-            try
-            {
-                switch (method)
-                {
-                    case MigrationMethods.redis:
-                        var status = _globalSettings.GetKey("MigrationStatus");
-                        if (status.Equals("Running"))
-                        {
-                            await ReplyAsync("Migration already running");
-                            return;
-                        }
-                        if (status.Equals("Done") && !force.Equals("force"))
-                        {
-                            await ReplyAsync("Migration already ran, write `!owner migrate redis force` to run again");
-                            return;                  
-                        }
-
-                        await ReplyAsync("starting migration");
-                        await _globalSettings.SetKey("MigrationStatus", "Running");
-                        var redisMigration = new RedisMigration(_database, _redis, _logger, _client);
-                        await redisMigration.Migrate();
-                        await _globalSettings.SetKey("MigrationStatus", "Done");
-                        break;
-                    
-                    case MigrationMethods.messages:
-                        await ReplyAsync("Migrating Messages to postgres...");
-                        var messageMigration = new MessageMigration(_database, _redis, _logger);
-                        await messageMigration.Migrate();
-                        break;
-                    
-                    default:
-                        await ReplyAsync("No Migration Method specified...");
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                await _errorHandler.HandleCommandException(e, Context);
-            }
-
-            await ReplyAsync("done");
         }
 
         [Command("youtubekey", RunMode = RunMode.Async)]
