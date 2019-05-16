@@ -32,7 +32,6 @@ namespace Geekbot.net.Commands.Integrations
                 var result = service
                     .Where(x => x.Name, cardName)
                     // fewer cards less risk of deserialization problems, don't need more than one anyways...
-                    // ToDo: fix the deserialization issue in card[n].foreignNames[]
                     .Where(x => x.PageSize, 1);
 
                 var card = result.All().Value.FirstOrDefault();
