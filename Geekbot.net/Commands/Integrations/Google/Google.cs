@@ -23,7 +23,7 @@ namespace Geekbot.net.Commands.Integrations.Google
         
         [Command("google", RunMode = RunMode.Async)]
         [Summary("Google Something.")]
-        public async Task AskGoogle([Remainder, Summary("SearchText")] string searchText)
+        public async Task AskGoogle([Remainder, Summary("search-text")] string searchText)
         {
             try
             {

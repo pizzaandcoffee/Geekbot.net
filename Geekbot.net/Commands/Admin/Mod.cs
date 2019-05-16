@@ -30,7 +30,7 @@ namespace Geekbot.net.Commands.Admin
 
         [Command("namehistory", RunMode = RunMode.Async)]
         [Summary("See past usernames of an user")]
-        public async Task UsernameHistory([Summary("@user")] IUser user)
+        public async Task UsernameHistory([Summary("@someone")] IUser user)
         {
             try
             {

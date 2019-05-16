@@ -21,7 +21,7 @@ namespace Geekbot.net.Commands.Integrations
 
         [Command("yt", RunMode = RunMode.Async)]
         [Summary("Search for something on youtube.")]
-        public async Task Yt([Remainder] [Summary("Title")] string searchQuery)
+        public async Task Yt([Remainder] [Summary("title")] string searchQuery)
         {
             var key = _globalSettings.GetKey("YoutubeKey");
             if (string.IsNullOrEmpty(key))

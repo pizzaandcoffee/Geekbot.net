@@ -31,7 +31,7 @@ namespace Geekbot.net.Commands.Admin.Owner
 
         [Command("youtubekey", RunMode = RunMode.Async)]
         [Summary("Set the youtube api key")]
-        public async Task SetYoutubeKey([Summary("API Key")] string key)
+        public async Task SetYoutubeKey([Summary("API-Key")] string key)
         {
             await _globalSettings.SetKey("YoutubeKey", key);
             await ReplyAsync("Apikey has been set");
@@ -80,7 +80,7 @@ namespace Geekbot.net.Commands.Admin.Owner
 
         [Command("refreshuser", RunMode = RunMode.Async)]
         [Summary("Refresh a user in the user cache")]
-        public async Task PopUserRepoCommand([Summary("@user")] IUser user)
+        public async Task PopUserRepoCommand([Summary("@someone")] IUser user)
         {
             try
             {

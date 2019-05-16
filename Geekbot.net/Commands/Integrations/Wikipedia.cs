@@ -29,7 +29,7 @@ namespace Geekbot.net.Commands.Integrations
 
         [Command("wiki", RunMode = RunMode.Async)]
         [Summary("Get an article from wikipedia.")]
-        public async Task GetPreview([Remainder] [Summary("Article")] string articleName)
+        public async Task GetPreview([Remainder] [Summary("article")] string articleName)
         {
             try
             {

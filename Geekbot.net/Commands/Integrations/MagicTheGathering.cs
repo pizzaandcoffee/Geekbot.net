@@ -24,7 +24,7 @@ namespace Geekbot.net.Commands.Integrations
 
         [Command("mtg", RunMode = RunMode.Async)]
         [Summary("Find a Magic The Gathering Card.")]
-        public async Task GetCard([Remainder] [Summary("name")] string cardName)
+        public async Task GetCard([Remainder] [Summary("card-name")] string cardName)
         {
             try
             {

@@ -19,7 +19,7 @@ namespace Geekbot.net.Commands.Utils.Dice
         
         [Command("dice", RunMode = RunMode.Async)]
         [Summary("Roll a dice.")]
-        public async Task RollCommand([Remainder] [Summary("diceType")] string diceType = "1d20")
+        public async Task RollCommand([Remainder] [Summary("dice-type")] string diceType = "1d20")
         {
             var splitedDices = diceType.Split("+");
             var dices = new List<DiceTypeDto>();

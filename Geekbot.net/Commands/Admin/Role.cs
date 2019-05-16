@@ -60,7 +60,7 @@ namespace Geekbot.net.Commands.Admin
 
         [Command(RunMode = RunMode.Async)]
         [Summary("Get a role by mentioning it.")]
-        public async Task GiveRole([Summary("roleNickname")] string roleNameRaw)
+        public async Task GiveRole([Summary("role-nickname")] string roleNameRaw)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace Geekbot.net.Commands.Admin
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [Command("remove", RunMode = RunMode.Async)]
         [Summary("Remove a role from the whitelist.")]
-        public async Task RemoveRole([Summary("roleNickname")] string roleName)
+        public async Task RemoveRole([Summary("role-nickname")] string roleName)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace Geekbot.net.Commands.Admin
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [Summary("Give a role by clicking on an emoji")]
         [Command("listen", RunMode = RunMode.Async)]
-        public async Task AddListener([Summary("messageID")] string messageId, [Summary("Emoji")] string emoji, [Summary("@role")] IRole role)
+        public async Task AddListener([Summary("message-ID")] string messageId, [Summary("Emoji")] string emoji, [Summary("@role")] IRole role)
         {
             try
             {

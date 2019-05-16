@@ -17,7 +17,7 @@ namespace Geekbot.net.Commands.Randomness
 
         [Command("8ball", RunMode = RunMode.Async)]
         [Summary("Ask 8Ball a Question.")]
-        public async Task Ball([Remainder] [Summary("Question")] string echo)
+        public async Task Ball([Remainder] [Summary("question")] string echo)
         {
             try
             {

@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands.Admin
 
         [Command("welcome", RunMode = RunMode.Async)]
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
-        public async Task SetWelcomeMessage([Remainder] [Summary("message")] string welcomeMessage)
+        public async Task SetWelcomeMessage([Remainder, Summary("message")] string welcomeMessage)
         {
             var guild = await GetGuildSettings(Context.Guild.Id);
             guild.WelcomeMessage = welcomeMessage;
