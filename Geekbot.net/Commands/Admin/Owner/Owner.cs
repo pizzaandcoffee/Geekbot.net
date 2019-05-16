@@ -92,6 +92,22 @@ namespace Geekbot.net.Commands.Admin.Owner
                 await _errorHandler.HandleCommandException(e, Context);
             }
         }
+        
+        [Command("refreshuser", RunMode = RunMode.Async)]
+        [Summary("Refresh a user in the user cache")]
+        public async Task PopUserRepoCommand([Summary("user-id")] ulong userId)
+        {
+            try
+            {
+                var user = _client.GetUser(userId);
+                await _userRepository.Update(user);
+                await ReplyAsync($"Refreshed: {user.Username}#{user.Discriminator}");
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context);
+            }
+        }
 
         [Command("error", RunMode = RunMode.Async)]
         [Summary("Throw an error un purpose")]
