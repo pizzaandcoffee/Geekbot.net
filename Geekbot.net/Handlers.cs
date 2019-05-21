@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
@@ -143,18 +144,38 @@ namespace Geekbot.net
         {
             try
             {
+                var userRepoUpdate = _userRepository.Update(user);
+                _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
+
                 if (!user.IsBot)
                 {
-                    var message = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(user.Guild.Id.AsLong()))?.WelcomeMessage;
-                    if (!string.IsNullOrEmpty(message))
+                    var guildSettings = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId == user.Guild.Id.AsLong());
+                    var message = guildSettings?.WelcomeMessage;
+                    if (string.IsNullOrEmpty(message)) return;
+                    message = message.Replace("$user", user.Mention);
+
+                    var fallbackSender = new Func<Task<RestUserMessage>>(() => user.Guild.DefaultChannel.SendMessageAsync(message));
+                    if (guildSettings.WelcomeChannel != 0)
                     {
-                        message = message.Replace("$user", user.Mention);
-                        await user.Guild.DefaultChannel.SendMessageAsync(message);
+                        try
+                        {
+                            var target = await _client.GetChannelAsync(guildSettings.WelcomeChannel.AsUlong());
+                            var channel = target as ISocketMessageChannel;
+                            await channel.SendMessageAsync(message);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.Error(LogSource.Geekbot, "Failed to send welcome message to user defined welcome channel", e);
+                            await fallbackSender();
+                        }
+                    }
+                    else
+                    {
+                        await fallbackSender();
                     }
                 }
 
-                await _userRepository.Update(user);
-                _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
+                await userRepoUpdate;
             }
             catch (Exception e)
             {

@@ -6,7 +6,7 @@ namespace Geekbot.net.Database.Models
     {
         [Key]
         public int Id { get; set; }
-        
+
         [Required]
         public long GuildId { get; set; }
 
@@ -15,8 +15,10 @@ namespace Geekbot.net.Database.Models
         public bool Hui { get; set; } = false;
 
         public long ModChannel { get; set; } = 0;
-        
+
         public string WelcomeMessage { get; set; }
+
+        public long WelcomeChannel { get; set; }
 
         public bool ShowDelete { get; set; } = false;
 

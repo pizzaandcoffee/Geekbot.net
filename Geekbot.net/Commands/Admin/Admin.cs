@@ -46,6 +46,29 @@ namespace Geekbot.net.Commands.Admin
             await ReplyAsync($"Welcome message has been changed\r\nHere is an example of how it would look:\r\n{formatedMessage}");
         }
 
+        [Command("welcomechannel", RunMode = RunMode.Async)]
+        [Summary("Set a channel for the welcome messages (by default it uses the top most channel)")]
+        public async Task SelectWelcomeChannel([Summary("#Channel")] ISocketMessageChannel channel)
+        {
+            try
+            {
+                var m = await channel.SendMessageAsync("...");
+
+                var guild = await GetGuildSettings(Context.Guild.Id);
+                guild.WelcomeChannel = channel.Id.AsLong();
+                _database.GuildSettings.Update(guild);
+                await _database.SaveChangesAsync();
+                
+                await m.DeleteAsync();
+                
+                await ReplyAsync("Successfully saved the welcome channel");
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
+            }
+        }
+        
         [Command("modchannel", RunMode = RunMode.Async)]
         [Summary("Set a channel for moderation purposes")]
         public async Task SelectModChannel([Summary("#Channel")] ISocketMessageChannel channel)
@@ -67,7 +90,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to be valid");
+                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
             }
         }
 
