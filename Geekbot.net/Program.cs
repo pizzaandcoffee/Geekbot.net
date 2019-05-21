@@ -79,7 +79,8 @@ namespace Geekbot.net
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
-                MessageCacheSize = 1000
+                MessageCacheSize = 1000,
+                ExclusiveBulkDelete = true
             });
             _client.Log += discordLogger.Log;
             _commands = new CommandService();
