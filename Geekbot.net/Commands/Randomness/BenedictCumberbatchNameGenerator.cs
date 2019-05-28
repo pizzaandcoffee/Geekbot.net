@@ -18,7 +18,7 @@ namespace Geekbot.net.Commands.Randomness
             _randomNumberGenerator = randomNumberGenerator;
         }
 
-        [Command("bdcc", RunMode = RunMode.Async)]
+        [Command("bdcb", RunMode = RunMode.Async)]
         [Summary("Benedict Cumberbatch Name Generator")]
         public async Task GetQuote()
         {
