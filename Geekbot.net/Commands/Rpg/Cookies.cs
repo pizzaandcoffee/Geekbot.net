@@ -38,9 +38,9 @@ namespace Geekbot.net.Commands.Rpg
             {
                 var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
-                if (actor.LastPayout.Value.AddHours(24) > DateTimeOffset.Now)
+                if (actor.LastPayout.Value.AddDays(1).Date > DateTime.Now.Date)
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.LastPayout.Value.AddHours(24));
+                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(DateTimeOffset.Now.AddDays(1).Date);
                     await ReplyAsync(transContext.GetString("WaitForMoreCookies", formatedWaitTime));
                     return;
                 }

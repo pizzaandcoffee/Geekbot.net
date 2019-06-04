@@ -90,8 +90,8 @@ cookies:
     EN: "You got {0} cookies, there are now {1} cookies in you cookie jar"
     CHDE: "Du häsch {0} guetzli becho, du häsch jetzt {1} guetzli ih dr büchse"
   WaitForMoreCookies:
-    EN: "You already got cookies in the last 24 hours, you can have more cookies in {0}"
-    CHDE: "Du hesch scho guetzli becho ih de letzti 24 stund, du chasch meh ha in {0}"
+    EN: "You already got cookies today, you can have more cookies in {0}"
+    CHDE: "Du hesch scho guetzli becho hüt, du chasch meh ha in {0}"
   InYourJar:
     EN: "There are {0} cookies in you cookie jar"
     CHDE: "Es hät {0} guetzli ih dineri büchs"
