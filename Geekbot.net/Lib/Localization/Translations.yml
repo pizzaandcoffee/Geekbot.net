@@ -85,7 +85,7 @@ roll:
   NoPrevGuess:
     EN: ":red_circle: {0}, you can't guess the same number again"
     CHDE: ":red_circle: {0}, du chasch nid nomol es gliche rate"
-cookies:
+cookies: &cookiesAlias
   GetCookies:
     EN: "You got {0} cookies, there are now {1} cookies in you cookie jar"
     CHDE: "Du häsch {0} guetzli becho, du häsch jetzt {1} guetzli ih dr büchse"
@@ -107,6 +107,9 @@ cookies:
   AteCookies:
     EN: "You ate {0} cookies, you've only got {1} cookies left"
     CHDE: "Du hesch {0} guetzli gesse und hesch jezt no {1} übrig"
+cookie:
+  # because command aliases are to hard to deal with...
+  <<: *cookiesAlias
 role:
   NoRolesConfigured:
     EN: "There are no roles configured for this server"

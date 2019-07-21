@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 namespace Tests.Lib.Localization
@@ -17,8 +18,9 @@ namespace Tests.Lib.Localization
                 
             // Deserialize
             var input = new StringReader(translationFile);
+            var mergingParser = new MergingParser(new Parser(input));
             var deserializer = new DeserializerBuilder().Build();
-            var rawTranslations = deserializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(input);
+            var rawTranslations = deserializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(mergingParser);
             
             // These languages must be supported
             var supportedLanguages = new List<string>

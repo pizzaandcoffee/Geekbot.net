@@ -15,6 +15,7 @@ namespace Geekbot.net.Commands.Rpg
 {
     [DisableInDirectMessage]
     [Group("cookies")]
+    [Alias("cookie")]
     public class Cookies : ModuleBase
     {
         private readonly DatabaseContext _database;

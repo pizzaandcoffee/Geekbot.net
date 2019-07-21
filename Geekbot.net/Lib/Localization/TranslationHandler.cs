@@ -8,8 +8,7 @@ using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
-using Utf8Json;
-using YamlDotNet.RepresentationModel;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 namespace Geekbot.net.Lib.Localization
@@ -39,8 +38,9 @@ namespace Geekbot.net.Lib.Localization
                 
                 // Deserialize
                 var input = new StringReader(translationFile);
+                var mergingParser = new MergingParser(new Parser(input));
                 var deserializer = new DeserializerBuilder().Build();
-                var rawTranslations = deserializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(input);
+                var rawTranslations = deserializer.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(mergingParser);
                 
                 // Sort
                 var sortedPerLanguage = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
