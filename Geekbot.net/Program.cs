@@ -156,6 +156,7 @@ namespace Geekbot.net
                 var isConneted = await IsConnected();
                 if (isConneted)
                 {
+                    var applicationInfo = await _client.GetApplicationInfoAsync();
                     await _client.SetGameAsync(_globalSettings.GetKey("Game"));
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
@@ -170,7 +171,7 @@ namespace Geekbot.net
                     _servicesProvider = _services.BuildServiceProvider();
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
 
-                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener);
+                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
                     
                     _client.MessageReceived += handlers.RunCommand;
                     _client.MessageDeleted += handlers.MessageDeleted;

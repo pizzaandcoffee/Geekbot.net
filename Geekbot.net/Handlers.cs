@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,10 +29,12 @@ namespace Geekbot.net
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
         private readonly DatabaseContext _messageCounterDatabaseContext;
+        private readonly RestApplication _applicationInfo;
+        private readonly List<ulong> _ignoredServers;
 
         public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
-            IReactionListener reactionListener)
+            IReactionListener reactionListener, RestApplication applicationInfo)
         {
             _database = databaseInitializer.Initialize();
             _messageCounterDatabaseContext = databaseInitializer.Initialize();
@@ -42,6 +45,14 @@ namespace Geekbot.net
             _commands = commands;
             _userRepository = userRepository;
             _reactionListener = reactionListener;
+            _applicationInfo = applicationInfo;
+            // ToDo: create a clean solution for this...
+            _ignoredServers = new List<ulong>()
+            {
+                228623803201224704, // SwitzerLAN
+                169844523181015040, // EEvent
+                248531441548263425  // MYI
+            };
         }
 
         //
@@ -56,10 +67,21 @@ namespace Geekbot.net
                 if (message.Author.IsBot) return Task.CompletedTask;
                 var argPos = 0;
 
+                var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
+                // Some guilds only wanted very specific functionally without any of the commands, a quick hack that solves that short term...
+                // ToDo: cleanup
+                if (_ignoredServers.Contains(guildId))
+                {
+                    if (message.Author.Id != _applicationInfo.Owner.Id)
+                    {
+                        return Task.CompletedTask;
+                    }
+                }
+                
                 var lowCaseMsg = message.ToString().ToLower();
                 if (lowCaseMsg.StartsWith("hui"))
                 {
-                    var hasPing = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(((SocketGuildChannel) message.Channel).Guild.Id.AsLong()))?.Hui ?? false;
+                    var hasPing = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(guildId.AsLong()))?.Hui ?? false;
                     if (hasPing)
                     {
                         message.Channel.SendMessageAsync("hui!!!");
@@ -69,7 +91,7 @@ namespace Geekbot.net
 
                 if (lowCaseMsg.StartsWith("ping ") || lowCaseMsg.Equals("ping"))
                 {
-                    var hasPing = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(((SocketGuildChannel) message.Channel).Guild.Id.AsLong()))?.Ping ?? false;
+                    var hasPing = _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(guildId.AsLong()))?.Ping ?? false;
                     if (hasPing)
                     {
                         message.Channel.SendMessageAsync("pong");
