@@ -23,6 +23,7 @@ build:
 sentry:
   stage: ops
   image: getsentry/sentry-cli
+  allow_failure: true
   only:
     - master
   dependencies:
