@@ -129,7 +129,6 @@ namespace Geekbot.net
 
                 var channel = (SocketGuildChannel) message.Channel;
 
-                // just testing, redis will remain the source of truth for now
                 var rowId = await _messageCounterDatabaseContext.Database.ExecuteSqlCommandAsync(
                     "UPDATE \"Messages\" SET \"MessageCount\" = \"MessageCount\" + 1 WHERE \"GuildId\" = {0} AND \"UserId\" = {1}",
                     channel.Guild.Id.AsLong(),
@@ -146,9 +145,6 @@ namespace Geekbot.net
                     });
                     _messageCounterDatabaseContext.SaveChanges();
                 }
-
-                await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", message.Author.Id.ToString());
-                await _redis.Db.HashIncrementAsync($"{channel.Guild.Id}:Messages", 0.ToString());
 
                 if (message.Author.IsBot) return;
                 _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));
