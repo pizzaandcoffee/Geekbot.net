@@ -41,6 +41,12 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
 
                     var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
 
+                    var description = definition.Definition;
+                    if (description.Length > 1801)
+                    {
+                        description = description.Substring(0, 1800) + " [...]";
+                    }
+                    
                     var eb = new EmbedBuilder();
                     eb.WithAuthor(new EmbedAuthorBuilder
                     {
@@ -48,7 +54,7 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
                         Url = definition.Permalink
                     });
                     eb.WithColor(new Color(239, 255, 0));
-                    if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = definition.Definition.Substring(0, 1800);
+                    if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = description;
                     if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
                     if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
                     if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
