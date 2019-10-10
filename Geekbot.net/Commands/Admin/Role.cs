@@ -196,8 +196,7 @@ namespace Geekbot.net.Commands.Admin
             }
             catch (Exception e)
             {
-                await Context.Channel.SendMessageAsync("Something went wrong... please try again on a new message");
-                Console.WriteLine(e);
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }
