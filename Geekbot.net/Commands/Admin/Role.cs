@@ -133,7 +133,7 @@ namespace Geekbot.net.Commands.Admin
                     WhiteListName = roleName
                 });
                 await _database.SaveChangesAsync();
-                await ReplyAsync(transContext.GetString("CannotAddDangerousRole", role.Name));
+                await ReplyAsync(transContext.GetString("AddedRoleToWhitelist", role.Name));
             }
             catch (Exception e)
             {
