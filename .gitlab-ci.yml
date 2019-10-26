@@ -16,9 +16,9 @@ build:
     paths:
       - Geekbot.net/Binaries/
   script:
-    - dotnet restore -s https://api.nuget.org/v3/index.json -s https://www.myget.org/F/discord-net/api/v3/index.json
+    - dotnet restore
     - dotnet test Tests
-    - dotnet publish --version-suffix ${CI_COMMIT_SHA:0:8} --configuration Release -o Binaries ./
+    - dotnet publish --version-suffix ${CI_COMMIT_SHA:0:8} --configuration Release -o ./Geekbot.net/Binaries ./Geekbot.net/
 
 sentry:
   stage: ops
