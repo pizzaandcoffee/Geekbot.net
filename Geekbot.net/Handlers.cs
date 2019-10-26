@@ -129,7 +129,7 @@ namespace Geekbot.net
 
                 var channel = (SocketGuildChannel) message.Channel;
 
-                var rowId = await _messageCounterDatabaseContext.Database.ExecuteSqlCommandAsync(
+                var rowId = await _messageCounterDatabaseContext.Database.ExecuteSqlRawAsync(
                     "UPDATE \"Messages\" SET \"MessageCount\" = \"MessageCount\" + 1 WHERE \"GuildId\" = {0} AND \"UserId\" = {1}",
                     channel.Guild.Id.AsLong(),
                     message.Author.Id.AsLong()
