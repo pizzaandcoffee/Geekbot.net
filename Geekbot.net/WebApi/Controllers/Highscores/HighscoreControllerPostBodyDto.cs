@@ -8,9 +8,9 @@ namespace Geekbot.net.WebApi.Controllers.Highscores
         [Required]
         public ulong GuildId { get; set; }
         
-        public HighscoreTypes Type { get; set; } = HighscoreTypes.messages;
+        public HighscoreTypes Type { get; } = HighscoreTypes.messages;
         
         [Range(1, 150)]
-        public int Amount { get; set; } = 50;
+        public int Amount { get; } = 50;
     }
 }

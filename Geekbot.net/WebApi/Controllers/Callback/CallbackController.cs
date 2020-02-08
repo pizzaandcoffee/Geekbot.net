@@ -32,14 +32,16 @@ namespace Geekbot.net.WebApi.Controllers.Callback
                 var accessToken = _globalSettings.GetKey("OAuthToken");
                 var callbackUrl = _globalSettings.GetKey("OAuthCallbackUrl");
 
-                var form = new Dictionary<string, string>();
-                form.Add("client_id", appInfo.Id.ToString());
-                form.Add("client_secret", accessToken);
-                form.Add("grant_type", "authorization_code");
-                form.Add("code", code);
-                form.Add("scope", "identify email guilds");
-                form.Add("redirect_uri", callbackUrl);
-                
+                var form = new Dictionary<string, string>
+                {
+                    {"client_id", appInfo.Id.ToString()},
+                    {"client_secret", accessToken},
+                    {"grant_type", "authorization_code"},
+                    {"code", code},
+                    {"scope", "identify email guilds"},
+                    {"redirect_uri", callbackUrl}
+                };
+
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
                 var result = await client.PostAsync("/api/oauth2/token", new FormUrlEncodedContent(form));
                 result.EnsureSuccessStatusCode();

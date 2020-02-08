@@ -23,23 +23,21 @@ namespace Geekbot.net.Commands.Randomness.Kanye
         {
             try
             {
-                using (var client = new HttpClient())
+                try
                 {
-                    try
-                    {
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                        var response = await client.GetAsync("https://api.kanye.rest/");
-                        response.EnsureSuccessStatusCode();
+                    using var client = new HttpClient();
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    var response = await client.GetAsync("https://api.kanye.rest/");
+                    response.EnsureSuccessStatusCode();
 
-                        var stringResponse = await response.Content.ReadAsStringAsync();
-                        var data = JsonConvert.DeserializeObject<KanyeResponseDto>(stringResponse);
-                        await ReplyAsync(data.Quote);
-                    }
-                    catch (HttpRequestException)
-                    {
-                        await ReplyAsync("Api down...");
-                    }
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<KanyeResponseDto>(stringResponse);
+                    await ReplyAsync(data.Quote);
+                }
+                catch (HttpRequestException)
+                {
+                    await ReplyAsync("Api down...");
                 }
             }
             catch (Exception e)

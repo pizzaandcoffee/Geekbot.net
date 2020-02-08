@@ -55,25 +55,17 @@ namespace Geekbot.net.WebApi.Logging
         
         private static NLog.LogLevel ToGeekbotLogLevel(LogLevel level)
         {
-            switch (level)
+            return level switch
             {
-                case LogLevel.Trace:
-                    return NLog.LogLevel.Trace;
-                case LogLevel.Debug:
-                    return NLog.LogLevel.Debug;
-                case LogLevel.Information:
-                    return NLog.LogLevel.Info;
-                case LogLevel.Warning:
-                    return NLog.LogLevel.Warn;
-                case LogLevel.Error:
-                    return NLog.LogLevel.Error;
-                case LogLevel.Critical:
-                    return NLog.LogLevel.Fatal;
-                case LogLevel.None:
-                    return NLog.LogLevel.Off;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(level));
-            }
+                LogLevel.Trace => NLog.LogLevel.Trace,
+                LogLevel.Debug => NLog.LogLevel.Debug,
+                LogLevel.Information => NLog.LogLevel.Info,
+                LogLevel.Warning => NLog.LogLevel.Warn,
+                LogLevel.Error => NLog.LogLevel.Error,
+                LogLevel.Critical => NLog.LogLevel.Fatal,
+                LogLevel.None => NLog.LogLevel.Off,
+                _ => throw new ArgumentOutOfRangeException(nameof(level))
+            };
         }
     }
 }

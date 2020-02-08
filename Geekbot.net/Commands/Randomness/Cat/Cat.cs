@@ -23,24 +23,27 @@ namespace Geekbot.net.Commands.Randomness.Cat
         {
             try
             {
-                using (var client = new HttpClient())
+                
+                try
                 {
-                    try
+                    using var client = new HttpClient
                     {
-                        client.BaseAddress = new Uri("https://aws.random.cat");
-                        var response = await client.GetAsync("/meow");
-                        response.EnsureSuccessStatusCode();
+                        BaseAddress = new Uri("https://aws.random.cat")
+                    };
+                    var response = await client.GetAsync("/meow");
+                    response.EnsureSuccessStatusCode();
 
-                        var stringResponse = await response.Content.ReadAsStringAsync();
-                        var catFile = JsonConvert.DeserializeObject<CatResponseDto>(stringResponse);
-                        var eb = new EmbedBuilder();
-                        eb.ImageUrl = catFile.File;
-                        await ReplyAsync("", false, eb.Build());
-                    }
-                    catch
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var catFile = JsonConvert.DeserializeObject<CatResponseDto>(stringResponse);
+                    var eb = new EmbedBuilder
                     {
-                        await ReplyAsync("Seems like the dog cought the cat (error occured)");
-                    }
+                        ImageUrl = catFile.File
+                    };
+                    await ReplyAsync("", false, eb.Build());
+                }
+                catch
+                {
+                    await ReplyAsync("Seems like the dog cought the cat (error occured)");
                 }
             }
             catch (Exception e)

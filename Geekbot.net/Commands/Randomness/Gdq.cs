@@ -21,13 +21,11 @@ namespace Geekbot.net.Commands.Randomness
         {
             try
             {
-                using (var client = new WebClient())
-                {
-                    var url = new Uri("http://taskinoz.com/gdq/api/");
-                    var response = client.DownloadString(url);
+                using var client = new WebClient();
+                var url = new Uri("http://taskinoz.com/gdq/api/");
+                var response = client.DownloadString(url);
                     
-                    await ReplyAsync(response);
-                }
+                await ReplyAsync(response);
             }
             catch (Exception e)
             {

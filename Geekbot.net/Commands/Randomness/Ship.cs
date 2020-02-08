@@ -56,8 +56,8 @@ namespace Geekbot.net.Commands.Randomness
                 }
 
                 var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";
-                reply = reply + $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
-                reply = reply + $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
+                reply += $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
+                reply += $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
                 await ReplyAsync(reply);
             }
             catch (Exception e)
@@ -87,13 +87,13 @@ namespace Geekbot.net.Commands.Randomness
             for (var i = 1; i <= 10; i++)
                 if (i <= amount)
                 {
-                    blocks = blocks + ":white_medium_small_square:";
+                    blocks += ":white_medium_small_square:";
                     if (i == amount)
-                        blocks = blocks + $" {rate}% ";
+                        blocks += $" {rate}% ";
                 }
                 else
                 {
-                    blocks = blocks + ":black_medium_small_square:";
+                    blocks += ":black_medium_small_square:";
                 }
 
             return blocks;

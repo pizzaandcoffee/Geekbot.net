@@ -35,7 +35,7 @@ namespace Geekbot.net.Commands.Admin
             try
             {
                 var userRepo = _userRepository.Get(user.Id);
-                if (userRepo != null && userRepo.UsedNames != null)
+                if (userRepo?.UsedNames != null)
                 {
                     var sb = new StringBuilder();
                     sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
@@ -50,7 +50,7 @@ namespace Geekbot.net.Commands.Admin
             catch (Exception e)
             {
                 await _errorHandler.HandleCommandException(e, Context,
-                    $"I don't have enough permissions do that");
+                    "I don't have enough permissions do that");
             }
         }
     }

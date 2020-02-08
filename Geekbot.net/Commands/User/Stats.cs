@@ -51,7 +51,7 @@ namespace Geekbot.net.Commands.User
 
                 var level = _levelCalc.GetLevel(messages);
 
-                var percent = Math.Round((double) (100 * messages) / guildMessages, digits: 2);
+                var percent = Math.Round((double) (100 * messages) / guildMessages, 2);
 
                 var cookies = _database.Cookies
                       ?.FirstOrDefault(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))

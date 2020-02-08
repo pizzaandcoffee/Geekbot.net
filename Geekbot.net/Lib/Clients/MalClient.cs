@@ -22,7 +22,7 @@ namespace Geekbot.net.Lib.Clients
             ReloadClient();
         }
 
-        public bool ReloadClient()
+        private bool ReloadClient()
         {
             var malCredentials = _globalSettings.GetKey("MalCredentials");
             if (!string.IsNullOrEmpty(malCredentials))

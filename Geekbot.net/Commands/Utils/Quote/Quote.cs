@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands.Utils.Quote
                     return;
                 }
 
-                var random = _randomNumberGenerator.Next(0, s.Count());
+                var random = _randomNumberGenerator.Next(0, s.Count);
                 var quote = s[random];
                 
                 var embed = QuoteBuilder(quote);
@@ -238,7 +238,7 @@ namespace Geekbot.net.Commands.Utils.Quote
 
             var last = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
                                  .OrderByDescending(e => e.InternalId).FirstOrDefault();
-            int internalId = 1;
+            var internalId = 1;
             if (last != null) internalId = last.InternalId + 1;
             return new QuoteModel()
             {

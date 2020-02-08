@@ -41,9 +41,11 @@ namespace Geekbot.net.Commands.Integrations
                     return;
                 }
 
-                var eb = new EmbedBuilder();
-                eb.Title = card.Name;
-                eb.Description = card.Type;
+                var eb = new EmbedBuilder
+                {
+                    Title = card.Name,
+                    Description = card.Type
+                };
 
                 if (card.Colors != null) eb.WithColor(GetColor(card.Colors));
 
@@ -74,21 +76,15 @@ namespace Geekbot.net.Commands.Integrations
         private Color GetColor(IEnumerable<string> colors)
         {
             var color = colors.FirstOrDefault();
-            switch (color)
+            return color switch
             {
-                case "Black":
-                    return new Color(203, 194, 191);
-                case "White":
-                    return new Color(255, 251, 213);
-                case "Blue":
-                    return new Color(170, 224, 250);
-                case "Red":
-                    return new Color(250, 170, 143);
-                case "Green":
-                    return new Color(155, 211, 174);
-                default:
-                    return new Color(204, 194, 212);
-            }
+                "Black" => new Color(203, 194, 191),
+                "White" => new Color(255, 251, 213),
+                "Blue" => new Color(170, 224, 250),
+                "Red" => new Color(250, 170, 143),
+                "Green" => new Color(155, 211, 174),
+                _ => new Color(204, 194, 212)
+            };
         }
     }
 }

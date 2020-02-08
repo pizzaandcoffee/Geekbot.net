@@ -74,7 +74,7 @@ namespace Geekbot.net.Commands.User.Ranking
                     return;
                 }
 
-                int guildMessages = 0;
+                var guildMessages = 0;
                 if (type == HighscoreTypes.messages)
                 {
                     guildMessages = _database.Messages
@@ -99,7 +99,7 @@ namespace Geekbot.net.Commands.User.Ranking
                         : $"**{user.Key.Id}**");
                     
                     replyBuilder.Append(type == HighscoreTypes.messages
-                        ? $" - {user.Value} {type} - {Math.Round((double) (100 * user.Value) / guildMessages, digits: 2)}%\n"
+                        ? $" - {user.Value} {type} - {Math.Round((double) (100 * user.Value) / guildMessages, 2)}%\n"
                         : $" - {user.Value} {type}\n");
 
                     highscorePlace++;

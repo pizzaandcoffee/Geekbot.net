@@ -7,7 +7,7 @@ namespace Geekbot.net.Lib.Converters
 {
     public class MtgManaConverter : IMtgManaConverter
     {
-        private Dictionary<string, string> _manaDict;
+        private readonly Dictionary<string, string> _manaDict;
 
         public MtgManaConverter()
         {

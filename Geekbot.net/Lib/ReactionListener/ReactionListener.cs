@@ -63,8 +63,11 @@ namespace Geekbot.net.Lib.ReactionListener
                 _listener[messageId].Add(emoji, role.Id);
                 return Task.CompletedTask;
             }
-            var dict = new Dictionary<IEmote, ulong>();
-            dict.Add(emoji, role.Id);
+
+            var dict = new Dictionary<IEmote, ulong>
+            {
+                {emoji, role.Id}
+            };
             _listener.Add(messageId, dict);
             return Task.CompletedTask;
         }

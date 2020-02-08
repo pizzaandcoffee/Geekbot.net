@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Geekbot.net.Lib.Levels
 {
     public class LevelCalc : ILevelCalc
     {
-        private int[] _levels;
+        private readonly int[] _levels;
 
         public LevelCalc()
         {
@@ -21,13 +22,7 @@ namespace Geekbot.net.Lib.Levels
 
         public int GetLevel(int? messages)
         {
-            var returnVal = 1;
-            foreach (var level in _levels)
-            {
-                if (level > messages) break;
-                returnVal++;
-            }
-            return returnVal;
+            return 1 + _levels.TakeWhile(level => !(level > messages)).Count();
         }
     }
 }

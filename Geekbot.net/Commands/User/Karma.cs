@@ -46,7 +46,7 @@ namespace Geekbot.net.Commands.User
                 else
                 {
                     var target = await GetUser(user.Id);
-                    target.Karma = target.Karma + 1;
+                    target.Karma += 1;
                     SetUser(target);
                     
                     actor.TimeOut = DateTimeOffset.Now;
@@ -93,7 +93,7 @@ namespace Geekbot.net.Commands.User
                 else
                 {
                     var target = await GetUser(user.Id);
-                    target.Karma = target.Karma - 1;
+                    target.Karma -= 1;
                     SetUser(target);
                     
                     actor.TimeOut = DateTimeOffset.Now;

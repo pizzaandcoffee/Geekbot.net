@@ -25,43 +25,43 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
         {
             try
             {
-                using (var client = new HttpClient())
+                using var client = new HttpClient
                 {
-                    client.BaseAddress = new Uri("https://api.urbandictionary.com");
-                    var response = await client.GetAsync($"/v0/define?term={word}");
-                    response.EnsureSuccessStatusCode();
+                    BaseAddress = new Uri("https://api.urbandictionary.com")
+                };
+                var response = await client.GetAsync($"/v0/define?term={word}");
+                response.EnsureSuccessStatusCode();
 
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var definitions = JsonConvert.DeserializeObject<UrbanResponseDto>(stringResponse);
-                    if (definitions.List.Count == 0)
-                    {
-                        await ReplyAsync("That word hasn't been defined...");
-                        return;
-                    }
-
-                    var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
-
-                    var description = definition.Definition;
-                    if (description.Length > 1801)
-                    {
-                        description = description.Substring(0, 1800) + " [...]";
-                    }
-                    
-                    var eb = new EmbedBuilder();
-                    eb.WithAuthor(new EmbedAuthorBuilder
-                    {
-                        Name = definition.Word,
-                        Url = definition.Permalink
-                    });
-                    eb.WithColor(new Color(239, 255, 0));
-                    if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = description;
-                    if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
-                    if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
-                    if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
-                    if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
-
-                    await ReplyAsync("", false, eb.Build());
+                var stringResponse = await response.Content.ReadAsStringAsync();
+                var definitions = JsonConvert.DeserializeObject<UrbanResponseDto>(stringResponse);
+                if (definitions.List.Count == 0)
+                {
+                    await ReplyAsync("That word hasn't been defined...");
+                    return;
                 }
+
+                var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
+
+                var description = definition.Definition;
+                if (description.Length > 1801)
+                {
+                    description = description.Substring(0, 1800) + " [...]";
+                }
+                    
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder
+                {
+                    Name = definition.Word,
+                    Url = definition.Permalink
+                });
+                eb.WithColor(new Color(239, 255, 0));
+                if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = description;
+                if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
+                if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
+                if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
+                if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
+
+                await ReplyAsync("", false, eb.Build());
             }
             catch (Exception e)
             {

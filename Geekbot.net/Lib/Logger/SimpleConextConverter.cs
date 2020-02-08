@@ -37,7 +37,7 @@ namespace Geekbot.net.Lib.Logger
         }
         public static MessageDto ConvertSocketMessage(SocketMessage message, bool isPrivate = false)
         {
-            SocketGuildChannel channel = isPrivate ? null : (SocketGuildChannel) message.Channel;
+            var channel = isPrivate ? null : (SocketGuildChannel) message.Channel;
             return new MessageDto
             {
                 Message = new MessageDto.MessageContent

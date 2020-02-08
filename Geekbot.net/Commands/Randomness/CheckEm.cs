@@ -61,7 +61,7 @@ namespace Geekbot.net.Commands.Randomness
             while (num > 0)
             {
                 listOfInts.Add(num % 10);
-                num = num / 10;
+                num /= 10;
             }
 
             listOfInts.Reverse();

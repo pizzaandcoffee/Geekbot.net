@@ -23,24 +23,26 @@ namespace Geekbot.net.Commands.Randomness.Dog
         {
             try
             {
-                using (var client = new HttpClient())
+                try
                 {
-                    try
+                    using var client = new HttpClient
                     {
-                        client.BaseAddress = new Uri("http://random.dog");
-                        var response = await client.GetAsync("/woof.json");
-                        response.EnsureSuccessStatusCode();
+                        BaseAddress = new Uri("http://random.dog")
+                    };
+                    var response = await client.GetAsync("/woof.json");
+                    response.EnsureSuccessStatusCode();
 
-                        var stringResponse = await response.Content.ReadAsStringAsync();
-                        var dogFile = JsonConvert.DeserializeObject<DogResponseDto>(stringResponse);
-                        var eb = new EmbedBuilder();
-                        eb.ImageUrl = dogFile.Url;
-                        await ReplyAsync("", false, eb.Build());
-                    }
-                    catch (HttpRequestException e)
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var dogFile = JsonConvert.DeserializeObject<DogResponseDto>(stringResponse);
+                    var eb = new EmbedBuilder
                     {
-                        await ReplyAsync($"Seems like the dog got lost (error occured)\r\n{e.Message}");
-                    }
+                        ImageUrl = dogFile.Url
+                    };
+                    await ReplyAsync("", false, eb.Build());
+                }
+                catch (HttpRequestException e)
+                {
+                    await ReplyAsync($"Seems like the dog got lost (error occured)\r\n{e.Message}");
                 }
             }
             catch (Exception e)

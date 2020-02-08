@@ -20,26 +20,15 @@ namespace Geekbot.net.Lib.Highscores
 
         public Dictionary<HighscoreUserDto, int> GetHighscoresWithUserData(HighscoreTypes type, ulong guildId, int amount)
         {
-            Dictionary<ulong, int> list;
-            switch (type)
+            var list = type switch
             {
-                case HighscoreTypes.messages:
-                    list = GetMessageList(guildId, amount);
-                    break;
-                case HighscoreTypes.karma:
-                    list = GetKarmaList(guildId, amount);
-                    break;
-                case HighscoreTypes.rolls:
-                    list = GetRollsList(guildId, amount);
-                    break;
-                case HighscoreTypes.cookies:
-                    list = GetCookiesList(guildId, amount);
-                    break;
-                default:
-                    list = new Dictionary<ulong, int>();
-                    break;
-            }
-            
+                HighscoreTypes.messages => GetMessageList(guildId, amount),
+                HighscoreTypes.karma => GetKarmaList(guildId, amount),
+                HighscoreTypes.rolls => GetRollsList(guildId, amount),
+                HighscoreTypes.cookies => GetCookiesList(guildId, amount),
+                _ => new Dictionary<ulong, int>()
+            };
+
             if (!list.Any())
             {
                 throw new HighscoreListEmptyException($"No {type} found for guild {guildId}");
@@ -103,8 +92,8 @@ namespace Geekbot.net.Lib.Highscores
                 .Take(amount)
                 .ToDictionary(key => key.UserId.AsUlong(), key => key.Rolls);
         }
-        
-        public Dictionary<ulong, int> GetCookiesList(ulong guildId, int amount)
+
+        private Dictionary<ulong, int> GetCookiesList(ulong guildId, int amount)
         {
             return _database.Cookies
                 .Where(k => k.GuildId.Equals(guildId.AsLong()))
