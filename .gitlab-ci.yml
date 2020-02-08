@@ -10,7 +10,7 @@ before_script:
 
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/core/sdk:3.0
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
   artifacts:
     expire_in: 1h
     paths:
