@@ -1,6 +1,6 @@
 ﻿namespace Geekbot.net.Lib
 {
-    public enum GeekbotExitCode : int
+    public enum GeekbotExitCode
     {
         // General
         Clean = 0,

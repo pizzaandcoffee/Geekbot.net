@@ -3,9 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Commands.Randomness.Dad;
 using Geekbot.net.Lib.ErrorHandling;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Kanye

@@ -21,6 +21,7 @@ using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.RandomNumberGenerator;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Geekbot.net.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WikipediaApi;
@@ -125,8 +126,8 @@ namespace Geekbot.net
             var wikipediaClient = new WikipediaClient();
             var randomNumberGenerator = new RandomNumberGenerator();
             
-            _services.AddSingleton<IAlmostRedis>(_redis);
-            _services.AddSingleton<IUserRepository>(_userRepository);
+            _services.AddSingleton(_redis);
+            _services.AddSingleton(_userRepository);
             _services.AddSingleton<IGeekbotLogger>(logger);
             _services.AddSingleton<ILevelCalc>(levelCalc);
             _services.AddSingleton<IEmojiConverter>(emojiConverter);
@@ -136,9 +137,9 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
-            _services.AddSingleton<IGlobalSettings>(_globalSettings);
-            _services.AddTransient<IHighscoreManager>((e) => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
-            _services.AddTransient<DatabaseContext>((e) => _databaseInitializer.Initialize());
+            _services.AddSingleton(_globalSettings);
+            _services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
+            _services.AddTransient(e => _databaseInitializer.Initialize());
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
 
@@ -162,7 +163,7 @@ namespace Geekbot.net
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
                     var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
-                    var errorHandler = new ErrorHandler(_logger, translationHandler, _globalSettings, _runParameters.ExposeErrors);
+                    var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
                     _services.AddSingleton<IErrorHandler>(errorHandler);
                     _services.AddSingleton<ITranslationHandler>(translationHandler);
@@ -207,7 +208,7 @@ namespace Geekbot.net
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
-            WebApi.WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
+            WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
             return Task.CompletedTask;
         }
     }

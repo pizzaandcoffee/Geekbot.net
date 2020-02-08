@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Geekbot.net.Database;
 using Geekbot.net.Lib.Extensions;
-using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.UserRepository;
 
 namespace Geekbot.net.Lib.Highscores

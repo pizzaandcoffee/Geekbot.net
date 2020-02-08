@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.Net;
-using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
 using SharpRaven;
@@ -19,7 +18,7 @@ namespace Geekbot.net.Lib.ErrorHandling
         private readonly IRavenClient _raven;
         private readonly bool _errorsInChat;
 
-        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, IGlobalSettings globalSettings, bool errorsInChat)
+        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, bool errorsInChat)
         {
             _logger = logger;
             _translation = translation;

@@ -18,7 +18,7 @@ namespace Geekbot.net.Lib.ReactionListener
             LoadListeners();
         }
 
-        private Task LoadListeners()
+        private void LoadListeners()
         {
             var ids = _redis.SetMembers("MessageIds");
             _listener = new Dictionary<string, Dictionary<IEmote, ulong>>();
@@ -43,8 +43,6 @@ namespace Geekbot.net.Lib.ReactionListener
                 }
                 _listener.Add(messageId, emojiDict);
             }
-
-            return Task.CompletedTask;
         }
 
         public bool IsListener(ulong id)

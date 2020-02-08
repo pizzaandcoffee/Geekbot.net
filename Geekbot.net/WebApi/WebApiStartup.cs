@@ -29,11 +29,11 @@ namespace Geekbot.net.WebApi
                 .ConfigureServices(services =>
                 {
                     services.AddMvc();
-                    services.AddSingleton<CommandService>(commandService);
-                    services.AddSingleton<DatabaseContext>(databaseContext);
-                    services.AddSingleton<DiscordSocketClient>(client);
-                    services.AddSingleton<IGlobalSettings>(globalSettings);
-                    services.AddSingleton<IHighscoreManager>(highscoreManager);
+                    services.AddSingleton(commandService);
+                    services.AddSingleton(databaseContext);
+                    services.AddSingleton(client);
+                    services.AddSingleton(globalSettings);
+                    services.AddSingleton(highscoreManager);
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowSpecificOrigin",
