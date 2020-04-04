@@ -67,7 +67,6 @@ namespace Geekbot.net.Commands.Utils.Dice
             rep.Append("**Result:** ");
             var resultStrings = new List<string>();
             var total = 0;
-            var extraText = "";
             foreach (var dice in dices)
             {
                 var results = new List<int>();
@@ -76,8 +75,6 @@ namespace Geekbot.net.Commands.Utils.Dice
                     var roll = _randomNumberGenerator.Next(1, dice.Sides);
                     total += roll;
                     results.Add(roll);
-                    if (roll == dice.Sides) extraText = "**Critical Hit!**";
-                    if (roll == 1) extraText = "**Critical Fail!**";
                 }
 
                 resultStrings.Add($"{dice.DiceType} ({string.Join(",", results)})");
@@ -92,7 +89,6 @@ namespace Geekbot.net.Commands.Utils.Dice
 
             rep.AppendLine();
             rep.AppendLine($"**Total:** {total}");
-            if (extraText != "") rep.AppendLine(extraText);
             await ReplyAsync(rep.ToString());
         }
 
