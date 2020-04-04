@@ -176,3 +176,23 @@ rank:
   HighscoresFor:
     EN: ":bar_chart: **{0} Highscore for {1}**"
     CHDE: ":bar_chart: **{0} Highscore für {1}**"
+ship:
+  Matchmaking:
+    EN: "Matchmaking"
+    CHDE: "Verkupple"
+  NotGonnaToHappen:
+    EN: "Not gonna happen"
+    CHDE: "Wird nöd klappe"
+  NotSuchAGoodIdea:
+    EN: "Not such a good idea"
+    CHDE: "Nöd so ä gueti idee"
+  ThereMightBeAChance:
+    EN: "There might be a chance"
+    CHDE: "Es gid eventuel ä chance"
+  CouldWork:
+    EN: "Almost a match"
+    CHDE: "Fasch en match"
+  ItsAMatch:
+    EN: "It's a match"
+    CHDE: "Es isch es traumpaar"
+    

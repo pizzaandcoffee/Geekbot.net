@@ -7,6 +7,7 @@ using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.RandomNumberGenerator;
 
 namespace Geekbot.net.Commands.Randomness
@@ -15,13 +16,15 @@ namespace Geekbot.net.Commands.Randomness
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
+        private readonly ITranslationHandler _translation;
         private readonly DatabaseContext _database;
 
-        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator)
+        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translation)
         {
             _database = database;
             _errorHandler = errorHandler;
             _randomNumberGenerator = randomNumberGenerator;
+            _translation = translation;
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
@@ -55,9 +58,11 @@ namespace Geekbot.net.Commands.Randomness
                     shippingRate = dbval.Strength;
                 }
 
-                var reply = ":heartpulse: **Matchmaking** :heartpulse:\r\n";
+                var transContext = await _translation.GetGuildContext(Context);
+
+                var reply = $":heartpulse: **{transContext.GetString("Matchmaking")}** :heartpulse:\r\n";
                 reply += $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
-                reply += $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
+                reply += $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate, transContext)}";
                 await ReplyAsync(reply);
             }
             catch (Exception e)
@@ -66,22 +71,22 @@ namespace Geekbot.net.Commands.Randomness
             }
         }
 
-        private string DeterminateSuccess(int rate)
+        private string DeterminateSuccess(int rate, TranslationGuildContext transContext)
         {
-            if (rate < 20)
-                return "Not gonna happen";
-            if (rate >= 20 && rate < 40)
-                return "Not such a good idea";
-            if (rate >= 40 && rate < 60)
-                return "There might be a chance";
-            if (rate >= 60 && rate < 80)
-                return "Almost a match, but could work";
-            return rate >= 80 ? "It's a match" : "a";
+            return (rate / 20) switch
+            {
+                0 => transContext.GetString("NotGonnaToHappen"),
+                1 => transContext.GetString("NotSuchAGoodIdea"),
+                2 => transContext.GetString("ThereMightBeAChance"),
+                3 => transContext.GetString("CouldWork"),
+                4 => transContext.GetString("ItsAMatch"),
+                _ => "nope"
+            };
         }
 
         private string BlockCounter(int rate)
         {
-            var amount = Math.Floor(decimal.Floor(rate / 10));
+            var amount = rate / 10;
             Console.WriteLine(amount);
             var blocks = "";
             for (var i = 1; i <= 10; i++)
