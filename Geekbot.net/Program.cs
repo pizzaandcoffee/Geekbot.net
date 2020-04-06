@@ -41,6 +41,7 @@ namespace Geekbot.net
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
         private IAlmostRedis _redis;
+        private DatabaseContext _database;
 
         private static void Main(string[] args)
         {
@@ -87,11 +88,11 @@ namespace Geekbot.net
             _commands = new CommandService();
 
             _databaseInitializer = new DatabaseInitializer(runParameters, logger);
-            var database = _databaseInitializer.Initialize();
-            database.Database.EnsureCreated();
-            if(!_runParameters.InMemory) database.Database.Migrate();
+            _database = _databaseInitializer.Initialize();
+            _database.Database.EnsureCreated();
+            if(!_runParameters.InMemory) _database.Database.Migrate();
             
-            _globalSettings = new GlobalSettings(database);
+            _globalSettings = new GlobalSettings(_database);
             
             try
             {
@@ -116,7 +117,7 @@ namespace Geekbot.net
 
             _services = new ServiceCollection();
             
-            _userRepository = new UserRepository(_databaseInitializer.Initialize(), logger);
+            _userRepository = new UserRepository(_database, logger);
             var fortunes = new FortunesProvider(logger);
             var mediaProvider = new MediaProvider(logger);
             var malClient = new MalClient(_globalSettings, logger);
@@ -137,9 +138,9 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
+            _services.AddSingleton<DatabaseContext>(_database);
             _services.AddSingleton(_globalSettings);
-            _services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
-            _services.AddTransient(e => _databaseInitializer.Initialize());
+            _services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_database, _userRepository));
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
 
@@ -162,7 +163,7 @@ namespace Geekbot.net
                     _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
 
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
-                    var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
+                    var translationHandler = new TranslationHandler(_database, _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
                     var reactionListener = new ReactionListener(_redis.Db);
                     _services.AddSingleton<IErrorHandler>(errorHandler);
@@ -172,7 +173,7 @@ namespace Geekbot.net
                     _servicesProvider = _services.BuildServiceProvider();
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
 
-                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
+                    var handlers = new Handlers(_database, _client, _logger, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
                     
                     _client.MessageReceived += handlers.RunCommand;
                     _client.MessageDeleted += handlers.MessageDeleted;
@@ -207,8 +208,8 @@ namespace Geekbot.net
         private Task StartWebApi()
         {
             _logger.Information(LogSource.Api, "Starting Webserver");
-            var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
-            WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
+            var highscoreManager = new HighscoreManager(_database, _userRepository);
+            WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _database, _client, _globalSettings, highscoreManager);
             return Task.CompletedTask;
         }
     }
