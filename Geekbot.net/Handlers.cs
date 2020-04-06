@@ -9,6 +9,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
@@ -22,20 +23,24 @@ namespace Geekbot.net
         private readonly DatabaseContext _database;
         private readonly IDiscordClient _client;
         private readonly IGeekbotLogger _logger;
+        private readonly IAlmostRedis _redis;
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
         private readonly IReactionListener _reactionListener;
+        private readonly DatabaseContext _messageCounterDatabaseContext;
         private readonly RestApplication _applicationInfo;
         private readonly List<ulong> _ignoredServers;
 
-        public Handlers(DatabaseContext database, IDiscordClient client, IGeekbotLogger logger,
+        public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
             IReactionListener reactionListener, RestApplication applicationInfo)
         {
-            _database = database;
+            _database = databaseInitializer.Initialize();
+            _messageCounterDatabaseContext = databaseInitializer.Initialize();
             _client = client;
             _logger = logger;
+            _redis = redis;
             _servicesProvider = servicesProvider;
             _commands = commands;
             _userRepository = userRepository;
@@ -124,7 +129,7 @@ namespace Geekbot.net
 
                 var channel = (SocketGuildChannel) message.Channel;
 
-                var rowId = await _database.Database.ExecuteSqlRawAsync(
+                var rowId = await _messageCounterDatabaseContext.Database.ExecuteSqlRawAsync(
                     "UPDATE \"Messages\" SET \"MessageCount\" = \"MessageCount\" + 1 WHERE \"GuildId\" = {0} AND \"UserId\" = {1}",
                     channel.Guild.Id.AsLong(),
                     message.Author.Id.AsLong()
@@ -132,13 +137,13 @@ namespace Geekbot.net
 
                 if (rowId == 0)
                 {
-                    await _database.Messages.AddAsync(new MessagesModel
+                    _messageCounterDatabaseContext.Messages.Add(new MessagesModel
                     {
                         UserId = message.Author.Id.AsLong(),
                         GuildId = channel.Guild.Id.AsLong(),
                         MessageCount = 1
                     });
-                    await _database.SaveChangesAsync();
+                    _messageCounterDatabaseContext.SaveChanges();
                 }
 
                 if (message.Author.IsBot) return;
