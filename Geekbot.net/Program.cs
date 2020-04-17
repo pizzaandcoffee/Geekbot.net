@@ -184,10 +184,9 @@ namespace Geekbot.net
                     _client.ReactionRemoved += handlers.ReactionRemoved;
                     if (!_runParameters.InMemory) _client.MessageReceived += handlers.UpdateStats;
 
-                    var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
-                    
                     StartPrometheusServer();
                     
+                    var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
                     _logger.Information(LogSource.Geekbot, "Done and ready for use");
 
                     await webserver;
@@ -217,7 +216,7 @@ namespace Geekbot.net
 
         private void StartPrometheusServer()
         {
-            var port = int.Parse(_runParameters.PrometheusPort);
+            var port = _runParameters.PrometheusPort == "12991" ? 12991 : int.Parse(_runParameters.PrometheusPort);
             var server = new MetricServer(_runParameters.PrometheusHost, port);
             server.Start();
             _logger.Information(LogSource.Geekbot, $"Prometheus Metric Server running on {_runParameters.PrometheusHost}:{_runParameters.PrometheusPort}");
