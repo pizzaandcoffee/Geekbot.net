@@ -24,6 +24,7 @@ using Geekbot.net.Lib.UserRepository;
 using Geekbot.net.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Prometheus;
 using WikipediaApi;
 
 namespace Geekbot.net
@@ -185,6 +186,8 @@ namespace Geekbot.net
 
                     var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
                     
+                    StartPrometheusServer();
+                    
                     _logger.Information(LogSource.Geekbot, "Done and ready for use");
 
                     await webserver;
@@ -210,6 +213,14 @@ namespace Geekbot.net
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
             return Task.CompletedTask;
+        }
+
+        private void StartPrometheusServer()
+        {
+            var port = int.Parse(_runParameters.PrometheusPort);
+            var server = new MetricServer(_runParameters.PrometheusHost, port);
+            server.Start();
+            _logger.Information(LogSource.Geekbot, $"Prometheus Metric Server running on {_runParameters.PrometheusHost}:{_runParameters.PrometheusPort}");
         }
     }
 }

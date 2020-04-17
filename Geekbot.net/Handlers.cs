@@ -15,6 +15,7 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 
 namespace Geekbot.net
 {
@@ -31,6 +32,9 @@ namespace Geekbot.net
         private readonly DatabaseContext _messageCounterDatabaseContext;
         private readonly RestApplication _applicationInfo;
         private readonly List<ulong> _ignoredServers;
+
+        private readonly Counter _messageCounterPrometheus =
+            Metrics.CreateCounter("messages", "Number of discord messages", new CounterConfiguration() {LabelNames = new[] {"guild", "channel", "user"}});
 
         public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
@@ -145,6 +149,8 @@ namespace Geekbot.net
                     });
                     _messageCounterDatabaseContext.SaveChanges();
                 }
+
+                _messageCounterPrometheus.WithLabels(channel.Guild.Id.ToString(), channel.Id.ToString(), message.Author.Id.ToString()).Inc();
 
                 if (message.Author.IsBot) return;
                 _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));

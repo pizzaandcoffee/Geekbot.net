@@ -72,5 +72,14 @@ namespace Geekbot.net.Lib
         
         [Option("api-port", Default = "12995", HelpText = "Port on which the WebApi listens")]
         public string ApiPort { get; set; }
+        
+        /************************************
+         * Prometheus                       *
+         ************************************/
+        [Option("prometheus-host", Default = "localhost", HelpText = "Host on which the Prometheus Metric Server listens")]
+        public string PrometheusHost { get; set; }
+        
+        [Option("prometheus-port", Default = "12991", HelpText = "Port on which the Prometheus Metric Server listens")]
+        public string PrometheusPort { get; set; }
     }
 }
