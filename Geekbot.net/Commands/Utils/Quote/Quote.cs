@@ -166,10 +166,8 @@ namespace Geekbot.net.Commands.Utils.Quote
         }
         
        [Command("remove")]
-       [RequireUserPermission(GuildPermission.KickMembers)]
        [RequireUserPermission(GuildPermission.ManageMessages)]
-       [RequireUserPermission(GuildPermission.ManageRoles)]
-       [Summary("Remove a quote (required mod permissions)")]
+       [Summary("Remove a quote (user needs the 'ManageMessages' permission)")]
        public async Task RemoveQuote([Summary("quote-ID")] int id)
        {
            try
