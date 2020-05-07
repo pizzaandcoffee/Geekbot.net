@@ -15,8 +15,6 @@ using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
 using Microsoft.EntityFrameworkCore;
-using Prometheus;
-
 namespace Geekbot.net
 {
     public class Handlers
@@ -24,7 +22,6 @@ namespace Geekbot.net
         private readonly DatabaseContext _database;
         private readonly IDiscordClient _client;
         private readonly IGeekbotLogger _logger;
-        private readonly IAlmostRedis _redis;
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly IUserRepository _userRepository;
@@ -33,10 +30,7 @@ namespace Geekbot.net
         private readonly RestApplication _applicationInfo;
         private readonly List<ulong> _ignoredServers;
 
-        private readonly Counter _messageCounterPrometheus =
-            Metrics.CreateCounter("messages", "Number of discord messages", new CounterConfiguration() {LabelNames = new[] {"guild", "channel", "user"}});
-
-        public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger, IAlmostRedis redis,
+        public Handlers(DatabaseInitializer databaseInitializer, IDiscordClient client, IGeekbotLogger logger,
             IServiceProvider servicesProvider, CommandService commands, IUserRepository userRepository,
             IReactionListener reactionListener, RestApplication applicationInfo)
         {
@@ -44,7 +38,6 @@ namespace Geekbot.net
             _messageCounterDatabaseContext = databaseInitializer.Initialize();
             _client = client;
             _logger = logger;
-            _redis = redis;
             _servicesProvider = servicesProvider;
             _commands = commands;
             _userRepository = userRepository;
@@ -149,8 +142,6 @@ namespace Geekbot.net
                     });
                     _messageCounterDatabaseContext.SaveChanges();
                 }
-
-                _messageCounterPrometheus.WithLabels(channel.Guild.Id.ToString(), channel.Id.ToString(), message.Author.Id.ToString()).Inc();
 
                 if (message.Author.IsBot) return;
                 _logger.Information(LogSource.Message, message.Content, SimpleConextConverter.ConvertSocketMessage(message));

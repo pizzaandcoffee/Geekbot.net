@@ -24,7 +24,6 @@ using Geekbot.net.Lib.UserRepository;
 using Geekbot.net.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Prometheus;
 using WikipediaApi;
 
 namespace Geekbot.net
@@ -173,7 +172,7 @@ namespace Geekbot.net
                     _servicesProvider = _services.BuildServiceProvider();
                     await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
 
-                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _redis, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
+                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
                     
                     _client.MessageReceived += handlers.RunCommand;
                     _client.MessageDeleted += handlers.MessageDeleted;
@@ -183,8 +182,6 @@ namespace Geekbot.net
                     _client.ReactionAdded += handlers.ReactionAdded;
                     _client.ReactionRemoved += handlers.ReactionRemoved;
                     if (!_runParameters.InMemory) _client.MessageReceived += handlers.UpdateStats;
-
-                    StartPrometheusServer();
                     
                     var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
                     _logger.Information(LogSource.Geekbot, "Done and ready for use");
@@ -212,14 +209,6 @@ namespace Geekbot.net
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
             return Task.CompletedTask;
-        }
-
-        private void StartPrometheusServer()
-        {
-            var port = _runParameters.PrometheusPort == "12991" ? 12991 : int.Parse(_runParameters.PrometheusPort);
-            var server = new MetricServer(_runParameters.PrometheusHost, port);
-            server.Start();
-            _logger.Information(LogSource.Geekbot, $"Prometheus Metric Server running on {_runParameters.PrometheusHost}:{_runParameters.PrometheusPort}");
         }
     }
 }
