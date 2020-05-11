@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -189,6 +189,52 @@ namespace Geekbot.net.Commands.Utils.Quote
            catch (Exception e)
            {
                await _errorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
+           }
+       }
+
+       [Command("stats")]
+       [Summary("Show quote stats for this server")]
+       public async Task GetQuoteStatsForServer()
+       {
+           try
+           {
+               var transContext = await _translationHandler.GetGuildContext(Context);
+               var eb = new EmbedBuilder();
+               eb.Author = new EmbedAuthorBuilder()
+               {
+                   IconUrl = Context.Guild.IconUrl,
+                   Name = $"{Context.Guild.Name} - {transContext.GetString("QuoteStats")}"
+               };
+
+               var totalQuotes = _database.Quotes.Count(row => row.GuildId == Context.Guild.Id.AsLong());
+               if (totalQuotes == 0)
+               {
+                   await ReplyAsync(transContext.GetString("NoQuotesFound"));
+                   return;
+               }
+               eb.AddInlineField(transContext.GetString("TotalQuotes"), totalQuotes);
+
+               var mostQuotedPerson = _database.Quotes
+                   .Where(row => row.GuildId == Context.Guild.Id.AsLong())
+                   .GroupBy(row => row.UserId)
+                   .Max(row => row.Key);
+               var user = Context.Client.GetUserAsync(mostQuotedPerson.AsUlong()).Result ?? new UserPolyfillDto {Username = "Unknown User"};
+               eb.AddInlineField(transContext.GetString("MostQuotesPerson"), user);
+
+               var quotesByYear = _database.Quotes
+                   .Where(row => row.GuildId == Context.Guild.Id.AsLong())
+                   .GroupBy(row => row.Time.Year)
+                   .Select(row => new { year = row.Key, amount = row.Count()});
+               foreach (var year in quotesByYear)
+               {
+                   eb.AddInlineField(year.year.ToString(), year.amount);
+               }
+
+               await ReplyAsync("", false, eb.Build());
+           }
+           catch (Exception e)
+           {
+               await _errorHandler.HandleCommandException(e, Context);
            }
        }
 

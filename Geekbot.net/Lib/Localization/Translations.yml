@@ -160,6 +160,15 @@ quote:
   NotFoundWithId:
     EN: "I couldn't find a quote with that ID :disappointed:"
     CHDE: "Ich chan kei quote finde mit därri ID :disappointed:"
+  QuoteStats:
+    EN: "Quote Stats"
+    CHDE: "Quote statistike"
+  TotalQuotes:
+    EN: "Total"
+    CHDE: "Total"
+  MostQuotesPerson:
+    EN: "Most quoted person"
+    CHDE: "Meist quoteti person"
 rank:
   InvalidType:
     EN: "Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'"
