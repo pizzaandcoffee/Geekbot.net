@@ -198,6 +198,7 @@ namespace Geekbot.net.Commands.Utils.Quote
        {
            try
            {
+               // setup
                var transContext = await _translationHandler.GetGuildContext(Context);
                var eb = new EmbedBuilder();
                eb.Author = new EmbedAuthorBuilder()
@@ -206,25 +207,33 @@ namespace Geekbot.net.Commands.Utils.Quote
                    Name = $"{Context.Guild.Name} - {transContext.GetString("QuoteStats")}"
                };
 
+               // gather data
                var totalQuotes = _database.Quotes.Count(row => row.GuildId == Context.Guild.Id.AsLong());
                if (totalQuotes == 0)
                {
+                   // no quotes, no stats, end of the road
                    await ReplyAsync(transContext.GetString("NoQuotesFound"));
                    return;
                }
-               eb.AddInlineField(transContext.GetString("TotalQuotes"), totalQuotes);
-
+               
                var mostQuotedPerson = _database.Quotes
                    .Where(row => row.GuildId == Context.Guild.Id.AsLong())
                    .GroupBy(row => row.UserId)
-                   .Max(row => row.Key);
-               var user = Context.Client.GetUserAsync(mostQuotedPerson.AsUlong()).Result ?? new UserPolyfillDto {Username = "Unknown User"};
-               eb.AddInlineField(transContext.GetString("MostQuotesPerson"), user);
+                   .Select(row => new { userId = row.Key, amount = row.Count()})
+                   .OrderBy(row => row.amount)
+                   .Last();
+               var mostQuotedPersonUser = Context.Client.GetUserAsync(mostQuotedPerson.userId.AsUlong()).Result ?? new UserPolyfillDto {Username = "Unknown User"};
 
                var quotesByYear = _database.Quotes
                    .Where(row => row.GuildId == Context.Guild.Id.AsLong())
                    .GroupBy(row => row.Time.Year)
-                   .Select(row => new { year = row.Key, amount = row.Count()});
+                   .Select(row => new { year = row.Key, amount = row.Count()})
+                   .OrderBy(row => row.year);
+               
+               // add data to the embed
+               eb.AddField(transContext.GetString("MostQuotesPerson"), $"{mostQuotedPersonUser.Username} ({mostQuotedPerson.amount})");
+               eb.AddInlineField(transContext.GetString("TotalQuotes"), totalQuotes);
+
                foreach (var year in quotesByYear)
                {
                    eb.AddInlineField(year.year.ToString(), year.amount);
