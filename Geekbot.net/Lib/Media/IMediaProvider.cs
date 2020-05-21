@@ -2,7 +2,6 @@
 {
     public interface IMediaProvider
     {
-        string GetCheckem();
         string GetPanda();
         string GetCrossant();
         string GetSquirrel();

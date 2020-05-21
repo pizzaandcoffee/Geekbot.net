@@ -59,9 +59,6 @@
     <PackageReference Include="YamlDotNet" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Storage\checkEmPics">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Storage\croissant">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

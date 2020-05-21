@@ -8,7 +8,6 @@ namespace Geekbot.net.Lib.Media
     {
         private readonly Random _random;
         private readonly IGeekbotLogger _logger;
-        private string[] _checkemImages;
         private string[] _pandaImages;
         private string[] _croissantImages;
         private string[] _squirrelImages;
@@ -24,8 +23,7 @@ namespace Geekbot.net.Lib.Media
             _logger = logger;
 
             logger.Information(LogSource.Geekbot, "Loading Media Files");
-            
-            LoadCheckem();
+;
             LoadPandas();
             BakeCroissants();
             LoadSquirrels();
@@ -34,13 +32,6 @@ namespace Geekbot.net.Lib.Media
             LoadPinguins();
             LoadFoxes();
             LoadDab();
-        }
-
-        private void LoadCheckem()
-        {
-            var rawLinks = File.ReadAllText(Path.GetFullPath("./Storage/checkEmPics"));
-            _checkemImages = rawLinks.Split("\n");
-            _logger.Trace(LogSource.Geekbot, $"Loaded {_checkemImages.Length} CheckEm Images");
         }
         
         private void LoadPandas()
@@ -98,12 +89,7 @@ namespace Geekbot.net.Lib.Media
             _dabImages = rawLinks.Split("\n");
             _logger.Trace(LogSource.Geekbot, $"Loaded {_dabImages.Length} Dab Images");
         }
-        
-        public string GetCheckem()
-        {
-            return _checkemImages[_random.Next(0, _checkemImages.Length)];
-        }
-        
+
         public string GetPanda()
         {
             return _pandaImages[_random.Next(0, _pandaImages.Length)];
