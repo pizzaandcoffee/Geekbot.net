@@ -14,6 +14,7 @@ using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.Highscores;
+using Geekbot.net.Lib.KvInMemoryStore;
 using Geekbot.net.Lib.Levels;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.Logger;
@@ -125,6 +126,7 @@ namespace Geekbot.net
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             var randomNumberGenerator = new RandomNumberGenerator();
+            var kvMemoryStore = new KvInInMemoryStore();
             
             _services.AddSingleton(_redis);
             _services.AddSingleton(_userRepository);
@@ -137,6 +139,7 @@ namespace Geekbot.net
             _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             _services.AddSingleton<IWikipediaClient>(wikipediaClient);
             _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
+            _services.AddSingleton<IKvInMemoryStore>(kvMemoryStore);
             _services.AddSingleton(_globalSettings);
             _services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
             _services.AddTransient(e => _databaseInitializer.Initialize());
@@ -164,7 +167,7 @@ namespace Geekbot.net
                     _logger.Information(LogSource.Geekbot, "Registering Stuff");
                     var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
                     var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
-                    var reactionListener = new ReactionListener(_redis.Db);
+                    var reactionListener = new ReactionListener(_databaseInitializer.Initialize());
                     _services.AddSingleton<IErrorHandler>(errorHandler);
                     _services.AddSingleton<ITranslationHandler>(translationHandler);
                     _services.AddSingleton(_client);

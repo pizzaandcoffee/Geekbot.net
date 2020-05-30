@@ -4,26 +4,25 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.KvInMemoryStore;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.RandomNumberGenerator;
-using StackExchange.Redis;
 
 namespace Geekbot.net.Commands.Games
 {
     public class Roll : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
-        private readonly IAlmostRedis _redis;
+        private readonly IKvInMemoryStore _kvInMemoryStore;
         private readonly ITranslationHandler _translation;
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Roll(IAlmostRedis redis, IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
+        public Roll(IKvInMemoryStore kvInMemoryStore,IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
         {
-            _redis = redis;
+            _kvInMemoryStore = kvInMemoryStore;
             _translation = translation;
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
@@ -37,28 +36,28 @@ namespace Geekbot.net.Commands.Games
             try
             {
                 var number = _randomNumberGenerator.Next(1, 100);
-                var guess = 1000;
-                int.TryParse(stuff, out guess);
+                int.TryParse(stuff, out var guess);
                 var transContext = await _translation.GetGuildContext(Context);
                 if (guess <= 100 && guess > 0)
                 {
-                    var prevRoll = _redis.Db.HashGet($"{Context.Guild.Id}:RollsPrevious2", Context.Message.Author.Id).ToString()?.Split('|');
-                    if (prevRoll?.Length == 2)
+                    var kvKey = $"{Context.Guild.Id}:{Context.User.Id}:RollsPrevious";
+
+                    var prevRoll = _kvInMemoryStore.Get<int>(kvKey);
+                    if (prevRoll > 0)
                     {
-                        if (prevRoll[0] == guess.ToString() && DateTime.Parse(prevRoll[1]) > DateTime.Now.AddDays(-1))
+                        if (prevRoll == guess)
                         {
                             await ReplyAsync(transContext.GetString("NoPrevGuess", Context.Message.Author.Mention));
                             return;
                         }
                     }
 
-                    _redis.Db.HashSet($"{Context.Guild.Id}:RollsPrevious2", new[] {new HashEntry(Context.Message.Author.Id, $"{guess}|{DateTime.Now}")});
+                    _kvInMemoryStore.Set(kvKey, guess);
 
                     await ReplyAsync(transContext.GetString("Rolled", Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
                         await ReplyAsync(transContext.GetString("Gratz", Context.Message.Author));
-                        _redis.Db.HashIncrement($"{Context.Guild.Id}:Rolls", Context.User.Id.ToString());
                         var user = await GetUser(Context.User.Id);
                         user.Rolls += 1;
                         _database.Rolls.Update(user);

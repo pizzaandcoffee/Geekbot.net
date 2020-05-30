@@ -1,80 +1,66 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using StackExchange.Redis;
+using Geekbot.net.Database;
+using Geekbot.net.Database.Models;
+using Geekbot.net.Lib.Extensions;
 
 namespace Geekbot.net.Lib.ReactionListener
 {
     public class ReactionListener : IReactionListener
     {
-        private readonly IDatabase _redis;
-        private Dictionary<string, Dictionary<IEmote, ulong>> _listener;
+        private readonly DatabaseContext _database;
+        private Dictionary<ulong, Dictionary<IEmote, ulong>> _listener;
 
-        public ReactionListener(IDatabase redis)
+        public ReactionListener(DatabaseContext database)
         {
-            _redis = redis;
+            _database = database;
             LoadListeners();
         }
 
         private void LoadListeners()
         {
-            var ids = _redis.SetMembers("MessageIds");
-            _listener = new Dictionary<string, Dictionary<IEmote, ulong>>();
-            foreach (var id in ids)
+            _listener = new Dictionary<ulong, Dictionary<IEmote, ulong>>();
+            foreach (var row in _database.ReactionListeners)
             {
-                var reactions = _redis.HashGetAll($"Messages:{id}");
-                var messageId = id;
-                var emojiDict = new Dictionary<IEmote, ulong>();
-                foreach (var r in reactions)
+                var messageId = row.MessageId.AsUlong();
+                if (!_listener.ContainsKey(messageId))
                 {
-                    IEmote emote;
-                    if (!r.Name.ToString().StartsWith('<'))
-                    {
-                        var emo = new Emoji(r.Name);
-                        emote = emo;
-                    }
-                    else
-                    {
-                        emote = Emote.Parse(r.Name);
-                    }
-                    emojiDict.Add(emote, ulong.Parse(r.Value));
+                    _listener.Add(messageId, new Dictionary<IEmote, ulong>());
                 }
-                _listener.Add(messageId, emojiDict);
+                
+                _listener[messageId].Add(ConvertStringToEmote(row.Reaction), row.RoleId.AsUlong());
             }
         }
 
         public bool IsListener(ulong id)
         {
-            return _listener.ContainsKey(id.ToString());
+            return _listener.ContainsKey(id);
         }
 
-        public Task AddRoleToListener(string messageId, IEmote emoji, IRole role)
+        public async Task AddRoleToListener(ulong messageId, ulong guildId, string emoji, IRole role)
         {
-            if (_redis.SetMembers("MessageIds").All(e => e.ToString() != messageId))
-            {
-                _redis.SetAdd("MessageIds", messageId);
-            }
-            _redis.HashSet($"Messages:{messageId}",  new[] {new HashEntry(emoji.ToString(), role.Id.ToString())});
-            _redis.SetAdd("MessageIds", messageId);
-            if (_listener.ContainsKey(messageId))
-            {
-                _listener[messageId].Add(emoji, role.Id);
-                return Task.CompletedTask;
-            }
+            var emote = ConvertStringToEmote(emoji);
 
-            var dict = new Dictionary<IEmote, ulong>
+            await _database.ReactionListeners.AddAsync(new ReactionListenerModel()
             {
-                {emoji, role.Id}
-            };
-            _listener.Add(messageId, dict);
-            return Task.CompletedTask;
+                GuildId = guildId.AsLong(),
+                MessageId = messageId.AsLong(),
+                RoleId = role.Id.AsLong(),
+                Reaction = emoji
+            });
+
+            if (!_listener.ContainsKey(messageId))
+            {
+                _listener.Add(messageId, new Dictionary<IEmote, ulong>());
+            }
+            _listener[messageId].Add(emote, role.Id);
         }
 
         public async void RemoveRole(ISocketMessageChannel channel, SocketReaction reaction)
         {
-            var roleId = _listener[reaction.MessageId.ToString()][reaction.Emote];
+            var roleId = _listener[reaction.MessageId][reaction.Emote];
             var guild = (SocketGuildChannel) channel;
             var role = guild.Guild.GetRole(roleId);
             await ((IGuildUser) reaction.User.Value).RemoveRoleAsync(role);
@@ -82,10 +68,19 @@ namespace Geekbot.net.Lib.ReactionListener
 
         public async void GiveRole(ISocketMessageChannel channel, SocketReaction reaction)
         {
-            var roleId = _listener[reaction.MessageId.ToString()][reaction.Emote];
+            var roleId = _listener[reaction.MessageId][reaction.Emote];
             var guild = (SocketGuildChannel) channel;
             var role = guild.Guild.GetRole(roleId);
             await ((IGuildUser) reaction.User.Value).AddRoleAsync(role);
+        }
+
+        public IEmote ConvertStringToEmote(string emoji)
+        {
+            if (!emoji.StartsWith('<'))
+            {
+                return new Emoji(emoji);
+            }
+            return Emote.Parse(emoji);
         }
     }
 }

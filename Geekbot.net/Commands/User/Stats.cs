@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.net.Database;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
@@ -16,12 +15,10 @@ namespace Geekbot.net.Commands.User
     {
         private readonly IErrorHandler _errorHandler;
         private readonly ILevelCalc _levelCalc;
-        private readonly IAlmostRedis _redis;
         private readonly DatabaseContext _database;
 
-        public Stats(IAlmostRedis redis, DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
+        public Stats(DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
         {
-            _redis = redis;
             _database = database;
             _errorHandler = errorHandler;
             _levelCalc = levelCalc;

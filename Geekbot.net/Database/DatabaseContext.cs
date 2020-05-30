@@ -18,5 +18,6 @@ namespace Geekbot.net.Database
         public DbSet<RoleSelfServiceModel> RoleSelfService { get; set; }
         public DbSet<PollModel> Polls { get; set; }
         public DbSet<CookiesModel> Cookies { get; set; }
+        public DbSet<ReactionListenerModel> ReactionListeners { get; set; }
     }
 }

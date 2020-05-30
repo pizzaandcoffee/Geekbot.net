@@ -9,12 +9,12 @@ using Discord.Rest;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Extensions;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
 using Microsoft.EntityFrameworkCore;
+
 namespace Geekbot.net
 {
     public class Handlers

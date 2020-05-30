@@ -170,23 +170,16 @@ namespace Geekbot.net.Commands.Admin
         [RequireUserPermission(GuildPermission.ManageRoles)]
         [Summary("Give a role by clicking on an emoji")]
         [Command("listen", RunMode = RunMode.Async)]
-        public async Task AddListener([Summary("message-ID")] string messageId, [Summary("Emoji")] string emoji, [Summary("@role")] IRole role)
+        public async Task AddListener([Summary("message-ID")] string messageIdStr, [Summary("Emoji")] string emoji, [Summary("@role")] IRole role)
         {
             try
             {
-                var message = (IUserMessage) await Context.Channel.GetMessageAsync(ulong.Parse(messageId));
-                IEmote emote;
-                if (!emoji.StartsWith('<'))
-                {
-                    var emo = new Emoji(emoji);
-                    emote = emo;
-                }
-                else
-                {
-                    emote = Emote.Parse(emoji);
-                }
+                var messageId = ulong.Parse(messageIdStr);
+                var message = (IUserMessage) await Context.Channel.GetMessageAsync(messageId);
+                var emote = _reactionListener.ConvertStringToEmote(emoji);
+                
                 await message.AddReactionAsync(emote);
-                await _reactionListener.AddRoleToListener(messageId, emote, role);
+                await _reactionListener.AddRoleToListener(messageId, Context.Guild.Id, emoji, role);
                 await Context.Message.DeleteAsync();
             }
             catch (HttpException e)

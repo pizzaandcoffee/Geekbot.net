@@ -7,8 +7,9 @@ namespace Geekbot.net.Lib.ReactionListener
     public interface IReactionListener
     {
         bool IsListener(ulong id);
-        Task AddRoleToListener(string messageId, IEmote emoji, IRole role);
+        Task AddRoleToListener(ulong messageId, ulong guildId, string emoji, IRole role);
         void RemoveRole(ISocketMessageChannel channel, SocketReaction reaction);
         void GiveRole(ISocketMessageChannel message, SocketReaction reaction);
+        IEmote ConvertStringToEmote(string emoji);
     }
 }
