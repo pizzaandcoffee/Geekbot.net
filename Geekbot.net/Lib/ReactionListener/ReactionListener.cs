@@ -11,6 +11,7 @@ namespace Geekbot.net.Lib.ReactionListener
     public class ReactionListener : IReactionListener
     {
         private readonly DatabaseContext _database;
+        // <messageId, <reaction, roleId>
         private Dictionary<ulong, Dictionary<IEmote, ulong>> _listener;
 
         public ReactionListener(DatabaseContext database)
@@ -50,6 +51,7 @@ namespace Geekbot.net.Lib.ReactionListener
                 RoleId = role.Id.AsLong(),
                 Reaction = emoji
             });
+            await _database.SaveChangesAsync();
 
             if (!_listener.ContainsKey(messageId))
             {
