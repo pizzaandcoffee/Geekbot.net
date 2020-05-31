@@ -8,7 +8,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Lib;
-using Geekbot.net.Lib.AlmostRedis;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
@@ -41,7 +40,6 @@ namespace Geekbot.net
         private GeekbotLogger _logger;
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
-        private IAlmostRedis _redis;
 
         private static void Main(string[] args)
         {
@@ -94,17 +92,6 @@ namespace Geekbot.net
             
             _globalSettings = new GlobalSettings(database);
             
-            try
-            {
-                _redis = new AlmostRedis(logger, runParameters);
-                _redis.Connect();
-            }
-            catch (Exception e)
-            {
-                logger.Error(LogSource.Redis, "Redis Connection Failed", e);
-                Environment.Exit(GeekbotExitCode.RedisConnectionFailed.GetHashCode());
-            }
-            
             _token = runParameters.Token ?? _globalSettings.GetKey("DiscordToken");
             if (string.IsNullOrEmpty(_token))
             {
@@ -128,7 +115,6 @@ namespace Geekbot.net
             var randomNumberGenerator = new RandomNumberGenerator();
             var kvMemoryStore = new KvInInMemoryStore();
             
-            _services.AddSingleton(_redis);
             _services.AddSingleton(_userRepository);
             _services.AddSingleton<IGeekbotLogger>(logger);
             _services.AddSingleton<ILevelCalc>(levelCalc);

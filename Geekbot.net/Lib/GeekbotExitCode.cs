@@ -10,7 +10,7 @@
         TranslationsFailed = 201,
         
         // Dependent Services
-        RedisConnectionFailed = 301,
+        /* 301 not in use anymore (redis) */
         DatabaseConnectionFailed = 302,
         
         // Discord Related

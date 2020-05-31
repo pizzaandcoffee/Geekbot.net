@@ -51,19 +51,6 @@ namespace Geekbot.net.Lib
         public bool DbLogging { get; set; }
 
         /************************************
-         * Redis                            *
-         ************************************/
-        
-        [Option("redis-host", Default = "127.0.0.1", HelpText = "Set a redis host")]
-        public string RedisHost { get; set; }
-
-        [Option("redis-port", Default = "6379", HelpText = "Set a redis port")]
-        public string RedisPort { get; set; }
-
-        [Option("redis-database", Default = "6", HelpText = "Select a redis database (1-15)")]
-        public string RedisDatabase { get; set; }
-        
-        /************************************
          * WebApi                           *
          ************************************/
      
