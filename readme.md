@@ -18,9 +18,11 @@ You can start geekbot with: `dotnet run`
 
 On your first run geekbot will ask for your bot token.
 
-You might need to pass some additional configuration (e.g. database credentials), these can be passed as commandline arguments.
+You might need to pass some additional configuration (e.g. database credentials), these can be passed as commandline arguments or environment variables.
 
-For a list of commandline arguments use `dotnet run -- -h` 
+For a list of commandline arguments and environment variables use `dotnet run -- -h` 
+
+All Environment Variables must be prefixed with `GEEKBOT_`
 
 ## Contributing
 

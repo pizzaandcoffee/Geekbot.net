@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System;
+using CommandLine;
 
 namespace Geekbot.net.Lib
 {
@@ -8,56 +9,89 @@ namespace Geekbot.net.Lib
          * General                          *
          ************************************/
         
-        [Option('V', "verbose", Default = false, HelpText = "Logs everything.")]
-        public bool Verbose { get; set; }
+        [Option("token", HelpText = "Set a new bot token. By default it will use your previous bot token which was stored in the database (default: null) (env: TOKEN)")]
+        public string Token { get; set; } = ParamFallback("TOKEN");
 
-        [Option('j', "log-json", Default = false, HelpText = "Logger outputs json")]
-        public bool LogJson { get; set; }
+        [Option('V', "verbose", HelpText = "Logs everything. (default: false) (env: LOG_VERBOSE)")]
+        public bool Verbose { get; set; } = ParamFallback("LOG_VERBOSE", false);
 
-        [Option('a', "disable-api", Default = false, HelpText = "Disables the web api")]
-        public bool DisableApi { get; set; }
+        [Option('j', "log-json", HelpText = "Logger outputs json (default: false ) (env: LOG_JSON)")]
+        public bool LogJson { get; set; } = ParamFallback("LOG_JSON", false);
 
-        [Option('e', "expose-errors", Default = false, HelpText = "Shows internal errors in the chat")]
-        public bool ExposeErrors { get; set; }
-        
-        [Option("token", Default = null, HelpText = "Set a new bot token")]
-        public string Token { get; set; }
-        
+        [Option('e', "expose-errors", HelpText = "Shows internal errors in the chat (default: false) (env: EXPOSE_ERRORS)")]
+        public bool ExposeErrors { get; set; } = ParamFallback("EXPOSE_ERRORS", false);
+
         /************************************
          * Database                         *
          ************************************/
         
-        [Option("in-memory", Default = false, HelpText = "Uses the in-memory database instead of postgresql")]
-        public bool InMemory { get; set; }
+        [Option("in-memory", HelpText = "Uses the in-memory database instead of postgresql (default: false) (env: DB_INMEMORY)")]
+        public bool InMemory { get; set; } = ParamFallback("DB_INMEMORY", false);
         
         // Postresql connection
-        [Option("database", Default = "geekbot", HelpText = "Select a postgresql database")]
-        public string DbDatabase { get; set; }
+        [Option("database", HelpText = "Select a postgresql database (default: geekbot) (env: DB_DATABASE)")]
+        public string DbDatabase { get; set; } = ParamFallback("DB_DATABASE", "geekbot");
 
-        [Option("db-host", Default = "localhost", HelpText = "Set a postgresql host (e.g. 127.0.0.1)")]
-        public string DbHost { get; set; }
+        [Option("db-host", HelpText = "Set a postgresql host (default: localhost) (env: DB_HOST)")]
+        public string DbHost { get; set; } = ParamFallback("DB_HOST", "localhost");
         
-        [Option("db-port", Default = "5432", HelpText = "Set a postgresql host (e.g. 5432)")]
-        public string DbPort { get; set; }
+        [Option("db-port", HelpText = "Set a postgresql host (default: 5432) (env: DB_PORT)")]
+        public string DbPort { get; set; } = ParamFallback("DB_PORT", "5432");
 
-        [Option("db-user", Default = "geekbot", HelpText = "Set a postgresql user")]
-        public string DbUser { get; set; }
+        [Option("db-user", HelpText = "Set a postgresql user (default: geekbot) (env: DB_USER)")]
+        public string DbUser { get; set; } = ParamFallback("DB_USER", "geekbot");
 
-        [Option("db-password", Default = "", HelpText = "Set a posgresql password")]
-        public string DbPassword { get; set; }
+        [Option("db-password", HelpText = "Set a posgresql password (default: empty) (env: DB_PASSWORD)")]
+        public string DbPassword { get; set; } = ParamFallback("DB_PASSWORD", "");
         
         // Logging
-        [Option("db-logging", Default = false, HelpText = "Enable database logging")]
-        public bool DbLogging { get; set; }
+        [Option("db-logging", HelpText = "Enable database logging (default: false) (env: DB_LOGGING)")]
+        public bool DbLogging { get; set; } = ParamFallback("DB_LOGGING", false);
 
         /************************************
          * WebApi                           *
          ************************************/
-     
-        [Option("api-host", Default = "localhost", HelpText = "Host on which the WebApi listens")]
-        public string ApiHost { get; set; }
         
-        [Option("api-port", Default = "12995", HelpText = "Port on which the WebApi listens")]
-        public string ApiPort { get; set; }
+        [Option('a', "disable-api", HelpText = "Disables the WebApi (default: false) (env: API_DISABLE)")]
+        public bool DisableApi { get; set; } = ParamFallback("API_DISABLE", false);
+
+        [Option("api-host", HelpText = "Host on which the WebApi listens (default: localhost) (env: API_HOST)")]
+        public string ApiHost { get; set; } = ParamFallback("API_HOST", "localhost");
+        
+        [Option("api-port", HelpText = "Port on which the WebApi listens (default: 12995) (env: API_PORT)")]
+        public string ApiPort { get; set; } = ParamFallback("API_PORT", "12995");
+        
+        /************************************
+         * Helper Functions                 *
+         ************************************/
+        
+        private static string ParamFallback(string key, string defaultValue = null)
+        {
+            var envVar = GetEnvironmentVariable(key);
+            return !string.IsNullOrEmpty(envVar) ? envVar : defaultValue;
+        }
+        
+        private static bool ParamFallback(string key, bool defaultValue)
+        {
+            var envVar = GetEnvironmentVariable(key);
+            if (!string.IsNullOrEmpty(envVar))
+            {
+                return envVar.ToLower() switch
+                {
+                    "true" => true,
+                    "1" => true,
+                    "false" => false,
+                    "0" => false,
+                    _ => defaultValue
+                };
+            }
+
+            return defaultValue;
+        }
+
+        private static string GetEnvironmentVariable(string name)
+        {
+            return Environment.GetEnvironmentVariable($"GEEKBOT_{name}");
+        }
     }
 }
