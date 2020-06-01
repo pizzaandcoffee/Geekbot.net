@@ -1,4 +1,4 @@
-[![pipeline status](https://git.boerlage.me/open/Geekbot.net/badges/master/pipeline.svg)](https://git.boerlage.me/open/Geekbot.net/commits/master)
+[![pipeline status](https://gitlab.com/dbgit/open/geekbot/badges/master/pipeline.svg)](https://gitlab.com/dbgit/open/geekbot/commits/master)
 
 # [Geekbot.net](https://geekbot.pizzaandcoffee.rocks/)
 
@@ -8,22 +8,19 @@ You can invite Geekbot to your server with [this link](https://discordapp.com/oa
 
 ## Technologies
 
-* DotNet Core 2
-* Redis
+* DotNet Core 3.1
+* PostgreSQL
 * Discord.net
 
 ## Running
 
-Make sure redis is running
+You can start geekbot with: `dotnet run`
 
-Run these commands
+On your first run geekbot will ask for your bot token.
 
-* `dotnet restore`
-* `dotnet run`
+You might need to pass some additional configuration (e.g. database credentials), these can be passed as commandline arguments.
 
-On your first run geekbot will ask for your bot token, everything else is taken care of.
-
-For a list of launch options use `dotnet run -h` 
+For a list of commandline arguments use `dotnet run -- -h` 
 
 ## Contributing
 
