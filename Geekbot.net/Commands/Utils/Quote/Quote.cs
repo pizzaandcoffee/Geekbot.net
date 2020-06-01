@@ -270,7 +270,14 @@ namespace Geekbot.net.Commands.Utils.Quote
             var user = Context.Client.GetUserAsync(quote.UserId.AsUlong()).Result ?? new UserPolyfillDto { Username = "Unknown User" };
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
-            eb.Title = $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
+            if (quote.InternalId == 0)
+            {
+                eb.Title = $"{user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";                
+            }
+            else
+            {
+                eb.Title = $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";                
+            }
             eb.Description = quote.Quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
             if (quote.Image != null) eb.ImageUrl = quote.Image;
@@ -289,9 +296,8 @@ namespace Geekbot.net.Commands.Utils.Quote
                 image = null;
             }
 
-            var last = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong()))
-                                 .OrderByDescending(e => e.InternalId).FirstOrDefault();
-            var internalId = 1;
+            var last = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).OrderByDescending(e => e.InternalId).FirstOrDefault();
+            var internalId = 0;
             if (last != null) internalId = last.InternalId + 1;
             return new QuoteModel()
             {
