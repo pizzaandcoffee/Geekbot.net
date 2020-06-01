@@ -252,7 +252,7 @@ namespace Geekbot.net.Commands.Utils.Quote
             try
             {
                 var list = Context.Channel.GetMessagesAsync().Flatten();
-                return await list.FirstOrDefault(msg => 
+                return await list.FirstOrDefaultAsync(msg => 
                     msg.Author.Id == user.Id &&
                     msg.Embeds.Count == 0 &&
                     msg.Id != Context.Message.Id &&

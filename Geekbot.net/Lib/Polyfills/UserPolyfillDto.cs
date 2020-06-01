@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Discord;
 
@@ -11,6 +12,7 @@ namespace Geekbot.net.Lib.Polyfills
         public string Mention { get; set; }
         public IActivity Activity { get; }
         public UserStatus Status { get; set; }
+        public IImmutableSet<ClientType> ActiveClients { get; }
         public string AvatarId { get; set; }
         public string Discriminator { get; set; }
         public ushort DiscriminatorValue { get; set; }
