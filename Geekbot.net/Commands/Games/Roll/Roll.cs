@@ -10,7 +10,7 @@ using Geekbot.net.Lib.KvInMemoryStore;
 using Geekbot.net.Lib.Localization;
 using Geekbot.net.Lib.RandomNumberGenerator;
 
-namespace Geekbot.net.Commands.Games
+namespace Geekbot.net.Commands.Games.Roll
 {
     public class Roll : ModuleBase
     {
@@ -42,17 +42,18 @@ namespace Geekbot.net.Commands.Games
                 {
                     var kvKey = $"{Context.Guild.Id}:{Context.User.Id}:RollsPrevious";
 
-                    var prevRoll = _kvInMemoryStore.Get<int>(kvKey);
-                    if (prevRoll > 0)
+                    var prevRoll = _kvInMemoryStore.Get<RollTimeout>(kvKey);
+
+                    if (prevRoll?.LastGuess == guess && prevRoll?.GuessedOn.AddDays(1) > DateTime.Now)
                     {
-                        if (prevRoll == guess)
-                        {
-                            await ReplyAsync(transContext.GetString("NoPrevGuess", Context.Message.Author.Mention));
-                            return;
-                        }
+                        await ReplyAsync(transContext.GetString(
+                            "NoPrevGuess",
+                            Context.Message.Author.Mention,
+                            transContext.FormatDateTimeAsRemaining(prevRoll.GuessedOn.AddDays(1))));
+                        return;
                     }
 
-                    _kvInMemoryStore.Set(kvKey, guess);
+                    _kvInMemoryStore.Set(kvKey, new RollTimeout { LastGuess = guess, GuessedOn = DateTime.Now });
 
                     await ReplyAsync(transContext.GetString("Rolled", Context.Message.Author.Mention, number, guess));
                     if (guess == number)
