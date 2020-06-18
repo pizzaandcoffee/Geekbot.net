@@ -508,11 +508,6 @@ namespace Geekbot.net.Commands.Randomness.Greetings
             },
             new GreetingDto()
             {
-                Text = "something",
-                Language = "something"
-            },
-            new GreetingDto()
-            {
                 Text = "Aluu",
                 Language = "Greenlandic"
             },

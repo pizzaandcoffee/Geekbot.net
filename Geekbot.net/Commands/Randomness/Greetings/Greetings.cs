@@ -17,7 +17,7 @@ namespace Geekbot.net.Commands.Randomness.Greetings
         }
 
         [Command("hello", RunMode = RunMode.Async)]
-        [Alias("greeting")]
+        [Alias("greeting", "hi", "hallo")]
         [Summary("Say hello to the bot and get a reply in a random language")]
         public async Task GetGreeting()
         {
@@ -36,7 +36,7 @@ namespace Geekbot.net.Commands.Randomness.Greetings
 
                 if (greeting.Romanization != null)
                 {
-                    eb.AddInlineField("Romanization", greeting.Romanization);
+                    eb.AddInlineField("Roman", greeting.Romanization);
                 }
 
                 await ReplyAsync(string.Empty, false, eb.Build());
