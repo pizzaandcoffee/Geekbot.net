@@ -83,8 +83,8 @@ roll:
     EN: "{0}, you rolled {1}"
     CHDE: "{0}, du hesch {1} grollt"
   NoPrevGuess:
-    EN: ":red_circle: {0}, you can't guess the same number again"
-    CHDE: ":red_circle: {0}, du chasch nid nomol es gliche rate"
+    EN: ":red_circle: {0}, you can't guess the same number again, guess another number or wait {1}"
+    CHDE: ":red_circle: {0}, du chasch nid nomol es gliche rate, rate öppis anders oder warte {1}"
 cookies: &cookiesAlias
   GetCookies:
     EN: "You got {0} cookies, there are now {1} cookies in you cookie jar"
