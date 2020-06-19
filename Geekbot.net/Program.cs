@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Geekbot.net.Database;
+using Geekbot.net.Handlers;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
@@ -34,12 +35,11 @@ namespace Geekbot.net
         private CommandService _commands;
         private DatabaseInitializer _databaseInitializer;
         private IGlobalSettings _globalSettings;
-        private IServiceCollection _services;
         private IServiceProvider _servicesProvider;
-        private string _token;
         private GeekbotLogger _logger;
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
+        private IReactionListener _reactionListener;
 
         private static void Main(string[] args)
         {
@@ -73,66 +73,25 @@ namespace Geekbot.net
         {
             _logger = logger;
             _runParameters = runParameters;
-            logger.Information(LogSource.Geekbot, "Initing Stuff");
-            var discordLogger = new DiscordLogger(logger);
-
-            _client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose,
-                MessageCacheSize = 1000,
-                ExclusiveBulkDelete = true
-            });
-            _client.Log += discordLogger.Log;
-            _commands = new CommandService();
-
-            _databaseInitializer = new DatabaseInitializer(runParameters, logger);
-            var database = _databaseInitializer.Initialize();
-            database.Database.EnsureCreated();
-            if(!_runParameters.InMemory) database.Database.Migrate();
             
+            logger.Information(LogSource.Geekbot, "Connecting to Database");
+            var database = ConnectToDatabase();
             _globalSettings = new GlobalSettings(database);
-            
-            _token = runParameters.Token ?? _globalSettings.GetKey("DiscordToken");
-            if (string.IsNullOrEmpty(_token))
-            {
-                Console.Write("Your bot Token: ");
-                var newToken = Console.ReadLine();
-                await _globalSettings.SetKey("DiscordToken", newToken);
-                await _globalSettings.SetKey("Game", "Ping Pong");
-                _token = newToken;
-            }
-
-            _services = new ServiceCollection();
-            
-            _userRepository = new UserRepository(_databaseInitializer.Initialize(), logger);
-            var fortunes = new FortunesProvider(logger);
-            var mediaProvider = new MediaProvider(logger);
-            var malClient = new MalClient(_globalSettings, logger);
-            var levelCalc = new LevelCalc();
-            var emojiConverter = new EmojiConverter();
-            var mtgManaConverter = new MtgManaConverter();
-            var wikipediaClient = new WikipediaClient();
-            var randomNumberGenerator = new RandomNumberGenerator();
-            var kvMemoryStore = new KvInInMemoryStore();
-            
-            _services.AddSingleton(_userRepository);
-            _services.AddSingleton<IGeekbotLogger>(logger);
-            _services.AddSingleton<ILevelCalc>(levelCalc);
-            _services.AddSingleton<IEmojiConverter>(emojiConverter);
-            _services.AddSingleton<IFortunesProvider>(fortunes);
-            _services.AddSingleton<IMediaProvider>(mediaProvider);
-            _services.AddSingleton<IMalClient>(malClient);
-            _services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
-            _services.AddSingleton<IWikipediaClient>(wikipediaClient);
-            _services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
-            _services.AddSingleton<IKvInMemoryStore>(kvMemoryStore);
-            _services.AddSingleton(_globalSettings);
-            _services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
-            _services.AddTransient(e => _databaseInitializer.Initialize());
 
             logger.Information(LogSource.Geekbot, "Connecting to Discord");
-
+            SetupDiscordClient();
             await Login();
+            _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
+            await _client.SetGameAsync(_globalSettings.GetKey("Game"));
+
+            _logger.Information(LogSource.Geekbot, "Loading Dependencies and Handlers");
+            RegisterDependencies();
+            await RegisterHandlers();
+
+            _logger.Information(LogSource.Api, "Starting Web API");
+            StartWebApi();
+            
+            _logger.Information(LogSource.Geekbot, "Done and ready for use");
 
             await Task.Delay(-1);
         }
@@ -141,42 +100,10 @@ namespace Geekbot.net
         {
             try
             {
-                await _client.LoginAsync(TokenType.Bot, _token);
+                var token = await GetToken();
+                await _client.LoginAsync(TokenType.Bot, token);
                 await _client.StartAsync();
-                var isConneted = await IsConnected();
-                if (isConneted)
-                {
-                    var applicationInfo = await _client.GetApplicationInfoAsync();
-                    await _client.SetGameAsync(_globalSettings.GetKey("Game"));
-                    _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
-
-                    _logger.Information(LogSource.Geekbot, "Registering Stuff");
-                    var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
-                    var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
-                    var reactionListener = new ReactionListener(_databaseInitializer.Initialize());
-                    _services.AddSingleton<IErrorHandler>(errorHandler);
-                    _services.AddSingleton<ITranslationHandler>(translationHandler);
-                    _services.AddSingleton(_client);
-                    _services.AddSingleton<IReactionListener>(reactionListener);
-                    _servicesProvider = _services.BuildServiceProvider();
-                    await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
-
-                    var handlers = new Handlers(_databaseInitializer, _client, _logger, _servicesProvider, _commands, _userRepository, reactionListener, applicationInfo);
-                    
-                    _client.MessageReceived += handlers.RunCommand;
-                    _client.MessageDeleted += handlers.MessageDeleted;
-                    _client.UserJoined += handlers.UserJoined;
-                    _client.UserUpdated += handlers.UserUpdated;
-                    _client.UserLeft += handlers.UserLeft;
-                    _client.ReactionAdded += handlers.ReactionAdded;
-                    _client.ReactionRemoved += handlers.ReactionRemoved;
-                    if (!_runParameters.InMemory) _client.MessageReceived += handlers.UpdateStats;
-                    
-                    var webserver = _runParameters.DisableApi ? Task.Delay(10) : StartWebApi();
-                    _logger.Information(LogSource.Geekbot, "Done and ready for use");
-
-                    await webserver;
-                }
+                while (!_client.ConnectionState.Equals(ConnectionState.Connected)) await Task.Delay(25);
             }
             catch (Exception e)
             {
@@ -185,19 +112,117 @@ namespace Geekbot.net
             }
         }
 
-        private async Task<bool> IsConnected()
+        private DatabaseContext ConnectToDatabase()
         {
-            while (!_client.ConnectionState.Equals(ConnectionState.Connected))
-                await Task.Delay(25);
-            return true;
+            _databaseInitializer = new DatabaseInitializer(_runParameters, _logger);
+            var database = _databaseInitializer.Initialize();
+            database.Database.EnsureCreated();
+            if(!_runParameters.InMemory) database.Database.Migrate();
+
+            return database;
         }
 
-        private Task StartWebApi()
+        private async Task<string> GetToken()
         {
-            _logger.Information(LogSource.Api, "Starting Webserver");
+            var token = _runParameters.Token ?? _globalSettings.GetKey("DiscordToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                Console.Write("Your bot Token: ");
+                var newToken = Console.ReadLine();
+                await _globalSettings.SetKey("DiscordToken", newToken);
+                await _globalSettings.SetKey("Game", "Ping Pong");
+                token = newToken;
+            }
+
+            return token;
+        }
+
+        private void SetupDiscordClient()
+        {
+            _client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                LogLevel = LogSeverity.Verbose,
+                MessageCacheSize = 1000,
+                ExclusiveBulkDelete = true
+            });
+            
+            var discordLogger = new DiscordLogger(_logger);
+            _client.Log += discordLogger.Log;
+        }
+
+        private void RegisterDependencies()
+        {
+            var services = new ServiceCollection();
+            
+            _userRepository = new UserRepository(_databaseInitializer.Initialize(), _logger);
+            _reactionListener = new ReactionListener(_databaseInitializer.Initialize());
+            var fortunes = new FortunesProvider(_logger);
+            var mediaProvider = new MediaProvider(_logger);
+            var malClient = new MalClient(_globalSettings, _logger);
+            var levelCalc = new LevelCalc();
+            var emojiConverter = new EmojiConverter();
+            var mtgManaConverter = new MtgManaConverter();
+            var wikipediaClient = new WikipediaClient();
+            var randomNumberGenerator = new RandomNumberGenerator();
+            var kvMemoryStore = new KvInInMemoryStore();
+            var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
+            var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
+            
+            services.AddSingleton(_userRepository);
+            services.AddSingleton<IGeekbotLogger>(_logger);
+            services.AddSingleton<ILevelCalc>(levelCalc);
+            services.AddSingleton<IEmojiConverter>(emojiConverter);
+            services.AddSingleton<IFortunesProvider>(fortunes);
+            services.AddSingleton<IMediaProvider>(mediaProvider);
+            services.AddSingleton<IMalClient>(malClient);
+            services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
+            services.AddSingleton<IWikipediaClient>(wikipediaClient);
+            services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
+            services.AddSingleton<IKvInMemoryStore>(kvMemoryStore);
+            services.AddSingleton<IGlobalSettings>(_globalSettings);
+            services.AddSingleton<IErrorHandler>(errorHandler);
+            services.AddSingleton<ITranslationHandler>(translationHandler);
+            services.AddSingleton<IReactionListener>(_reactionListener);
+            services.AddSingleton(_client);
+            services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
+            services.AddTransient(e => _databaseInitializer.Initialize());
+            
+            _servicesProvider = services.BuildServiceProvider();
+        }
+        
+        private async Task RegisterHandlers()
+        {
+            var applicationInfo = await _client.GetApplicationInfoAsync();
+            
+            _commands = new CommandService();
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
+            
+            var commandHandler = new CommandHandler(_databaseInitializer.Initialize(), _client, _logger, _servicesProvider, _commands, applicationInfo);
+            var userHandler = new UserHandler(_userRepository, _logger, _databaseInitializer.Initialize(), _client);
+            var reactionHandler = new ReactionHandler(_reactionListener);
+            var statsHandler = new StatsHandler(_logger, _databaseInitializer.Initialize());
+            var messageDeletedHandler = new MessageDeletedHandler(_databaseInitializer.Initialize(), _logger, _client);
+                    
+            _client.MessageReceived += commandHandler.RunCommand;
+            _client.MessageDeleted += messageDeletedHandler.HandleMessageDeleted;
+            _client.UserJoined += userHandler.Joined;
+            _client.UserUpdated += userHandler.Updated;
+            _client.UserLeft += userHandler.Left;
+            _client.ReactionAdded += reactionHandler.Added;
+            _client.ReactionRemoved += reactionHandler.Removed;
+            if (!_runParameters.InMemory) _client.MessageReceived += statsHandler.UpdateStats;
+        }
+
+        private void StartWebApi()
+        {
+            if (_runParameters.DisableApi)
+            {
+                _logger.Warning(LogSource.Api, "Web API is disabled");
+                return;
+            }
+            
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
-            return Task.CompletedTask;
         }
     }
 }

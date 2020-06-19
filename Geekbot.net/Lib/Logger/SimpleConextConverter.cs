@@ -11,7 +11,7 @@ namespace Geekbot.net.Lib.Logger
             {
                 Message = new MessageDto.MessageContent
                 {
-                    Content = context.Message.Content,
+                    Content = context.Message.Content, // Only when an error occurs, including for diagnostic reason 
                     Id = context.Message.Id.ToString(),
                     Attachments = context.Message.Attachments.Count,
                     ChannelMentions = context.Message.MentionedChannelIds.Count,
@@ -42,7 +42,6 @@ namespace Geekbot.net.Lib.Logger
             {
                 Message = new MessageDto.MessageContent
                 {
-                    Content = message.Content,
                     Id = message.Id.ToString(),
                     Attachments = message.Attachments.Count,
                     ChannelMentions = message.MentionedChannels.Count,
