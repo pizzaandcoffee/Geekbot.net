@@ -4,6 +4,8 @@ stages:
   - deploy
   - ops
 
+.imageTag: &IMAGE_TAG $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
 Build:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal
@@ -19,12 +21,13 @@ Build:
 Package:
   stage: docker
   image: docker
-#  only:
-#    - master
+  only:
+    - master
+    - docker
   services:
     - docker:stable-dind
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    IMAGE_TAG: *IMAGE_TAG
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $IMAGE_TAG .
@@ -32,21 +35,21 @@ Package:
 
 Deploy:
   stage: deploy
-  image: runebaas/rsync-ssh-git
+  image: ansible/ansible-runner
   only:
     - master
-  environment:
-      name: Production
-      url: https://discordapp.com/oauth2/authorize?client_id=171249478546882561&scope=bot&permissions=1416834054
+    - docker
+  variables:
+    ANSIBLE_NOCOWS: 1
+    IMAGE_TAG: *IMAGE_TAG
   before_script:
-    - eval $(ssh-agent -s)
-    - mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n    StrictHostKeyChecking no" > ~/.ssh/config'
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-    - chmod 700 ~/.ssh
+    - mkdir /root/.ssh
+    - cp $SSH_PRIVATE_KEY /root/.ssh/id_ed25519
+    - cp $SSH_PUBLIC_KEY /root/.ssh/id_ed25519.pub
+    - chmod -R 600 /root/.ssh
+    - ssh-keyscan -p 65432 $PROD_IP > /root/.ssh/known_hosts
   script:
-    - rsync -rav -e "ssh -p 65432" ./Geekbot.net/Binaries/* geekbot@$DEPIP:$DEPPATH
-    - ssh -p 65432 geekbot@$DEPIP "sudo systemctl restart geekbot.service"
+    - ansible-playbook -i $PROD_IP, .deploy.yml
 
 Sentry:
   stage: ops

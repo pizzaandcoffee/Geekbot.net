@@ -1,0 +1,37 @@
+---
+- name: Geekbot Deploy
+  hosts: all
+  remote_user: geekbot
+  vars:
+    ansible_port: 65432
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Login to Gitlab Docker Registry
+      docker_login:
+        registry_url: "{{ lookup('env', 'CI_REGISTRY') }}"
+        username: "{{ lookup('env', 'CI_REGISTRY_USER') }}"
+        password: "{{ lookup('env', 'CI_REGISTRY_PASSWORD') }}"
+        reauthorize: yes
+    - name: Replace Prod Container
+      docker_container:
+        name: GeekbotProd
+        image: "{{ lookup('env', 'IMAGE_TAG') }}"
+        recreate: yes
+        pull: yes
+        restart_policy: always
+        keep_volumes: no
+        ports:
+          - "12995:12995"
+        env:
+          GEEKBOT_DB_HOST: "{{ lookup('env', 'GEEKBOT_DB_HOST') }}"
+          GEEKBOT_DB_USER: "{{ lookup('env', 'GEEKBOT_DB_USER') }}"
+          GEEKBOT_DB_PASSWORD: "{{ lookup('env', 'GEEKBOT_DB_PASSWORD') }}"
+          GEEKBOT_DB_PORT: "{{ lookup('env', 'GEEKBOT_DB_PORT') }}"
+          GEEKBOT_DB_DATABASE: "{{ lookup('env', 'GEEKBOT_DB_DATABASE') }}"
+          GEEKBOT_DB_REQUIRE_SSL: "true"
+          GEEKBOT_DB_TRUST_CERT: "true"
+          GEEKBOT_SUMOLOCIG: "{{ lookup('env', 'GEEKBOT_SUMOLOCIG') }}"
+          GEEKBOT_SENTRY: "{{ lookup('env', 'GEEKBOT_SENTRY') }}"
+    - name: Cleanup Old Container
+      docker_prune:
+        images: yes
