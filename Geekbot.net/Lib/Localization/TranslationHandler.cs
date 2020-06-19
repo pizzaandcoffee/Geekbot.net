@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Geekbot.net.Database;
-using Geekbot.net.Database.Models;
-using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.GuildSettingsManager;
 using Geekbot.net.Lib.Logger;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
@@ -15,15 +13,15 @@ namespace Geekbot.net.Lib.Localization
 {
     public class TranslationHandler : ITranslationHandler
     {
-        private readonly DatabaseContext _database;
         private readonly IGeekbotLogger _logger;
+        private readonly IGuildSettingsManager _guildSettingsManager;
         private readonly Dictionary<ulong, string> _serverLanguages;
         private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _translations;
 
-        public TranslationHandler(DatabaseContext database, IGeekbotLogger logger)
+        public TranslationHandler(IGeekbotLogger logger, IGuildSettingsManager guildSettingsManager)
         {
-            _database = database;
             _logger = logger;
+            _guildSettingsManager = guildSettingsManager;
             _logger.Information(LogSource.Geekbot, "Loading Translations");
             LoadTranslations();
             _serverLanguages = new Dictionary<ulong, string>();
@@ -107,7 +105,7 @@ namespace Geekbot.net.Lib.Localization
                 }
                 catch
                 {
-                    lang = (await GetGuild(guildId)).Language ?? "EN";
+                    lang = _guildSettingsManager.GetSettings(guildId, false)?.Language ?? "EN";
                     _serverLanguages[guildId] = lang;
                     return lang;
                 }
@@ -178,9 +176,9 @@ namespace Geekbot.net.Lib.Localization
             try
             {
                 if (!SupportedLanguages.Contains(language)) return false;
-                var guild = await GetGuild(guildId);
+                var guild = _guildSettingsManager.GetSettings(guildId);
                 guild.Language = language;
-                _database.GuildSettings.Update(guild);
+                await _guildSettingsManager.UpdateSettings(guild);
                 _serverLanguages[guildId] = language;
                 return true;
             }
@@ -192,17 +190,5 @@ namespace Geekbot.net.Lib.Localization
         }
 
         public List<string> SupportedLanguages { get; private set; }
-
-        private async Task<GuildSettingsModel> GetGuild(ulong guildId)
-        {
-            var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
-            if (guild != null) return guild;
-            _database.GuildSettings.Add(new GuildSettingsModel
-            {
-                GuildId = guildId.AsLong()
-            });
-            await _database.SaveChangesAsync();
-            return _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildId.AsLong()));
-        }
     }
 }

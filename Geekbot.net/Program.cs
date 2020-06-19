@@ -13,6 +13,7 @@ using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
+using Geekbot.net.Lib.GuildSettingsManager;
 using Geekbot.net.Lib.Highscores;
 using Geekbot.net.Lib.KvInMemoryStore;
 using Geekbot.net.Lib.Levels;
@@ -40,6 +41,7 @@ namespace Geekbot.net
         private IUserRepository _userRepository;
         private RunParameters _runParameters;
         private IReactionListener _reactionListener;
+        private IGuildSettingsManager _guildSettingsManager;
 
         private static void Main(string[] args)
         {
@@ -156,6 +158,7 @@ namespace Geekbot.net
             
             _userRepository = new UserRepository(_databaseInitializer.Initialize(), _logger);
             _reactionListener = new ReactionListener(_databaseInitializer.Initialize());
+            _guildSettingsManager = new GuildSettingsManager(_databaseInitializer.Initialize());
             var fortunes = new FortunesProvider(_logger);
             var mediaProvider = new MediaProvider(_logger);
             var malClient = new MalClient(_globalSettings, _logger);
@@ -165,7 +168,7 @@ namespace Geekbot.net
             var wikipediaClient = new WikipediaClient();
             var randomNumberGenerator = new RandomNumberGenerator();
             var kvMemoryStore = new KvInInMemoryStore();
-            var translationHandler = new TranslationHandler(_databaseInitializer.Initialize(), _logger);
+            var translationHandler = new TranslationHandler(_logger, _guildSettingsManager);
             var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
             
             services.AddSingleton(_userRepository);
@@ -183,6 +186,7 @@ namespace Geekbot.net
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton<ITranslationHandler>(translationHandler);
             services.AddSingleton<IReactionListener>(_reactionListener);
+            services.AddSingleton<IGuildSettingsManager>(_guildSettingsManager);
             services.AddSingleton(_client);
             services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
             services.AddTransient(e => _databaseInitializer.Initialize());
@@ -197,7 +201,7 @@ namespace Geekbot.net
             _commands = new CommandService();
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _servicesProvider);
             
-            var commandHandler = new CommandHandler(_databaseInitializer.Initialize(), _client, _logger, _servicesProvider, _commands, applicationInfo);
+            var commandHandler = new CommandHandler(_databaseInitializer.Initialize(), _client, _logger, _servicesProvider, _commands, applicationInfo, _guildSettingsManager);
             var userHandler = new UserHandler(_userRepository, _logger, _databaseInitializer.Initialize(), _client);
             var reactionHandler = new ReactionHandler(_reactionListener);
             var statsHandler = new StatsHandler(_logger, _databaseInitializer.Initialize());

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -8,7 +7,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using Geekbot.net.Database;
 using Geekbot.net.Database.Models;
-using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.GuildSettingsManager;
 using Geekbot.net.Lib.Logger;
 
 namespace Geekbot.net.Handlers
@@ -20,10 +19,12 @@ namespace Geekbot.net.Handlers
         private readonly IServiceProvider _servicesProvider;
         private readonly CommandService _commands;
         private readonly RestApplication _applicationInfo;
+        private readonly IGuildSettingsManager _guildSettingsManager;
         private readonly List<ulong> _ignoredServers;
         private readonly DatabaseContext _database;
 
-        public CommandHandler(DatabaseContext database, IDiscordClient client, IGeekbotLogger logger, IServiceProvider servicesProvider, CommandService commands, RestApplication applicationInfo)
+        public CommandHandler(DatabaseContext database, IDiscordClient client, IGeekbotLogger logger, IServiceProvider servicesProvider, CommandService commands, RestApplication applicationInfo,
+            IGuildSettingsManager guildSettingsManager)
         {
             _database = database;
             _client = client;
@@ -31,6 +32,7 @@ namespace Geekbot.net.Handlers
             _servicesProvider = servicesProvider;
             _commands = commands;
             _applicationInfo = applicationInfo;
+            _guildSettingsManager = guildSettingsManager;
 
             // Some guilds only want very specific functionally without any of the commands, a quick hack that solves that "short term"
             // ToDo: create a clean solution for this...
@@ -68,14 +70,14 @@ namespace Geekbot.net.Handlers
 
                 var argPos = 0;
                 if (!IsCommand(message, ref argPos)) return Task.CompletedTask;
-                
+
                 ExecuteCommand(message, argPos);
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Failed to Process Message", e);
             }
-            
+
             return Task.CompletedTask;
         }
 
@@ -102,7 +104,7 @@ namespace Geekbot.net.Handlers
             if (!lowerCaseMessage.StartsWith("ping ") && !lowerCaseMessage.Equals("ping")) return false;
             return GetGuildSettings(guildId)?.Ping ?? false;
         }
-        
+
         private bool ShouldHui(string lowerCaseMessage, ulong guildId)
         {
             if (!lowerCaseMessage.StartsWith("hui")) return false;
@@ -111,7 +113,7 @@ namespace Geekbot.net.Handlers
 
         private GuildSettingsModel GetGuildSettings(ulong guildId)
         {
-            return _database.GuildSettings.FirstOrDefault(guild => guild.GuildId.Equals(guildId.AsLong()));
+            return _guildSettingsManager.GetSettings(guildId, false);
         }
     }
 }
