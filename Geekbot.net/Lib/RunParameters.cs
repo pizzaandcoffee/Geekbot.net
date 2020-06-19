@@ -43,6 +43,12 @@ namespace Geekbot.net.Lib
 
         [Option("db-password", HelpText = "Set a posgresql password (default: empty) (env: DB_PASSWORD)")]
         public string DbPassword { get; set; } = ParamFallback("DB_PASSWORD", "");
+
+        [Option("db-require-ssl", HelpText = "Require SSL to connect to the database (default: false) (env: DB_REQUIRE_SSL)")]
+        public bool DbSsl { get; set; } = ParamFallback("DB_REQUIRE_SSL", false);
+        
+        [Option("db-trust-cert", HelpText = "Trust the database certificate, regardless if it is valid (default: false) (env: DB_TRUST_CERT)")]
+        public bool DbTrustCert { get; set; } = ParamFallback("DB_TRUST_CERT", false);
         
         // Logging
         [Option("db-logging", HelpText = "Enable database logging (default: false) (env: DB_LOGGING)")]
