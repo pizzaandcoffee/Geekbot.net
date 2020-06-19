@@ -1,9 +1,6 @@
-Geekbot.net/bin
-Geekbot.net/obj
+*/bin/
+*/obj/
 Geekbot.net/tmp/
-Tests/bin
-Tests/obj
-Backup/
 .vs/
 UpgradeLog.htm
 .idea
@@ -12,5 +9,4 @@ Geekbot.net/Logs/*
 !/Geekbot.net/Logs/.keep
 Geekbot.net.sln.DotSettings.user
 Geekbot.net/temp/
-WikipediaApi/bin/
-WikipediaApi/obj/
+app

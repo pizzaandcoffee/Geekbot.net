@@ -1,7 +1,7 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:5.0-focal
 
-COPY Geekbot.net/Binaries /app/
+COPY ./app /app/
 
 EXPOSE 12995/tcp
 WORKDIR /app
-ENTRYPOINT ./run.sh
+ENTRYPOINT ./Geekbot.net

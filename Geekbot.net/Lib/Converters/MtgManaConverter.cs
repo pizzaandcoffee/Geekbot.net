@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
-using Utf8Json;
 
 namespace Geekbot.net.Lib.Converters
 {
