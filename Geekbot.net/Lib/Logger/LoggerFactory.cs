@@ -9,18 +9,18 @@ namespace Geekbot.net.Lib.Logger
 {
     public class LoggerFactory
     {
-        public static NLog.Logger CreateNLog(RunParameters runParameters, bool sumologicActive)
+        public static NLog.Logger CreateNLog(RunParameters runParameters)
         {
             var config = new LoggingConfiguration();
 
-            if (sumologicActive)
+            if (!string.IsNullOrEmpty(runParameters.SumologicEndpoint))
             {
                 Console.WriteLine("Logging Geekbot Logs to Sumologic");
                 config.LoggingRules.Add(
                     new LoggingRule("*", LogLevel.Debug, LogLevel.Fatal,
                         new SumoLogicTarget()
                         {
-                            Url = Environment.GetEnvironmentVariable("GEEKBOT_SUMO"),
+                            Url = runParameters.SumologicEndpoint,
                             SourceName = "GeekbotLogger",
                             Layout = "${message}",
                             UseConsoleLog = false,

@@ -68,6 +68,16 @@ namespace Geekbot.net.Lib
         public string ApiPort { get; set; } = ParamFallback("API_PORT", "12995");
         
         /************************************
+         * Intergrations                    *
+         ************************************/
+
+        [Option("sumologic", HelpText = "Sumologic endpoint for logging (default: null) (env: SUMOLOGIC)")]
+        public string SumologicEndpoint { get; set; } = ParamFallback("SUMOLOGIC");
+        
+        [Option("sentry", HelpText = "Sentry endpoint for error reporting (default: null) (env: SENTRY)")]
+        public string SentryEndpoint { get; set; } = ParamFallback("SENTRY");
+        
+        /************************************
          * Helper Functions                 *
          ************************************/
         

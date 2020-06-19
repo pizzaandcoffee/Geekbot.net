@@ -9,10 +9,10 @@ namespace Geekbot.net.Lib.Logger
         private readonly NLog.Logger _logger;
         private readonly JsonSerializerSettings _serializerSettings;
 
-        public GeekbotLogger(RunParameters runParameters, bool sumologicActive)
+        public GeekbotLogger(RunParameters runParameters)
         {
-            _logAsJson = sumologicActive || runParameters.LogJson;
-            _logger = LoggerFactory.CreateNLog(runParameters, sumologicActive);
+            _logAsJson = !string.IsNullOrEmpty(runParameters.SumologicEndpoint) || runParameters.LogJson;
+            _logger = LoggerFactory.CreateNLog(runParameters);
             _serializerSettings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,

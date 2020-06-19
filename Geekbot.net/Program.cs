@@ -58,8 +58,7 @@ namespace Geekbot.net
             logo.AppendLine(@" \____|_____|_____|_|\_\____/ \___/ |_|");
             logo.AppendLine($"Version {Constants.BotVersion()} ".PadRight(41, '='));
             Console.WriteLine(logo.ToString());
-            var sumologicActive = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GEEKBOT_SUMO"));
-            var logger = new GeekbotLogger(runParameters, sumologicActive);
+            var logger = new GeekbotLogger(runParameters);
             logger.Information(LogSource.Geekbot, "Starting...");
             try
             {
@@ -169,7 +168,7 @@ namespace Geekbot.net
             var randomNumberGenerator = new RandomNumberGenerator();
             var kvMemoryStore = new KvInInMemoryStore();
             var translationHandler = new TranslationHandler(_logger, _guildSettingsManager);
-            var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters.ExposeErrors);
+            var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters);
             
             services.AddSingleton(_userRepository);
             services.AddSingleton<IGeekbotLogger>(_logger);

@@ -18,13 +18,13 @@ namespace Geekbot.net.Lib.ErrorHandling
         private readonly IRavenClient _raven;
         private readonly bool _errorsInChat;
 
-        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, bool errorsInChat)
+        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, RunParameters runParameters)
         {
             _logger = logger;
             _translation = translation;
-            _errorsInChat = errorsInChat;
+            _errorsInChat = runParameters.ExposeErrors;
 
-            var sentryDsn = Environment.GetEnvironmentVariable("SENTRY");
+            var sentryDsn = runParameters.SentryEndpoint;
             if (!string.IsNullOrEmpty(sentryDsn))
             {
                 _raven = new RavenClient(sentryDsn) { Release = Constants.BotVersion(), Environment = "Production" };
