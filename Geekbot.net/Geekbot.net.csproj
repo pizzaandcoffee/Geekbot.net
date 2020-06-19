@@ -82,9 +82,6 @@
     <None Update="Storage\foxes">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Lib\Converters\MtgManaEmojis.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Storage\dab">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
