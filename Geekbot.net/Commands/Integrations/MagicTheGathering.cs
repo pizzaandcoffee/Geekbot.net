@@ -28,6 +28,8 @@ namespace Geekbot.net.Commands.Integrations
         {
             try
             {
+                var message = await Context.Channel.SendMessageAsync($":mag: Looking up\"{cardName}\", please wait...");
+                
                 var service = new CardService();
                 var result = service
                     .Where(x => x.Name, cardName)
@@ -37,7 +39,7 @@ namespace Geekbot.net.Commands.Integrations
                 var card = result.All().Value.FirstOrDefault();
                 if (card == null)
                 {
-                    await ReplyAsync("I couldn't find that card...");
+                    await message.ModifyAsync(properties => properties.Content = ":red_circle: I couldn't find a card with that name...");
                     return;
                 }
 
@@ -65,7 +67,11 @@ namespace Geekbot.net.Commands.Integrations
                 if (card.Legalities != null && card.Legalities.Count > 0)
                     eb.AddField("Legality", string.Join(", ", card.Legalities.Select(e => e.Format)));
 
-                await ReplyAsync("", false, eb.Build());
+                await message.ModifyAsync(properties =>
+                {
+                    properties.Content = string.Empty;
+                    properties.Embed = eb.Build();
+                });
             }
             catch (Exception e)
             {
