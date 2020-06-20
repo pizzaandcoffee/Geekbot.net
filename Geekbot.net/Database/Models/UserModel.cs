@@ -24,7 +24,5 @@ namespace Geekbot.net.Database.Models
         public bool IsBot { get; set; }
         
         public DateTimeOffset Joined { get; set; }
-        
-        public List<UserUsedNamesModel> UsedNames { get; set; }
     }
 }

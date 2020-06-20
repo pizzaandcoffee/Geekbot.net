@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using Geekbot.net.Lib.CommandPreconditions;
 using Geekbot.net.Lib.ErrorHandling;
-using Geekbot.net.Lib.UserRepository;
 
 namespace Geekbot.net.Commands.Admin
 {
@@ -17,15 +14,11 @@ namespace Geekbot.net.Commands.Admin
     [DisableInDirectMessage]
     public class Mod : ModuleBase
     {
-        private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;
-        private readonly IUserRepository _userRepository;
 
-        public Mod(IUserRepository userRepositry, IErrorHandler errorHandler, DiscordSocketClient client)
+        public Mod(IErrorHandler errorHandler)
         {
-            _userRepository = userRepositry;
             _errorHandler = errorHandler;
-            _client = client;
         }
 
         [Command("namehistory", RunMode = RunMode.Async)]
@@ -34,23 +27,11 @@ namespace Geekbot.net.Commands.Admin
         {
             try
             {
-                var userRepo = _userRepository.Get(user.Id);
-                if (userRepo?.UsedNames != null)
-                {
-                    var sb = new StringBuilder();
-                    sb.AppendLine($":bust_in_silhouette: {user.Username} has been known as:");
-                    foreach (var name in userRepo.UsedNames) sb.AppendLine($"- `{name.Name}`");
-                    await ReplyAsync(sb.ToString());
-                }
-                else
-                {
-                    await ReplyAsync($"No name changes found for {user.Username}");
-                }
+                await Context.Channel.SendMessageAsync("This command has been removed due to low usage and excessively high database usage");
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context,
-                    "I don't have enough permissions do that");
+                await _errorHandler.HandleCommandException(e, Context);
             }
         }
     }

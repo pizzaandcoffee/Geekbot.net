@@ -37,11 +37,6 @@ namespace Geekbot.net.Lib.UserRepository
                 savedUser.AvatarUrl = user.GetAvatarUrl() ?? "";
                 savedUser.IsBot = user.IsBot;
                 savedUser.Joined = user.CreatedAt;
-                if (savedUser.UsedNames == null) savedUser.UsedNames = new List<UserUsedNamesModel>();
-                if (!savedUser.UsedNames.Any(e => e.Name.Equals(user.Username)))
-                {
-                    savedUser.UsedNames.Add(new UserUsedNamesModel { Name = user.Username, FirstSeen = DateTimeOffset.Now });
-                }
 
                 if (isNew)
                 {
