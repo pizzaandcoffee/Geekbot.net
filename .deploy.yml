@@ -30,7 +30,7 @@
           GEEKBOT_DB_DATABASE: "{{ lookup('env', 'GEEKBOT_DB_DATABASE') }}"
           GEEKBOT_DB_REQUIRE_SSL: "true"
           GEEKBOT_DB_TRUST_CERT: "true"
-          GEEKBOT_SUMOLOCIG: "{{ lookup('env', 'GEEKBOT_SUMOLOCIG') }}"
+          GEEKBOT_SUMOLOGIC: "{{ lookup('env', 'GEEKBOT_SUMOLOCIG') }}"
           GEEKBOT_SENTRY: "{{ lookup('env', 'GEEKBOT_SENTRY') }}"
           GEEKBOT_DB_REDSHIFT_COMPAT: "true"
     - name: Cleanup Old Container
