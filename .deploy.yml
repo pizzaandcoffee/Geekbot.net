@@ -21,7 +21,7 @@
         restart_policy: always
         keep_volumes: no
         ports:
-          - "12995:12995"
+          - "80:12995"
         env:
           GEEKBOT_DB_HOST: "{{ lookup('env', 'GEEKBOT_DB_HOST') }}"
           GEEKBOT_DB_USER: "{{ lookup('env', 'GEEKBOT_DB_USER') }}"
