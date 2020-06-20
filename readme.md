@@ -2,13 +2,13 @@
 
 # [Geekbot.net](https://geekbot.pizzaandcoffee.rocks/)
 
-A General Purpose Discord Bot written in DotNet Core.
+A General Purpose Discord Bot written in C#
 
 You can invite Geekbot to your server with [this link](https://discordapp.com/oauth2/authorize?client_id=171249478546882561&scope=bot&permissions=1416834054)
 
 ## Technologies
 
-* DotNet Core 3.1
+* .NET 5
 * PostgreSQL
 * Discord.net
 
