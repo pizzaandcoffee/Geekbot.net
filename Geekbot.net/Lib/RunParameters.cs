@@ -49,6 +49,9 @@ namespace Geekbot.net.Lib
         
         [Option("db-trust-cert", HelpText = "Trust the database certificate, regardless if it is valid (default: false) (env: DB_TRUST_CERT)")]
         public bool DbTrustCert { get; set; } = ParamFallback("DB_TRUST_CERT", false);
+
+        [Option("db-redshift-compat", HelpText = "Enable compatibility for AWS Redshift and DigitalOcean Managed Database (default: false) (env: DB_REDSHIFT_COMPAT)")]
+        public bool DbRedshiftCompatibility { get; set; } = ParamFallback("DB_REDSHIFT_COMPAT", false);
         
         // Logging
         [Option("db-logging", HelpText = "Enable database logging (default: false) (env: DB_LOGGING)")]

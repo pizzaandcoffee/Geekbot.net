@@ -37,7 +37,8 @@ namespace Geekbot.net.Database
                         Username = _runParameters.DbUser,
                         Password = _runParameters.DbPassword,
                         RequireSsl = _runParameters.DbSsl,
-                        TrustServerCertificate = _runParameters.DbTrustCert
+                        TrustServerCertificate = _runParameters.DbTrustCert,
+                        RedshiftCompatibility = _runParameters.DbRedshiftCompatibility
                     });
                 }
             }

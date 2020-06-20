@@ -1,4 +1,6 @@
-﻿namespace Geekbot.net.Database
+﻿using System.Text;
+
+namespace Geekbot.net.Database
 {
     public class SqlConnectionString
     {
@@ -9,11 +11,29 @@
         public string Password { get; set; }
         public bool RequireSsl { get; set; }
         public bool TrustServerCertificate { get; set; }
+        public bool RedshiftCompatibility { get; set; }
 
         public override string ToString()
         {
+            var sb = new StringBuilder();
+            sb.Append("Application Name=Geekbot;");
+            
+            sb.Append($"Host={Host};");
+            sb.Append($"Port={Port};");
+            sb.Append($"Database={Database};");
+            sb.Append($"Username={Username};");
+            sb.Append($"Password={Password};");
+            
             var sslMode = RequireSsl ? "Require" : "Prefer";
-            return $"ApplicationName=Geekbot;Server={Host};Port={Port};Database={Database};Uid={Username};Pwd={Password};SSLMode={sslMode};TrustServerCertificate={TrustServerCertificate.ToString()};";
+            sb.Append($"SSL Mode={sslMode};");
+            sb.Append($"Trust Server Certificate={TrustServerCertificate.ToString()};");
+
+            if (RedshiftCompatibility)
+            {
+                sb.Append("Server Compatibility Mode=Redshift");
+            }
+
+            return sb.ToString();
         }
     }
 }
