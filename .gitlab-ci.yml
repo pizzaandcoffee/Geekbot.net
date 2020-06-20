@@ -23,7 +23,6 @@ Package:
   image: docker
   only:
     - master
-    - docker
   services:
     - docker:stable-dind
   variables:
@@ -38,7 +37,6 @@ Deploy:
   image: ansible/ansible-runner
   only:
     - master
-    - docker
   variables:
     ANSIBLE_NOCOWS: 1
     IMAGE_TAG: *IMAGE_TAG
