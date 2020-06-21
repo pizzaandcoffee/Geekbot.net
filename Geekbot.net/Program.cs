@@ -11,6 +11,7 @@ using Geekbot.net.Handlers;
 using Geekbot.net.Lib;
 using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.Converters;
+using Geekbot.net.Lib.DiceParser;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.GlobalSettings;
 using Geekbot.net.Lib.GuildSettingsManager;
@@ -169,6 +170,7 @@ namespace Geekbot.net
             var kvMemoryStore = new KvInInMemoryStore();
             var translationHandler = new TranslationHandler(_logger, _guildSettingsManager);
             var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters);
+            var diceParser = new DiceParser(randomNumberGenerator);
             
             services.AddSingleton(_userRepository);
             services.AddSingleton<IGeekbotLogger>(_logger);
@@ -183,6 +185,7 @@ namespace Geekbot.net
             services.AddSingleton<IKvInMemoryStore>(kvMemoryStore);
             services.AddSingleton<IGlobalSettings>(_globalSettings);
             services.AddSingleton<IErrorHandler>(errorHandler);
+            services.AddSingleton<IDiceParser>(diceParser);
             services.AddSingleton<ITranslationHandler>(translationHandler);
             services.AddSingleton<IReactionListener>(_reactionListener);
             services.AddSingleton<IGuildSettingsManager>(_guildSettingsManager);
