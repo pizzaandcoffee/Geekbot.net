@@ -90,15 +90,15 @@ namespace Geekbot.net.Commands.Utils
             var sb = new StringBuilder();
             sb.AppendLine("**__Examples__**");
             sb.AppendLine("```");
-            sb.AppendLine("'!dice' - throw a 1d20");
-            sb.AppendLine("'!dice 1d12' - throw a 1d12");
-            sb.AppendLine("'!dice +1d20' - throw with advantage");
-            sb.AppendLine("'!dice -1d20' - throw with disadvantage");
-            sb.AppendLine("'!dice 1d20 +2' - throw with a +2 skill bonus");
-            sb.AppendLine("'!dice 1d20 -2' - throw with a -2 skill bonus");
-            sb.AppendLine("'!dice 8d6' - throw ~~a fireball~~ a 8d6");
-            sb.AppendLine("'!dice 8d6 total' - calculate the total");
-            sb.AppendLine("'!dice 2d20 6d6 2d4 2d12' - drop your dice pouch");
+            sb.AppendLine("!dice               - throw a 1d20");
+            sb.AppendLine("!dice 1d12          - throw a 1d12");
+            sb.AppendLine("!dice +1d20         - throw with advantage");
+            sb.AppendLine("!dice -1d20         - throw with disadvantage");
+            sb.AppendLine("!dice 1d20 +2       - throw with a +2 skill bonus");
+            sb.AppendLine("!dice 1d20 -2       - throw with a -2 skill bonus");
+            sb.AppendLine("!dice 8d6           - throw a fireball 🔥");
+            sb.AppendLine("!dice 8d6 total     - calculate the total");
+            sb.AppendLine("!dice 2d20 6d6 2d12 - drop your dice pouch");
             sb.AppendLine("```");
             
             await Context.Channel.SendMessageAsync(sb.ToString());
