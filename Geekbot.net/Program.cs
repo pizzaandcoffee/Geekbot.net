@@ -160,13 +160,13 @@ namespace Geekbot.net
             _reactionListener = new ReactionListener(_databaseInitializer.Initialize());
             _guildSettingsManager = new GuildSettingsManager(_databaseInitializer.Initialize());
             var fortunes = new FortunesProvider(_logger);
-            var mediaProvider = new MediaProvider(_logger);
             var malClient = new MalClient(_globalSettings, _logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
             var randomNumberGenerator = new RandomNumberGenerator();
+            var mediaProvider = new MediaProvider(_logger, randomNumberGenerator);
             var kvMemoryStore = new KvInInMemoryStore();
             var translationHandler = new TranslationHandler(_logger, _guildSettingsManager);
             var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters);

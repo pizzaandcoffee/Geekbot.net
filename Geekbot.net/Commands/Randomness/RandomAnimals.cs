@@ -18,7 +18,7 @@ namespace Geekbot.net.Commands.Randomness
         [Summary("Get a random panda image")]
         public async Task Panda()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetPanda()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Panda)));
         }
 
         [Command("croissant", RunMode = RunMode.Async)]
@@ -26,50 +26,50 @@ namespace Geekbot.net.Commands.Randomness
         [Summary("Get a random croissant image")]
         public async Task Croissant()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetCrossant()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Croissant)));
         }
 
         [Command("pumpkin", RunMode = RunMode.Async)]
         [Summary("Get a random pumpkin image")]
         public async Task Pumpkin()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetPumpkin()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Pumpkin)));
         }
 
         [Command("squirrel", RunMode = RunMode.Async)]
         [Summary("Get a random squirrel image")]
         public async Task Squirrel()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetSquirrel()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Squirrel)));
         }
 
         [Command("turtle", RunMode = RunMode.Async)]
         [Summary("Get a random turtle image")]
         public async Task Turtle()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetTurtle()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Turtle)));
         }
         
-        [Command("pinguin", RunMode = RunMode.Async)]
-        [Alias("pingu")]
-        [Summary("Get a random pinguin image")]
-        public async Task Pinguin()
+        [Command("penguin", RunMode = RunMode.Async)]
+        [Alias("pengu")]
+        [Summary("Get a random penguin image")]
+        public async Task Penguin()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetPinguin()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Penguin)));
         }
         
         [Command("fox", RunMode = RunMode.Async)]
         [Summary("Get a random fox image")]
         public async Task Fox()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetFox()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Fox)));
         }
         
         [Command("dab", RunMode = RunMode.Async)]
         [Summary("Get a random dab image")]
         public async Task Dab()
         {
-            await ReplyAsync("", false, Eb(_mediaProvider.GetDab()));
+            await ReplyAsync("", false, Eb(_mediaProvider.GetMedia(MediaType.Dab)));
         }
 
         private static Embed Eb(string image)
