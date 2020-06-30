@@ -1,9 +1,12 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Commands.Randomness.Cat;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Greetings
 {
@@ -23,20 +26,20 @@ namespace Geekbot.net.Commands.Randomness.Greetings
         {
             try
             {
-                var greeting = GreetingProvider.Greetings[new Random().Next(GreetingProvider.GreetingCount - 1)];
+                var greeting = await GetRandomGreeting();
 
                 var eb = new EmbedBuilder();
-                eb.Title = greeting.Text;
+                eb.Title = greeting.Primary.Text;
                 eb.AddInlineField("Language", greeting.Language);
 
-                if (greeting.Dialect != null)
+                if (greeting.Primary.Dialect != null)
                 {
-                    eb.AddInlineField("Dialect", greeting.Dialect);
+                    eb.AddInlineField("Dialect", greeting.Primary.Dialect);
                 }
 
-                if (greeting.Romanization != null)
+                if (greeting.Primary.Romanization != null)
                 {
-                    eb.AddInlineField("Roman", greeting.Romanization);
+                    eb.AddInlineField("Roman", greeting.Primary.Romanization);
                 }
 
                 await ReplyAsync(string.Empty, false, eb.Build());
@@ -45,6 +48,19 @@ namespace Geekbot.net.Commands.Randomness.Greetings
             {
                 await _errorHandler.HandleCommandException(e, Context);
             }
+        }
+
+        private async Task<GreetingBaseDto> GetRandomGreeting()
+        {
+            using var client = new HttpClient
+            {
+                BaseAddress = new Uri("https://api.greetings.dev")
+            };
+            var response = await client.GetAsync("/v1/greeting");
+            response.EnsureSuccessStatusCode();
+
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<GreetingBaseDto>(stringResponse);
         }
     }
 }
