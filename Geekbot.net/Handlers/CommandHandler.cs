@@ -52,7 +52,12 @@ namespace Geekbot.net.Handlers
                 if (!(messageParam is SocketUserMessage message)) return Task.CompletedTask;
                 if (message.Author.IsBot) return Task.CompletedTask;
 
-                var guildId = ((SocketGuildChannel) message.Channel).Guild.Id;
+                ulong guildId = message.Author switch
+                {
+                    SocketGuildUser user => user.Guild.Id,
+                    _ => 0 // DM Channel
+                };
+                
                 if (IsIgnoredGuild(guildId, message.Author.Id)) return Task.CompletedTask;
 
                 var lowCaseMsg = message.ToString().ToLower();
@@ -102,12 +107,14 @@ namespace Geekbot.net.Handlers
         private bool ShouldPong(string lowerCaseMessage, ulong guildId)
         {
             if (!lowerCaseMessage.StartsWith("ping ") && !lowerCaseMessage.Equals("ping")) return false;
+            if (guildId == 0) return true;
             return GetGuildSettings(guildId)?.Ping ?? false;
         }
 
         private bool ShouldHui(string lowerCaseMessage, ulong guildId)
         {
             if (!lowerCaseMessage.StartsWith("hui")) return false;
+            if (guildId == 0) return true;
             return GetGuildSettings(guildId)?.Hui ?? false;
         }
 
