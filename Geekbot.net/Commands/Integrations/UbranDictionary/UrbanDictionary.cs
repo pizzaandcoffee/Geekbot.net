@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Integrations.UbranDictionary
 {
@@ -25,15 +24,7 @@ namespace Geekbot.net.Commands.Integrations.UbranDictionary
         {
             try
             {
-                using var client = new HttpClient
-                {
-                    BaseAddress = new Uri("https://api.urbandictionary.com")
-                };
-                var response = await client.GetAsync($"/v0/define?term={word}");
-                response.EnsureSuccessStatusCode();
-
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                var definitions = JsonConvert.DeserializeObject<UrbanResponseDto>(stringResponse);
+                var definitions = await HttpAbstractions.Get<UrbanResponseDto>(new Uri($"https://api.urbandictionary.com/v0/define?term={word}"));
                 if (definitions.List.Count == 0)
                 {
                     await ReplyAsync("That word hasn't been defined...");

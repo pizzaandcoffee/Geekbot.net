@@ -1,10 +1,8 @@
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Kanye
 {
@@ -23,22 +21,8 @@ namespace Geekbot.net.Commands.Randomness.Kanye
         {
             try
             {
-                try
-                {
-                    using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                    var response = await client.GetAsync("https://api.kanye.rest/");
-                    response.EnsureSuccessStatusCode();
-
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<KanyeResponseDto>(stringResponse);
-                    await ReplyAsync(data.Quote);
-                }
-                catch (HttpRequestException)
-                {
-                    await ReplyAsync("Api down...");
-                }
+                var response = await HttpAbstractions.Get<KanyeResponseDto>(new Uri("https://api.kanye.rest/"));
+                await ReplyAsync(response.Quote);
             }
             catch (Exception e)
             {

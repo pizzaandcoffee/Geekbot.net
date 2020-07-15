@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Utils.Changelog
 {
@@ -29,17 +28,14 @@ namespace Geekbot.net.Commands.Utils.Changelog
         {
             try
             {
-                using var client = new HttpClient
-                {
-                    BaseAddress = new Uri("https://api.github.com")
-                };
-                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
-                    "http://developer.github.com/v3/#user-agent-required");
-                var response = await client.GetAsync("/repos/pizzaandcoffee/geekbot.net/commits");
-                response.EnsureSuccessStatusCode();
-
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                var commits = JsonConvert.DeserializeObject<List<CommitDto>>(stringResponse);
+                var commits = await HttpAbstractions.Get<List<CommitDto>>(
+                    new Uri("https://api.github.com/repos/pizzaandcoffee/geekbot.net/commits"),
+                    new Dictionary<string, string>()
+                    {
+                        { "User-Agent", "http://developer.github.com/v3/#user-agent-required" }
+                    }
+                );
+                
                 var eb = new EmbedBuilder();
                 eb.WithColor(new Color(143, 165, 102));
                 eb.WithAuthor(new EmbedAuthorBuilder

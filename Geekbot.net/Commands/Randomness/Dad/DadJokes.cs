@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Dad
 {
@@ -23,22 +21,8 @@ namespace Geekbot.net.Commands.Randomness.Dad
         {
             try
             {
-                try
-                {
-                    using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                    var response = await client.GetAsync("https://icanhazdadjoke.com/");
-                    response.EnsureSuccessStatusCode();
-
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<DadJokeResponseDto>(stringResponse);
-                    await ReplyAsync(data.Joke);
-                }
-                catch (HttpRequestException)
-                {
-                    await ReplyAsync("Api down...");
-                }
+                var response = await HttpAbstractions.Get<DadJokeResponseDto>(new Uri("https://icanhazdadjoke.com/"));
+                await ReplyAsync(response.Joke);
             }
             catch (Exception e)
             {

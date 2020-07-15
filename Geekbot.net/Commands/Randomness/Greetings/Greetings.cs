@@ -1,12 +1,10 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Commands.Randomness.Cat;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Greetings
 {
@@ -26,7 +24,7 @@ namespace Geekbot.net.Commands.Randomness.Greetings
         {
             try
             {
-                var greeting = await GetRandomGreeting();
+                var greeting = await HttpAbstractions.Get<GreetingBaseDto>(new Uri("https://api.greetings.dev/v1/greeting"));
 
                 var eb = new EmbedBuilder();
                 eb.Title = greeting.Primary.Text;
@@ -48,19 +46,6 @@ namespace Geekbot.net.Commands.Randomness.Greetings
             {
                 await _errorHandler.HandleCommandException(e, Context);
             }
-        }
-
-        private async Task<GreetingBaseDto> GetRandomGreeting()
-        {
-            using var client = new HttpClient
-            {
-                BaseAddress = new Uri("https://api.greetings.dev")
-            };
-            var response = await client.GetAsync("/v1/greeting");
-            response.EnsureSuccessStatusCode();
-
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<GreetingBaseDto>(stringResponse);
         }
     }
 }

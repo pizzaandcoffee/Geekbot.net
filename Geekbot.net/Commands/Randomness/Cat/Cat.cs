@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Cat
 {
@@ -23,28 +22,12 @@ namespace Geekbot.net.Commands.Randomness.Cat
         {
             try
             {
-                
-                try
+                var response = await HttpAbstractions.Get<CatResponseDto>(new Uri("https://aws.random.cat/meow"));
+                var eb = new EmbedBuilder
                 {
-                    using var client = new HttpClient
-                    {
-                        BaseAddress = new Uri("https://aws.random.cat")
-                    };
-                    var response = await client.GetAsync("/meow");
-                    response.EnsureSuccessStatusCode();
-
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var catFile = JsonConvert.DeserializeObject<CatResponseDto>(stringResponse);
-                    var eb = new EmbedBuilder
-                    {
-                        ImageUrl = catFile.File
-                    };
-                    await ReplyAsync("", false, eb.Build());
-                }
-                catch
-                {
-                    await ReplyAsync("Seems like the dog cought the cat (error occured)");
-                }
+                    ImageUrl = response.File
+                };
+                await ReplyAsync("", false, eb.Build());
             }
             catch (Exception e)
             {

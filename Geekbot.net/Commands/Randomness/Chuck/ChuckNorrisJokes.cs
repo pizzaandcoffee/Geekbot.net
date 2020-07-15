@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.net.Lib;
 using Geekbot.net.Lib.ErrorHandling;
-using Newtonsoft.Json;
 
 namespace Geekbot.net.Commands.Randomness.Chuck
 {
@@ -25,15 +24,8 @@ namespace Geekbot.net.Commands.Randomness.Chuck
             {
                 try
                 {
-                    using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-                    var response = await client.GetAsync("https://api.chucknorris.io/jokes/random");
-                    response.EnsureSuccessStatusCode();
-
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<ChuckNorrisJokeResponseDto>(stringResponse);
-                    await ReplyAsync(data.Value);
+                    var response = await HttpAbstractions.Get<ChuckNorrisJokeResponseDto>(new Uri("https://api.chucknorris.io/jokes/random"));
+                    await ReplyAsync(response.Value);
                 }
                 catch (HttpRequestException)
                 {
