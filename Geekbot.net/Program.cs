@@ -44,7 +44,7 @@ namespace Geekbot.net
         private IReactionListener _reactionListener;
         private IGuildSettingsManager _guildSettingsManager;
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             RunParameters runParameters = null;
             Parser.Default.ParseArguments<RunParameters>(args)
@@ -63,7 +63,7 @@ namespace Geekbot.net
             logger.Information(LogSource.Geekbot, "Starting...");
             try
             {
-                new Program().MainAsync(runParameters, logger).GetAwaiter().GetResult();
+                await new Program().Start(runParameters, logger);
             }
             catch (Exception e)
             {
@@ -71,7 +71,7 @@ namespace Geekbot.net
             }
         }
 
-        private async Task MainAsync(RunParameters runParameters, GeekbotLogger logger)
+        private async Task Start(RunParameters runParameters, GeekbotLogger logger)
         {
             _logger = logger;
             _runParameters = runParameters;
