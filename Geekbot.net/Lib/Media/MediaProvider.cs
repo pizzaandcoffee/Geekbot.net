@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Geekbot.net.Lib.Logger;
 using Geekbot.net.Lib.RandomNumberGenerator;
@@ -9,14 +10,14 @@ namespace Geekbot.net.Lib.Media
     {
         private readonly IRandomNumberGenerator _random;
         private readonly IGeekbotLogger _logger;
-        private string[] _pandaImages;
-        private string[] _croissantImages;
-        private string[] _squirrelImages;
-        private string[] _pumpkinImages;
-        private string[] _turtlesImages;
-        private string[] _penguinImages;
-        private string[] _foxImages;
-        private string[] _dabImages;
+        private readonly string[] _pandaImages;
+        private readonly string[] _croissantImages;
+        private readonly string[] _squirrelImages;
+        private readonly string[] _pumpkinImages;
+        private readonly string[] _turtlesImages;
+        private readonly string[] _penguinImages;
+        private readonly string[] _foxImages;
+        private readonly string[] _dabImages;
         
         public MediaProvider(IGeekbotLogger logger, IRandomNumberGenerator random)
         {
@@ -24,7 +25,6 @@ namespace Geekbot.net.Lib.Media
             _logger = logger;
 
             logger.Information(LogSource.Geekbot, "Loading Media Files");
-;
             LoadMedia("./Storage/pandas", ref _pandaImages);
             LoadMedia("./Storage/croissant", ref _croissantImages);
             LoadMedia("./Storage/squirrel", ref _squirrelImages);
@@ -53,7 +53,8 @@ namespace Geekbot.net.Lib.Media
                 MediaType.Turtle => _turtlesImages,
                 MediaType.Penguin => _penguinImages,
                 MediaType.Fox => _foxImages,
-                MediaType.Dab => _dabImages
+                MediaType.Dab => _dabImages,
+                _ => new string[0]
             };
 
             return collection[_random.Next(0, collection.Length)];

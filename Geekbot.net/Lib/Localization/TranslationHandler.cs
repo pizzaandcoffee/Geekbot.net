@@ -89,7 +89,7 @@ namespace Geekbot.net.Lib.Localization
             }
         }
         
-        private async Task<string> GetServerLanguage(ulong guildId)
+        private Task<string> GetServerLanguage(ulong guildId)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Geekbot.net.Lib.Localization
                     lang = _serverLanguages[guildId];
                     if (!string.IsNullOrEmpty(lang))
                     {
-                        return lang;
+                        return Task.FromResult(lang);
                     }
                     throw new Exception();
                 }
@@ -107,13 +107,13 @@ namespace Geekbot.net.Lib.Localization
                 {
                     lang = _guildSettingsManager.GetSettings(guildId, false)?.Language ?? "EN";
                     _serverLanguages[guildId] = lang;
-                    return lang;
+                    return Task.FromResult(lang);
                 }
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Could not get guild language", e);
-                return "EN";
+                return Task.FromResult("EN");
             }
         }
 
