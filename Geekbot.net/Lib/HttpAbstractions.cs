@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -7,34 +6,36 @@ using Newtonsoft.Json;
 
 namespace Geekbot.net.Lib
 {
-    public class HttpAbstractions
+    public static class HttpAbstractions
     {
-        public static async Task<T> Get<T>(Uri location, Dictionary<string, string> additionalHeaders = null)
+        public static HttpClient CreateDefaultClient()
         {
-            using var client = new HttpClient
+            var client = new HttpClient
             {
-                BaseAddress = location,
                 DefaultRequestHeaders =
                 {
-                    Accept =
-                    {
-                        MediaTypeWithQualityHeaderValue.Parse("application/json")
-                    }
+                    Accept = {MediaTypeWithQualityHeaderValue.Parse("application/json")},
                 }
             };
+            client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Geekbot/v0.0.0 (+https://geekbot.pizzaandcoffee.rocks/)");
 
-            if (additionalHeaders != null)
-            {
-                foreach (var (name, val) in additionalHeaders)
-                {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(name, val);
-                }
-            }
-            
-            var response = await client.GetAsync(location.PathAndQuery);
+            return client;
+        }
+
+        public static async Task<T> Get<T>(Uri location, HttpClient httpClient = null, bool disposeClient = true)
+        {
+            httpClient ??= CreateDefaultClient();
+            httpClient.BaseAddress = location;
+
+            var response = await httpClient.GetAsync(location.PathAndQuery);
             response.EnsureSuccessStatusCode();
-            
             var stringResponse = await response.Content.ReadAsStringAsync();
+
+            if (disposeClient)
+            {
+                httpClient.Dispose();
+            }
+
             return JsonConvert.DeserializeObject<T>(stringResponse);
         }
     }

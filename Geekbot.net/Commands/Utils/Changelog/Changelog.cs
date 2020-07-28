@@ -28,13 +28,7 @@ namespace Geekbot.net.Commands.Utils.Changelog
         {
             try
             {
-                var commits = await HttpAbstractions.Get<List<CommitDto>>(
-                    new Uri("https://api.github.com/repos/pizzaandcoffee/geekbot.net/commits"),
-                    new Dictionary<string, string>()
-                    {
-                        { "User-Agent", "http://developer.github.com/v3/#user-agent-required" }
-                    }
-                );
+                var commits = await HttpAbstractions.Get<List<CommitDto>>(new Uri("https://api.github.com/repos/pizzaandcoffee/geekbot.net/commits"));
                 
                 var eb = new EmbedBuilder();
                 eb.WithColor(new Color(143, 165, 102));
