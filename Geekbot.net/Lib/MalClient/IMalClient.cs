@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MyAnimeListSharp.Core;
 
-namespace Geekbot.net.Lib.Clients
+namespace Geekbot.net.Lib.MalClient
 {
     public interface IMalClient
     {

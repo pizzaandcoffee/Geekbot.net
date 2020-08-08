@@ -4,9 +4,9 @@ using System.Web;
 using System.Xml;
 using Discord;
 using Discord.Commands;
-using Geekbot.net.Lib.Clients;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.MalClient;
 
 namespace Geekbot.net.Commands.Integrations
 {

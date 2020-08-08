@@ -5,7 +5,7 @@ using MyAnimeListSharp.Auth;
 using MyAnimeListSharp.Core;
 using MyAnimeListSharp.Facade.Async;
 
-namespace Geekbot.net.Lib.Clients
+namespace Geekbot.net.Lib.MalClient
 {
     public class MalClient : IMalClient
     {
