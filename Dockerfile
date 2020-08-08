@@ -4,4 +4,4 @@ COPY ./app /app/
 
 EXPOSE 12995/tcp
 WORKDIR /app
-ENTRYPOINT ./Geekbot.net
+ENTRYPOINT ./Geekbot
