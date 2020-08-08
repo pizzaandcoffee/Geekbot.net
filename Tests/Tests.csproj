@@ -15,6 +15,6 @@
     <PackageReference Include="YamlDotNet" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Geekbot.net\Geekbot.net.csproj" />
+    <ProjectReference Include="..\src\Bot\Bot.csproj" />
   </ItemGroup>
 </Project>

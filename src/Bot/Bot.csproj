@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <ApplicationIcon>derp.ico</ApplicationIcon>
+        <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+        <RootNamespace>Geekbot.Bot</RootNamespace>
+        <AssemblyName>Geekbot</AssemblyName>
+            <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
+        <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
+        <Company>Pizza and Coffee Studios</Company>
+        <Authors>Pizza and Coffee Studios</Authors>
+        <Description>A Discord bot</Description>
+        <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
+        <NoWarn>NU1701</NoWarn>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://geekbot.pizzaandcoffee.rocks</PackageProjectUrl>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.8.0" />
+        <PackageReference Include="Discord.Net" Version="2.2.0" />
+        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1929" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
+        <PackageReference Include="MtgApiManager.Lib" Version="1.2.2" />
+        <PackageReference Include="MyAnimeListSharp" Version="1.3.4" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="PokeApi.NET" Version="1.1.2" />
+        <PackageReference Include="SharpRaven" Version="2.4.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Storage\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj" />
+        <ProjectReference Include="..\Web\Web.csproj" />
+    </ItemGroup>
+</Project>

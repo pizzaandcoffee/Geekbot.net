@@ -1,12 +1,10 @@
-*/bin/
-*/obj/
-Geekbot.net/tmp/
+/*/**/bin
+/*/**/obj
+src/Bot/tmp/
+src/Bot/Logs/*
+!/src/Bot/Logs/.keep
 .vs/
-UpgradeLog.htm
 .idea
 .vscode
-Geekbot.net/Logs/*
-!/Geekbot.net/Logs/.keep
 Geekbot.net.sln.DotSettings.user
-Geekbot.net/temp/
 app
