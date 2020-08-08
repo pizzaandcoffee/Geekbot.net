@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using WikipediaApi.Page;
+using Geekbot.net.Lib.WikipediaClient.Page;
 
-namespace WikipediaApi
+namespace Geekbot.net.Lib.WikipediaClient
 {
     public interface IWikipediaClient
     {

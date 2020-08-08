@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace WikipediaApi.Page
+namespace Geekbot.net.Lib.WikipediaClient.Page
 {
     public class PagePreview
     {

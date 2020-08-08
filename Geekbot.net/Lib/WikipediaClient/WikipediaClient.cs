@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Geekbot.net.Lib.WikipediaClient.Page;
 using Newtonsoft.Json;
-using WikipediaApi.Page;
 
-namespace WikipediaApi
+namespace Geekbot.net.Lib.WikipediaClient
 {
     public class WikipediaClient : IWikipediaClient
     {

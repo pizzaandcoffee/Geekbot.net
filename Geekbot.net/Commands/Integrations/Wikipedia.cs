@@ -8,9 +8,9 @@ using Discord.Commands;
 using Geekbot.net.Database;
 using Geekbot.net.Lib.ErrorHandling;
 using Geekbot.net.Lib.Extensions;
+using Geekbot.net.Lib.WikipediaClient;
+using Geekbot.net.Lib.WikipediaClient.Page;
 using HtmlAgilityPack;
-using WikipediaApi;
-using WikipediaApi.Page;
 
 namespace Geekbot.net.Commands.Integrations
 {

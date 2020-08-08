@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace WikipediaApi.Page
+namespace Geekbot.net.Lib.WikipediaClient.Page
 {
     public enum PageTypes
     {

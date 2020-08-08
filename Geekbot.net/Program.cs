@@ -24,10 +24,10 @@ using Geekbot.net.Lib.Media;
 using Geekbot.net.Lib.RandomNumberGenerator;
 using Geekbot.net.Lib.ReactionListener;
 using Geekbot.net.Lib.UserRepository;
+using Geekbot.net.Lib.WikipediaClient;
 using Geekbot.net.WebApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using WikipediaApi;
 
 namespace Geekbot.net
 {

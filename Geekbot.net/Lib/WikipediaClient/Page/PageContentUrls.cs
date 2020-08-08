@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WikipediaApi.Page
+namespace Geekbot.net.Lib.WikipediaClient.Page
 {
     public class PageContentUrls
     {
