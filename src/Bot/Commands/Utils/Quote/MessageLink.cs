@@ -7,7 +7,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
     public class MessageLink
     {
         public readonly static Regex re = new Regex(
-            @"https:\/\/(canary|ptb)?.discord(app)?.com\/channels\/(?<GuildId>\d{16,20})\/(?<ChannelId>\d{16,20})\/(?<MessageId>\d{16,20})",
+            @"https:\/\/((canary|ptb)\.)?discord(app)?.com\/channels\/(?<GuildId>\d{16,20})\/(?<ChannelId>\d{16,20})\/(?<MessageId>\d{16,20})",
             RegexOptions.Compiled | RegexOptions.IgnoreCase,
             new TimeSpan(0, 0, 2));
         
