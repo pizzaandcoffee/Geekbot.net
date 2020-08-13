@@ -82,7 +82,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 if (lastMessage == null) return;
                 
                 var quote = CreateQuoteObject(lastMessage);
-                _database.Quotes.Add(quote);
+                await _database.Quotes.AddAsync(quote);
                 await _database.SaveChangesAsync();
 
                 var embed = QuoteBuilder(quote);
@@ -117,7 +117,61 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 }
 
                 var quote = CreateQuoteObject(message);
-                _database.Quotes.Add(quote);
+                await _database.Quotes.AddAsync(quote);
+                await _database.SaveChangesAsync();
+                
+                var embed = QuoteBuilder(quote);
+                await ReplyAsync(transContext.GetString("QuoteAdded"), false, embed.Build());
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context,
+                    "I couldn't find a message with that id :disappointed:");
+            }
+        }
+        
+        [Command("add")]
+        [Alias("save")]
+        [Summary("Add a quote from a message link")]
+        public async Task AddQuote([Summary("message-link")] string messageLink)
+        {
+            try
+            {
+                var transContext = await _translationHandler.GetGuildContext(Context);
+                
+                if (!MessageLink.IsValid(messageLink))
+                {
+                    await ReplyAsync(transContext.GetString("NotAValidMessageLink"));
+                    return;
+                }
+                
+                var link = new MessageLink(messageLink);
+                if (link.GuildId != Context.Guild.Id)
+                {
+                    await ReplyAsync(transContext.GetString("OnlyQuoteFromSameServer"));
+                    return;
+                }
+                
+                var channel = link.ChannelId == Context.Channel.Id
+                    ? Context.Channel
+                    : await Context.Guild.GetTextChannelAsync(link.ChannelId);
+
+                var message = await channel.GetMessageAsync(link.MessageId);
+                
+                if (message.Author.Id == Context.Message.Author.Id)
+                {
+                    await ReplyAsync(transContext.GetString("CannotSaveOwnQuotes"));
+                    return;
+                }
+                
+                if (message.Author.IsBot)
+                {
+                    await ReplyAsync(transContext.GetString("CannotQuoteBots"));
+                    return;
+                }
+
+                var quote = CreateQuoteObject(message);
+                await _database.Quotes.AddAsync(quote);
                 await _database.SaveChangesAsync();
                 
                 var embed = QuoteBuilder(quote);
@@ -164,6 +218,43 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             {
                 await _errorHandler.HandleCommandException(e, Context,
                     "I couldn't find a message with that id :disappointed:");
+            }
+        }
+        
+        [Command("make")]
+        [Summary("Create a quote from a message link")]
+        public async Task ReturnSpecifiedQuote([Summary("message-link")] string messageLink)
+        {
+            try
+            {
+                var transContext = await _translationHandler.GetGuildContext(Context);
+                
+                if (!MessageLink.IsValid(messageLink))
+                {
+                    await ReplyAsync(transContext.GetString("NotAValidMessageLink"));
+                    return;
+                }
+                
+                var link = new MessageLink(messageLink);
+                if (link.GuildId != Context.Guild.Id)
+                {
+                    await ReplyAsync(transContext.GetString("OnlyQuoteFromSameServer"));
+                    return;
+                }
+
+                var channel = link.ChannelId == Context.Channel.Id
+                    ? Context.Channel
+                    : await Context.Guild.GetTextChannelAsync(link.ChannelId);
+
+                var message = await channel.GetMessageAsync(link.MessageId);
+                var quote = CreateQuoteObject(message);
+                var embed = QuoteBuilder(quote);
+                await ReplyAsync("", false, embed.Build());
+            }
+            catch (Exception e)
+            {
+                await _errorHandler.HandleCommandException(e, Context,
+                    "I couldn't find that message :disappointed:");
             }
         }
         

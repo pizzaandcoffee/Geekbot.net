@@ -169,6 +169,12 @@ quote:
   MostQuotesPerson:
     EN: "Most quoted person"
     CHDE: "Meist quoteti person"
+  NotAValidMessageLink:
+    EN: "That is not a valid message link"
+    CHDE: "Das isch kei korrete nachrichtelink"
+  OnlyQuoteFromSameServer:
+    EN: "You can only quote messages from the same server"
+    CHDE: "Du chasch numme nachrichte vom gliche server quote"
 rank:
   InvalidType:
     EN: "Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'"
