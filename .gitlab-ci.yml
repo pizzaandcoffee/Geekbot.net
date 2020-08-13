@@ -5,7 +5,7 @@ stages:
   - ops
 
 variables:
-  VERSION: 4.2.0-$CI_COMMIT_SHORT_SHA
+  VERSION: 4.3.0-$CI_COMMIT_SHORT_SHA
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 Build:
@@ -17,8 +17,8 @@ Build:
       - app
   script:
     - dotnet restore
-    - dotnet test Tests
-    - dotnet publish --version-suffix $VERSION -r linux-x64 -c Release -o ./app ./Geekbot.net/
+    - dotnet test tests
+    - dotnet publish --version-suffix $VERSION -r linux-x64 -c Release -o ./app ./src/Bot/
 
 Package:
   stage: docker
