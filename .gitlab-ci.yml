@@ -17,7 +17,7 @@ Build:
       - app
   script:
     - dotnet restore
-    - dotnet test Tests
+    - dotnet test tests
     - dotnet publish --version-suffix $VERSION -r linux-x64 -c Release -o ./app ./src/Bot/
 
 Package:
