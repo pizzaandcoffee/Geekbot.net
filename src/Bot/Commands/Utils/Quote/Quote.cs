@@ -58,9 +58,10 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
         }
 
-        [Command("save")]
-        [Summary("Save a quote from the last sent message by @user")]
-        public async Task SaveQuote([Summary("@someone")] IUser user)
+        [Command("add")]
+        [Alias("save")]
+        [Summary("Add a quote from the last sent message by @user")]
+        public async Task AddQuote([Summary("@someone")] IUser user)
         {
             try
             {
@@ -94,9 +95,10 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
         }
 
-        [Command("save")]
-        [Summary("Save a quote from a message id")]
-        public async Task SaveQuote([Summary("message-ID")] ulong messageId)
+        [Command("add")]
+        [Alias("save")]
+        [Summary("Add a quote from a message id")]
+        public async Task AddQuote([Summary("message-ID")] ulong messageId)
         {
             try
             {
