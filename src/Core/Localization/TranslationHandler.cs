@@ -32,7 +32,7 @@ namespace Geekbot.Core.Localization
             try
             {
                 // Read the file
-                var translationFile = File.ReadAllText(Path.GetFullPath("./Lib/Localization/Translations.yml"));
+                var translationFile = File.ReadAllText(Path.GetFullPath("./Localization/Translations.yml"));
                 
                 // Deserialize
                 var input = new StringReader(translationFile);
