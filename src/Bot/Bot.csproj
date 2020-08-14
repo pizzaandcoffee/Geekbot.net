@@ -40,4 +40,110 @@
         <ProjectReference Include="..\Core\Core.csproj" />
         <ProjectReference Include="..\Web\Web.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Localization\Ship.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Ship.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Rank.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Rank.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Karma.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Karma.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Internal.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Internal.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Cookies.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Cookies.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Roll.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Roll.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Choose.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Choose.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Admin.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Admin.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Quote.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Quote.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Role.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Role.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Stats.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Stats.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Localization\Ship.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ship.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Rank.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Rank.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Ship.Designer.cs">
+        <DependentUpon>Ship.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Karma.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Karma.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Internal.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Internal.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Cookies.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Cookies.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Roll.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Roll.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Choose.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Choose.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Admin.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Admin.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Quote.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Quote.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Role.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Role.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Stats.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Stats.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>

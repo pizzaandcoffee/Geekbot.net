@@ -17,7 +17,6 @@ using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
 using Geekbot.Core.KvInMemoryStore;
 using Geekbot.Core.Levels;
-using Geekbot.Core.Localization;
 using Geekbot.Core.Logger;
 using Geekbot.Core.MalClient;
 using Geekbot.Core.Media;
@@ -168,8 +167,7 @@ namespace Geekbot.Bot
             var randomNumberGenerator = new RandomNumberGenerator();
             var mediaProvider = new MediaProvider(_logger, randomNumberGenerator);
             var kvMemoryStore = new KvInInMemoryStore();
-            var translationHandler = new TranslationHandler(_logger, _guildSettingsManager);
-            var errorHandler = new ErrorHandler(_logger, translationHandler, _runParameters);
+            var errorHandler = new ErrorHandler(_logger, _runParameters, () => Localization.Internal.SomethingWentWrong);
             var diceParser = new DiceParser(randomNumberGenerator);
             
             services.AddSingleton(_userRepository);
@@ -186,7 +184,6 @@ namespace Geekbot.Bot
             services.AddSingleton<IGlobalSettings>(_globalSettings);
             services.AddSingleton<IErrorHandler>(errorHandler);
             services.AddSingleton<IDiceParser>(diceParser);
-            services.AddSingleton<ITranslationHandler>(translationHandler);
             services.AddSingleton<IReactionListener>(_reactionListener);
             services.AddSingleton<IGuildSettingsManager>(_guildSettingsManager);
             services.AddSingleton(_client);

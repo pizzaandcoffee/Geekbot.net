@@ -1,0 +1,47 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="NoQuotesFound" xml:space="preserve">
+        <value>Dä server het no kei quotes. Du chasch quotes hinzuefüege mit `!quote save @user` oder `!quote save &lt;messageId&gt;`</value>
+    </data>
+    <data name="CannotSaveOwnQuotes" xml:space="preserve">
+        <value>Du chasch kei quotes vo dir selber speichere...</value>
+    </data>
+    <data name="CannotQuoteBots" xml:space="preserve">
+        <value>Du chasch kei quotes vomne bot speichere...</value>
+    </data>
+    <data name="QuoteAdded" xml:space="preserve">
+        <value>**Quote hinzugfüegt**</value>
+    </data>
+    <data name="Removed" xml:space="preserve">
+        <value>**#{0} glöscht**</value>
+    </data>
+    <data name="NotFoundWithId" xml:space="preserve">
+        <value>Ich chan kei quote finde mit därri ID :disappointed:</value>
+    </data>
+    <data name="QuoteStats" xml:space="preserve">
+        <value>Quote statistike</value>
+    </data>
+    <data name="TotalQuotes" xml:space="preserve">
+        <value>Total</value>
+    </data>
+    <data name="MostQuotesPerson" xml:space="preserve">
+        <value>Meist quoteti person</value>
+    </data>
+    <data name="NotAValidMessageLink" xml:space="preserve">
+        <value>Das isch kei korrete nachrichtelink</value>
+    </data>
+    <data name="OnlyQuoteFromSameServer" xml:space="preserve">
+        <value>Du chasch numme nachrichte vom gliche server quote</value>
+    </data>
+</root>

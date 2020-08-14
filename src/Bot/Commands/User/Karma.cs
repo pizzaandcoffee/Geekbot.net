@@ -3,27 +3,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Bot.Utils;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 
 namespace Geekbot.Bot.Commands.User
 {
     [DisableInDirectMessage]
-    public class Karma : ModuleBase
+    public class Karma : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
-        private readonly ITranslationHandler _translation;
 
-        public Karma(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translation)
+        public Karma(DatabaseContext database, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
-            _errorHandler = errorHandler;
-            _translation = translation;
         }
 
         [Command("good", RunMode = RunMode.Async)]
@@ -32,16 +30,15 @@ namespace Geekbot.Bot.Commands.User
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync(transContext.GetString("CannotChangeOwn", Context.User.Username));
+                    await ReplyAsync(string.Format(Localization.Karma.CannotChangeOwnUp, Context.User.Username));
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
-                    await ReplyAsync(transContext.GetString("WaitUntill", Context.User.Username, formatedWaitTime));
+                    var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    await ReplyAsync(string.Format(Localization.Karma.WaitUntill, Context.User.Username, formatedWaitTime));
                 }
                 else
                 {
@@ -60,16 +57,16 @@ namespace Geekbot.Bot.Commands.User
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = transContext.GetString("Increased");
-                    eb.AddInlineField(transContext.GetString("By"), Context.User.Username);
-                    eb.AddInlineField(transContext.GetString("Amount"), "+1");
-                    eb.AddInlineField(transContext.GetString("Current"), target.Karma);
+                    eb.Title = Localization.Karma.Increased;
+                    eb.AddInlineField(Localization.Karma.By, Context.User.Username);
+                    eb.AddInlineField(Localization.Karma.Amount, "+1");
+                    eb.AddInlineField(Localization.Karma.Current, target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -79,16 +76,15 @@ namespace Geekbot.Bot.Commands.User
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync(transContext.GetString("CannotChangeOwn", Context.User.Username));
+                    await ReplyAsync(string.Format(Localization.Karma.CannotChangeOwnDown, Context.User.Username));
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
-                    await ReplyAsync(transContext.GetString("WaitUntill", Context.User.Username, formatedWaitTime));
+                    var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    await ReplyAsync(string.Format(Localization.Karma.WaitUntill, Context.User.Username, formatedWaitTime));
                 }
                 else
                 {
@@ -107,16 +103,16 @@ namespace Geekbot.Bot.Commands.User
                         .WithName(user.Username));
 
                     eb.WithColor(new Color(138, 219, 146));
-                    eb.Title = transContext.GetString("Decreased");
-                    eb.AddInlineField(transContext.GetString("By"), Context.User.Username);
-                    eb.AddInlineField(transContext.GetString("Amount"), "-1");
-                    eb.AddInlineField(transContext.GetString("Current"), target.Karma);
+                    eb.Title = Localization.Karma.Decreased;
+                    eb.AddInlineField(Localization.Karma.By, Context.User.Username);
+                    eb.AddInlineField(Localization.Karma.Amount, "-1");
+                    eb.AddInlineField(Localization.Karma.Current, target.Karma);
                     await ReplyAsync("", false, eb.Build());
                 }
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 

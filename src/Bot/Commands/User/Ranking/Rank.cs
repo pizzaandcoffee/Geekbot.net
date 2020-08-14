@@ -4,35 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Converters;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
-using Geekbot.Core.Localization;
-using Geekbot.Core.UserRepository;
 
 namespace Geekbot.Bot.Commands.User.Ranking
 {
-    public class Rank : ModuleBase
+    public class Rank : GeekbotCommandBase
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IHighscoreManager _highscoreManager;
-        private readonly ITranslationHandler _translationHandler;
-        private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
-        private readonly IUserRepository _userRepository;
 
-        public Rank(DatabaseContext database, IErrorHandler errorHandler, IUserRepository userRepository,
-            IEmojiConverter emojiConverter, IHighscoreManager highscoreManager, ITranslationHandler translationHandler)
+        public Rank(DatabaseContext database, IErrorHandler errorHandler, IEmojiConverter emojiConverter, IHighscoreManager highscoreManager, IGuildSettingsManager guildSettingsManager)
+            : base(errorHandler, guildSettingsManager)
         {
             _database = database;
-            _errorHandler = errorHandler;
-            _userRepository = userRepository;
             _emojiConverter = emojiConverter;
             _highscoreManager = highscoreManager;
-            _translationHandler = translationHandler;
         }
 
         [Command("rank", RunMode = RunMode.Async)]
@@ -42,7 +36,6 @@ namespace Geekbot.Bot.Commands.User.Ranking
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
                 HighscoreTypes type;
                 try
                 {
@@ -51,17 +44,17 @@ namespace Geekbot.Bot.Commands.User.Ranking
                 }
                 catch
                 {
-                    await ReplyAsync(transContext.GetString("InvalidType"));
+                    await ReplyAsync(Localization.Rank.InvalidType);
                     return;
                 }
 
                 var replyBuilder = new StringBuilder();
                 if (amount > 20)
                 {
-                    await ReplyAsync(transContext.GetString("LimitingTo20Warning"));
+                    await ReplyAsync(Localization.Rank.LimitingTo20Warning);
                     amount = 20;
                 }
-                
+
                 var guildId = Context.Guild.Id;
                 Dictionary<HighscoreUserDto, int> highscoreUsers;
                 try
@@ -70,7 +63,7 @@ namespace Geekbot.Bot.Commands.User.Ranking
                 }
                 catch (HighscoreListEmptyException)
                 {
-                    await ReplyAsync(transContext.GetString("NoTypeFoundForServer", type));
+                    await ReplyAsync(string.Format(Localization.Rank.NoTypeFoundForServer, type));
                     return;
                 }
 
@@ -85,22 +78,24 @@ namespace Geekbot.Bot.Commands.User.Ranking
 
                 var failedToRetrieveUser = highscoreUsers.Any(e => string.IsNullOrEmpty(e.Key.Username));
 
-                if (failedToRetrieveUser) replyBuilder.AppendLine(transContext.GetString("FailedToResolveAllUsernames"));
-                replyBuilder.AppendLine(transContext.GetString("HighscoresFor", type.ToString().CapitalizeFirst(), Context.Guild.Name));
+                if (failedToRetrieveUser) replyBuilder.AppendLine(Localization.Rank.FailedToResolveAllUsernames).AppendLine();
+
+                replyBuilder.AppendLine(string.Format(Localization.Rank.HighscoresFor, type.ToString().CapitalizeFirst(), Context.Guild.Name));
+
                 var highscorePlace = 1;
-                foreach (var user in highscoreUsers)
+                foreach (var (user, value) in highscoreUsers)
                 {
                     replyBuilder.Append(highscorePlace < 11
                         ? $"{_emojiConverter.NumberToEmoji(highscorePlace)} "
                         : $"`{highscorePlace}.` ");
 
-                    replyBuilder.Append(user.Key.Username != null
-                        ? $"**{user.Key.Username}#{user.Key.Discriminator}**"
-                        : $"**{user.Key.Id}**");
-                    
+                    replyBuilder.Append(user.Username != null
+                        ? $"**{user.Username}#{user.Discriminator}**"
+                        : $"**{user.Id}**");
+
                     replyBuilder.Append(type == HighscoreTypes.messages
-                        ? $" - {user.Value} {type} - {Math.Round((double) (100 * user.Value) / guildMessages, 2)}%\n"
-                        : $" - {user.Value} {type}\n");
+                        ? $" - {value} {type} - {Math.Round((double) (100 * value) / guildMessages, 2)}%\n"
+                        : $" - {value} {type}\n");
 
                     highscorePlace++;
                 }
@@ -109,7 +104,7 @@ namespace Geekbot.Bot.Commands.User.Ranking
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }

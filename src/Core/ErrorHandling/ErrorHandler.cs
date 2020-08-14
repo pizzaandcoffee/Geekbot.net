@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Discord.Commands;
-using Discord.Net;
-using Geekbot.Core.Localization;
 using Geekbot.Core.Logger;
 using SharpRaven;
 using SharpRaven.Data;
@@ -14,14 +11,14 @@ namespace Geekbot.Core.ErrorHandling
     public class ErrorHandler : IErrorHandler
     {
         private readonly IGeekbotLogger _logger;
-        private readonly ITranslationHandler _translation;
+        private readonly Func<string> _getDefaultErrorText;
         private readonly IRavenClient _raven;
         private readonly bool _errorsInChat;
 
-        public ErrorHandler(IGeekbotLogger logger, ITranslationHandler translation, RunParameters runParameters)
+        public ErrorHandler(IGeekbotLogger logger, RunParameters runParameters, Func<string> getDefaultErrorText)
         {
             _logger = logger;
-            _translation = translation;
+            _getDefaultErrorText = getDefaultErrorText;
             _errorsInChat = runParameters.ExposeErrors;
 
             var sentryDsn = runParameters.SentryEndpoint;
@@ -40,7 +37,9 @@ namespace Geekbot.Core.ErrorHandling
         {
             try
             {
-                var errorString = errorMessage == "def" ? await _translation.GetString(context.Guild?.Id ?? 0, "errorHandler", "SomethingWentWrong") : errorMessage;
+                var errorString = errorMessage == "def"
+                    ? _getDefaultErrorText()
+                    : errorMessage;
                 var errorObj = SimpleConextConverter.ConvertContext(context);
                 if (e.Message.Contains("50007")) return;
                 if (e.Message.Contains("50013")) return;
@@ -73,17 +72,6 @@ namespace Geekbot.Core.ErrorHandling
             {
                 await context.Channel.SendMessageAsync("Something went really really wrong here");
                 _logger.Error(LogSource.Geekbot, "Errorception", ex);
-            }
-        }
-
-        public async Task HandleHttpException(HttpException e, ICommandContext context)
-        {
-            var errorStrings = await _translation.GetDict(context, "httpErrors");
-            switch(e.HttpCode)
-            {
-                case HttpStatusCode.Forbidden:
-                    await context.Channel.SendMessageAsync(errorStrings["403"]);
-                    break;
             }
         }
 

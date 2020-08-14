@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="GetCookies" xml:space="preserve">
+        <value>You got {0} cookies, there are now {1} cookies in you cookie jar</value>
+    </data>
+    <data name="WaitForMoreCookies" xml:space="preserve">
+        <value>You already got cookies today, you can have more cookies in {0}</value>
+    </data>
+    <data name="InYourJar" xml:space="preserve">
+        <value>There are {0} cookies in you cookie jar</value>
+    </data>
+    <data name="Given" xml:space="preserve">
+        <value>You gave {0} cookies to {1}</value>
+    </data>
+    <data name="NotEnoughToGive" xml:space="preserve">
+        <value>You don't have enough cookies</value>
+    </data>
+    <data name="NotEnoughCookiesToEat" xml:space="preserve">
+        <value>Your cookie jar looks almost empty, you should probably not eat a cookie</value>
+    </data>
+    <data name="AteCookies" xml:space="preserve">
+        <value>You ate {0} cookies, you've only got {1} cookies left</value>
+    </data>
+</root>

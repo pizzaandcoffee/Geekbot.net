@@ -1,35 +1,33 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.ReactionListener;
 
 namespace Geekbot.Bot.Commands.Admin
 {
     [Group("role")]
     [DisableInDirectMessage]
-    public class Role : ModuleBase
+    public class Role : GeekbotCommandBase
     {
         private readonly DatabaseContext _database;
-        private readonly IErrorHandler _errorHandler;
         private readonly IReactionListener _reactionListener;
-        private readonly ITranslationHandler _translationHandler;
 
-        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, ITranslationHandler translationHandler)
+        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
-            _errorHandler = errorHandler;
             _reactionListener = reactionListener;
-            _translationHandler = translationHandler;
         }
 
         [Command(RunMode = RunMode.Async)]
@@ -38,23 +36,22 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roles = _database.RoleSelfService.Where(g => g.GuildId.Equals(Context.Guild.Id.AsLong())).ToList();
                 if (roles.Count == 0)
                 {
-                    await ReplyAsync(transContext.GetString("NoRolesConfigured"));
+                    await ReplyAsync(Localization.Role.NoRolesConfigured);
                     return;
                 }
 
                 var sb = new StringBuilder();
-                sb.AppendLine(transContext.GetString("ListHeader", Context.Guild.Name));
-                sb.AppendLine(transContext.GetString("ListInstruction"));
+                sb.AppendLine(string.Format(Localization.Role.ListHeader, Context.Guild.Name));
+                sb.AppendLine(Localization.Role.ListInstruction);
                 foreach (var role in roles) sb.AppendLine($"- {role.WhiteListName}");
                 await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -64,7 +61,6 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roleName = roleNameRaw.ToLower();
                 var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
                     e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
@@ -74,31 +70,38 @@ namespace Geekbot.Bot.Commands.Admin
                     var role = Context.Guild.Roles.First(r => r.Id == roleFromDb.RoleId.AsUlong());
                     if (role == null)
                     {
-                        await ReplyAsync(transContext.GetString("RoleNotFound"));
+                        await ReplyAsync(Localization.Role.RoleNotFound);
                         return;
                     }
 
                     if (guildUser.RoleIds.Contains(role.Id))
                     {
                         await guildUser.RemoveRoleAsync(role);
-                        await ReplyAsync(transContext.GetString("RemovedUserFromRole", role.Name));
+                        await ReplyAsync(string.Format(Localization.Role.RemovedUserFromRole, role.Name));
                         return;
                     }
 
                     await guildUser.AddRoleAsync(role);
-                    await ReplyAsync(transContext.GetString("AddedUserFromRole", role.Name));
+                    await ReplyAsync(string.Format(Localization.Role.AddedUserFromRole, role.Name));
                     return;
                 }
 
-                await ReplyAsync(transContext.GetString("RoleNotFound"));
+                await ReplyAsync(Localization.Role.RoleNotFound);
             }
             catch (HttpException e)
             {
-                await _errorHandler.HandleHttpException(e, Context);
+                if (e.HttpCode == HttpStatusCode.Forbidden)
+                {
+                    await ReplyAsync(Localization.Internal.Http403);
+                }
+                else
+                {
+                    await ErrorHandler.HandleCommandException(e, Context);
+                }
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -109,10 +112,9 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
                 if (role.IsManaged)
                 {
-                    await ReplyAsync(transContext.GetString("CannotAddManagedRole"));
+                    await ReplyAsync(Localization.Role.CannotAddManagedRole);
                     return;
                 }
 
@@ -122,7 +124,7 @@ namespace Geekbot.Bot.Commands.Admin
                     || role.Permissions.BanMembers
                     || role.Permissions.KickMembers)
                 {
-                    await ReplyAsync(transContext.GetString("CannotAddDangerousRole"));
+                    await ReplyAsync(Localization.Role.CannotAddDangerousRole);
                     return;
                 }
 
@@ -133,11 +135,11 @@ namespace Geekbot.Bot.Commands.Admin
                     WhiteListName = roleName
                 });
                 await _database.SaveChangesAsync();
-                await ReplyAsync(transContext.GetString("AddedRoleToWhitelist", role.Name));
+                await ReplyAsync(string.Format(Localization.Role.AddedRoleToWhitelist, role.Name));
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -148,22 +150,21 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
                 var roleFromDb = _database.RoleSelfService.FirstOrDefault(e =>
                     e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.WhiteListName.Equals(roleName));
                 if (roleFromDb != null)
                 {
                     _database.RoleSelfService.Remove(roleFromDb);
                     await _database.SaveChangesAsync();
-                    await ReplyAsync(transContext.GetString("RemovedRoleFromWhitelist", roleName));
+                    await ReplyAsync(string.Format(Localization.Role.RemovedRoleFromWhitelist, roleName));
                     return;
                 }
 
-                await ReplyAsync(transContext.GetString("RoleNotFound"));
+                await ReplyAsync(Localization.Role.RoleNotFound);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -182,14 +183,13 @@ namespace Geekbot.Bot.Commands.Admin
                 await _reactionListener.AddRoleToListener(messageId, Context.Guild.Id, emoji, role);
                 await Context.Message.DeleteAsync();
             }
-            catch (HttpException e)
+            catch (HttpException)
             {
                 await Context.Channel.SendMessageAsync("Custom emojis from other servers are not supported");
-                Console.WriteLine(e);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }
