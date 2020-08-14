@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -11,7 +12,7 @@ using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.ReactionListener;
 
 namespace Geekbot.Bot.Commands.Admin
@@ -23,7 +24,7 @@ namespace Geekbot.Bot.Commands.Admin
         private readonly DatabaseContext _database;
         private readonly IReactionListener _reactionListener;
 
-        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, ITranslationHandler translationHandler) : base(errorHandler, translationHandler)
+        public Role(DatabaseContext database, IErrorHandler errorHandler, IReactionListener reactionListener, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _reactionListener = reactionListener;
@@ -89,7 +90,14 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (HttpException e)
             {
-                await ErrorHandler.HandleHttpException(e, Context);
+                if (e.HttpCode == HttpStatusCode.Forbidden)
+                {
+                    await ReplyAsync(Localization.Internal.Http403);
+                }
+                else
+                {
+                    await ErrorHandler.HandleCommandException(e, Context);
+                }
             }
             catch (Exception e)
             {

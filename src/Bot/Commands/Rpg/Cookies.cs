@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Bot.Utils;
 using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Bot.Commands.Rpg
@@ -22,7 +23,8 @@ namespace Geekbot.Bot.Commands.Rpg
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Cookies(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translations , IRandomNumberGenerator randomNumberGenerator) : base(errorHandler, translations)
+        public Cookies(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, IGuildSettingsManager guildSettingsManager)
+            : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
@@ -34,12 +36,11 @@ namespace Geekbot.Bot.Commands.Rpg
         {
             try
             {
-                var transContext = await Translations.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (actor.LastPayout.Value.AddDays(1).Date > DateTime.Now.Date)
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(DateTimeOffset.Now.AddDays(1).Date);
-                    await ReplyAsync(string.Format(Localization.Cookies.WaitForMoreCookies, formatedWaitTime));
+                    var formattedWaitTime = DateLocalization.FormatDateTimeAsRemaining(DateTimeOffset.Now.AddDays(1).Date);
+                    await ReplyAsync(string.Format(Localization.Cookies.WaitForMoreCookies, formattedWaitTime));
                     return;
                 }
                 actor.Cookies += 10;

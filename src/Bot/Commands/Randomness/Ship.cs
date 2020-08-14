@@ -8,7 +8,7 @@ using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Bot.Commands.Randomness
@@ -18,7 +18,7 @@ namespace Geekbot.Bot.Commands.Randomness
         private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly DatabaseContext _database;
 
-        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translations) : base(errorHandler, translations)
+        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;

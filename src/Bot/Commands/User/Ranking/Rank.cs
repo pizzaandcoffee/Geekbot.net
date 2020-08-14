@@ -10,8 +10,8 @@ using Geekbot.Core.Converters;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
-using Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.User.Ranking
 {
@@ -21,7 +21,8 @@ namespace Geekbot.Bot.Commands.User.Ranking
         private readonly IHighscoreManager _highscoreManager;
         private readonly DatabaseContext _database;
 
-        public Rank(DatabaseContext database, IErrorHandler errorHandler, IEmojiConverter emojiConverter, IHighscoreManager highscoreManager, ITranslationHandler translations): base(errorHandler, translations)
+        public Rank(DatabaseContext database, IErrorHandler errorHandler, IEmojiConverter emojiConverter, IHighscoreManager highscoreManager, IGuildSettingsManager guildSettingsManager)
+            : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _emojiConverter = emojiConverter;
@@ -53,7 +54,7 @@ namespace Geekbot.Bot.Commands.User.Ranking
                     await ReplyAsync(Localization.Rank.LimitingTo20Warning);
                     amount = 20;
                 }
-                
+
                 var guildId = Context.Guild.Id;
                 Dictionary<HighscoreUserDto, int> highscoreUsers;
                 try
@@ -78,9 +79,9 @@ namespace Geekbot.Bot.Commands.User.Ranking
                 var failedToRetrieveUser = highscoreUsers.Any(e => string.IsNullOrEmpty(e.Key.Username));
 
                 if (failedToRetrieveUser) replyBuilder.AppendLine(Localization.Rank.FailedToResolveAllUsernames).AppendLine();
-                
+
                 replyBuilder.AppendLine(string.Format(Localization.Rank.HighscoresFor, type.ToString().CapitalizeFirst(), Context.Guild.Name));
-                
+
                 var highscorePlace = 1;
                 foreach (var (user, value) in highscoreUsers)
                 {
@@ -91,7 +92,7 @@ namespace Geekbot.Bot.Commands.User.Ranking
                     replyBuilder.Append(user.Username != null
                         ? $"**{user.Username}#{user.Discriminator}**"
                         : $"**{user.Id}**");
-                    
+
                     replyBuilder.Append(type == HighscoreTypes.messages
                         ? $" - {value} {type} - {Math.Round((double) (100 * value) / guildMessages, 2)}%\n"
                         : $" - {value} {type}\n");

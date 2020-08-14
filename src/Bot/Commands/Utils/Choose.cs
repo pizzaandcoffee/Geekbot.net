@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 
 namespace Geekbot.Bot.Commands.Utils
 {
     public class Choose : GeekbotCommandBase
     {
-        public Choose(IErrorHandler errorHandler, ITranslationHandler translation) : base(errorHandler, translation)
+        public Choose(IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
         }
 

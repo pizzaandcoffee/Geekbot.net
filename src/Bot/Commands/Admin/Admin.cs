@@ -14,7 +14,6 @@ using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
-using Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Admin
 {
@@ -24,21 +23,18 @@ namespace Geekbot.Bot.Commands.Admin
     public class Admin : GeekbotCommandBase
     {
         private readonly DiscordSocketClient _client;
-        private readonly IGuildSettingsManager _guildSettingsManager;
 
-        public Admin(DiscordSocketClient client, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager, ITranslationHandler translationHandler) : base(errorHandler, translationHandler)
+        public Admin(DiscordSocketClient client, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _client = client;
-            _guildSettingsManager = guildSettingsManager;
         }
 
         [Command("welcome", RunMode = RunMode.Async)]
         [Summary("Set a Welcome Message (use '$user' to mention the new joined user).")]
         public async Task SetWelcomeMessage([Remainder, Summary("message")] string welcomeMessage)
         {
-            var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-            guild.WelcomeMessage = welcomeMessage;
-            await _guildSettingsManager.UpdateSettings(guild);
+            GuildSettings.WelcomeMessage = welcomeMessage;
+            await GuildSettingsManager.UpdateSettings(GuildSettings);
 
             var formatedMessage = welcomeMessage.Replace("$user", Context.User.Mention);
             await ReplyAsync($"Welcome message has been changed\r\nHere is an example of how it would look:\r\n{formatedMessage}");
@@ -52,9 +48,8 @@ namespace Geekbot.Bot.Commands.Admin
             {
                 var m = await channel.SendMessageAsync("...");
 
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                guild.WelcomeChannel = channel.Id.AsLong();
-                await _guildSettingsManager.UpdateSettings(guild);
+                GuildSettings.WelcomeChannel = channel.Id.AsLong();
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
 
                 await m.DeleteAsync();
 
@@ -74,9 +69,8 @@ namespace Geekbot.Bot.Commands.Admin
             {
                 var m = await channel.SendMessageAsync("verifying...");
 
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                guild.ModChannel = channel.Id.AsLong();
-                await _guildSettingsManager.UpdateSettings(guild);
+                GuildSettings.ModChannel = channel.Id.AsLong();
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
 
                 var sb = new StringBuilder();
                 sb.AppendLine("Successfully saved mod channel, you can now do the following");
@@ -96,13 +90,12 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
+                var modChannel = await GetModChannel(GuildSettings.ModChannel.AsUlong());
                 if (modChannel == null) return;
 
-                guild.ShowLeave = !guild.ShowLeave;
-                await _guildSettingsManager.UpdateSettings(guild);
-                await modChannel.SendMessageAsync(guild.ShowLeave
+                GuildSettings.ShowLeave = !GuildSettings.ShowLeave;
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
+                await modChannel.SendMessageAsync(GuildSettings.ShowLeave
                     ? "Saved - now sending messages here when someone leaves"
                     : "Saved - stopping sending messages here when someone leaves"
                 );
@@ -119,13 +112,12 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                var modChannel = await GetModChannel(guild.ModChannel.AsUlong());
+                var modChannel = await GetModChannel(GuildSettings.ModChannel.AsUlong());
                 if (modChannel == null) return;
 
-                guild.ShowDelete = !guild.ShowDelete;
-                await _guildSettingsManager.UpdateSettings(guild);
-                await modChannel.SendMessageAsync(guild.ShowDelete
+                GuildSettings.ShowDelete = !GuildSettings.ShowDelete;
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
+                await modChannel.SendMessageAsync(GuildSettings.ShowDelete
                     ? "Saved - now sending messages here when someone deletes a message"
                     : "Saved - stopping sending messages here when someone deletes a message"
                 );
@@ -138,31 +130,25 @@ namespace Geekbot.Bot.Commands.Admin
 
         [Command("setlang", RunMode = RunMode.Async)]
         [Summary("Change the bots language")]
-        public async Task SetLanguage([Summary("language")] string languageRaw)
+        public async Task SetLanguage([Summary("language")] string language)
         {
             try
             {
-                var language = languageRaw.ToUpper();
-                var success = await Translations.SetLanguage(Context.Guild.Id, language);
-                if (success)
+                var availableLanguages = new List<string>();
+                availableLanguages.Add("en-GB"); // default
+                availableLanguages.AddRange(GetAvailableCultures().Select(culture => culture.Name));
+                if (availableLanguages.Contains(language))
                 {
-                    var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                    guild.Language = language;
-                    await _guildSettingsManager.UpdateSettings(guild);
+                    GuildSettings.Language = language;
+                    await GuildSettingsManager.UpdateSettings(GuildSettings);
 
-                    if (language.ToLower() == "chde")
-                    {
-                        Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("de-ch");
-                    }
-                    
+                    Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language.ToLower() == "chde" ? "de-CH" : language);
+
                     await ReplyAsync(Localization.Admin.NewLanguageSet);
                     return;
                 }
-
-                var available = new List<string>();
-                available.Add("en-GB"); // default
-                available.AddRange(GetAvailableCultures().Select(culture => culture.Name));
-                await ReplyAsync($"That doesn't seem to be a supported language\nSupported Languages are {string.Join(", ", available)}");
+                
+                await ReplyAsync($"That doesn't seem to be a supported language\nSupported Languages are {string.Join(", ", availableLanguages)}");
             }
             catch (Exception e)
             {
@@ -177,9 +163,8 @@ namespace Geekbot.Bot.Commands.Admin
             try
             {
                 var language = languageRaw.ToLower();
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                guild.WikiLang = language;
-                await _guildSettingsManager.UpdateSettings(guild);
+                GuildSettings.WikiLang = language;
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
 
                 await ReplyAsync($"Now using the {language} wikipedia");
             }
@@ -195,10 +180,10 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                guild.Ping = !guild.Ping;
-                await _guildSettingsManager.UpdateSettings(guild);
-                await ReplyAsync(guild.Ping ? "i will reply to ping now" : "No more pongs...");
+                // var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
+                GuildSettings.Ping = !GuildSettings.Ping;
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
+                await ReplyAsync(GuildSettings.Ping ? "i will reply to ping now" : "No more pongs...");
             }
             catch (Exception e)
             {
@@ -212,10 +197,10 @@ namespace Geekbot.Bot.Commands.Admin
         {
             try
             {
-                var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
-                guild.Hui = !guild.Hui;
-                await _guildSettingsManager.UpdateSettings(guild);
-                await ReplyAsync(guild.Hui ? "i will reply to hui now" : "No more hui's...");
+                // var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
+                GuildSettings.Hui = !GuildSettings.Hui;
+                await GuildSettingsManager.UpdateSettings(GuildSettings);
+                await ReplyAsync(GuildSettings.Hui ? "i will reply to hui now" : "No more hui's...");
             }
             catch (Exception e)
             {

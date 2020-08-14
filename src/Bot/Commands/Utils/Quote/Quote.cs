@@ -9,7 +9,7 @@ using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Polyfills;
 using Geekbot.Core.RandomNumberGenerator;
 
@@ -23,7 +23,8 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly bool _isDev;
 
-        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translationHandler) : base(errorHandler, translationHandler)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, IGuildSettingsManager guildSettingsManager)
+            : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;

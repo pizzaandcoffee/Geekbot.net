@@ -31,10 +31,4 @@
         <PackageReference Include="YamlDotNet" Version="6.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="Localization\Translations.yml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
 </Project>

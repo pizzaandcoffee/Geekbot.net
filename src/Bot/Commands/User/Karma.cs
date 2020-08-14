@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Bot.Utils;
 using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
-using Geekbot.Core.Localization;
+using Geekbot.Core.GuildSettingsManager;
 
 namespace Geekbot.Bot.Commands.User
 {
@@ -19,12 +18,10 @@ namespace Geekbot.Bot.Commands.User
     public class Karma : GeekbotCommandBase
     {
         private readonly DatabaseContext _database;
-        private readonly ITranslationHandler _translations;
 
-        public Karma(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translations) : base(errorHandler, translations)
+        public Karma(DatabaseContext database, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
-            _translations = translations;
         }
 
         [Command("good", RunMode = RunMode.Async)]
@@ -33,8 +30,6 @@ namespace Geekbot.Bot.Commands.User
         {
             try
             {
-                var transContext = await _translations.GetGuildContext(Context);
-                
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
@@ -42,7 +37,7 @@ namespace Geekbot.Bot.Commands.User
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
                     await ReplyAsync(string.Format(Localization.Karma.WaitUntill, Context.User.Username, formatedWaitTime));
                 }
                 else
@@ -81,8 +76,6 @@ namespace Geekbot.Bot.Commands.User
         {
             try
             {
-                var transContext = await _translations.GetGuildContext(Context);
-                
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
@@ -90,7 +83,7 @@ namespace Geekbot.Bot.Commands.User
                 }
                 else if (TimeoutFinished(actor.TimeOut))
                 {
-                    var formatedWaitTime = transContext.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
                     await ReplyAsync(string.Format(Localization.Karma.WaitUntill, Context.User.Username, formatedWaitTime));
                 }
                 else

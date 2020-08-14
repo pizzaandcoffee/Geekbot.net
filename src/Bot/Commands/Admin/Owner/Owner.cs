@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.GlobalSettings;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Logger;
 using Geekbot.Core.UserRepository;
 
@@ -12,20 +14,19 @@ namespace Geekbot.Bot.Commands.Admin.Owner
 {
     [Group("owner")]
     [RequireOwner]
-    public class Owner : ModuleBase
+    public class Owner : GeekbotCommandBase
     {
         private readonly DiscordSocketClient _client;
-        private readonly IErrorHandler _errorHandler;
         private readonly IGlobalSettings _globalSettings;
         private readonly IGeekbotLogger _logger;
         private readonly IUserRepository _userRepository;
 
-        public Owner(DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, IGlobalSettings globalSettings)
+        public Owner(DiscordSocketClient client, IGeekbotLogger logger, IUserRepository userRepositry, IErrorHandler errorHandler, IGlobalSettings globalSettings,
+            IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _client = client;
             _logger = logger;
             _userRepository = userRepositry;
-            _errorHandler = errorHandler;
             _globalSettings = globalSettings;
         }
 
@@ -73,7 +74,7 @@ namespace Geekbot.Bot.Commands.Admin.Owner
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context,
+                await ErrorHandler.HandleCommandException(e, Context,
                     "Couldn't complete User Repository, see console for more info");
             }
         }
@@ -89,10 +90,10 @@ namespace Geekbot.Bot.Commands.Admin.Owner
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         [Command("refreshuser", RunMode = RunMode.Async)]
         [Summary("Refresh a user in the user cache")]
         public async Task PopUserRepoCommand([Summary("user-id")] ulong userId)
@@ -105,7 +106,7 @@ namespace Geekbot.Bot.Commands.Admin.Owner
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -119,7 +120,7 @@ namespace Geekbot.Bot.Commands.Admin.Owner
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }
