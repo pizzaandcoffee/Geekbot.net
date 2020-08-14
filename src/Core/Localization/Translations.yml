@@ -23,34 +23,3 @@ httpErrors:
   403:
     EN: "Seems like i don't have enough permission to that :confused:"
     CHDE: "Gseht danach us das ich nid gnueg recht han zum das mache :confused:"
-role:
-  NoRolesConfigured:
-    EN: "There are no roles configured for this server"
-    CHDE: "Es sind kei rolle für dä server konfiguriert"
-  ListHeader:
-    EN: "**Self Service Roles on {0}**"
-    CHDE: "**Self Service Rollene uf {0}**"
-  ListInstruction:
-    EN: "To get a role, use `!role [name]`"
-    CHDE: "Zum ä rolle becho, schriib `!role [name]`"
-  RoleNotFound:
-    EN: "That role doesn't exist or is not on the whitelist"
-    CHDE: "Die rolle gids nid or isch nid uf dr whitelist"
-  RemovedUserFromRole:
-    EN: "Removed you from {0}"
-    CHDE: "Han di entfernt vo {0}"
-  AddedUserFromRole:
-    EN: "Added you to {0}"
-    CHDE: "Han di hinzue gfüegt zu {0}"
-  CannotAddManagedRole:
-    EN: "You can't add a role that is managed by discord"
-    CHDE: "Du chasch kei rolle hinzuefüge wo verwalted wird vo discord"
-  CannotAddDangerousRole:
-    EN: "You cannot add that role to self service because it contains one or more dangerous permissions"
-    CHDE: "Du chasch die rolle nid hinzuefüge will er ein oder mehreri gföhrlichi berechtigunge het"
-  AddedRoleToWhitelist:
-    EN: "Added {0} to the whitelist"
-    CHDE: "{0} isch zur whitelist hinzuegfüegt"
-  RemovedRoleFromWhitelist:
-    EN: "Removed {0} from the whitelist"
-    CHDE: "{0} isch vo dr whitelist glöscht"
