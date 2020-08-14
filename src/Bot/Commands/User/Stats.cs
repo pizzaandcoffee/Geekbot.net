@@ -3,24 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Levels;
 
 namespace Geekbot.Bot.Commands.User
 {
-    public class Stats : ModuleBase
+    public class Stats : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly ILevelCalc _levelCalc;
         private readonly DatabaseContext _database;
 
-        public Stats(DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc)
+        public Stats(DatabaseContext database, IErrorHandler errorHandler, ILevelCalc levelCalc, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
             _database = database;
-            _errorHandler = errorHandler;
             _levelCalc = levelCalc;
         }
 
@@ -67,23 +67,23 @@ namespace Geekbot.Bot.Commands.User
                     e.GuildId.Equals(Context.Guild.Id.AsLong()) &&
                     e.UserId.Equals(userInfo.Id.AsLong()));
 
-                eb.AddInlineField("Discordian Since",
+                eb.AddInlineField(Localization.Stats.OnDiscordSince,
                         $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
-                    .AddInlineField("Joined Server",
+                    .AddInlineField(Localization.Stats.JoinedServer,
                         $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
-                    .AddInlineField("Karma", karma?.Karma ?? 0)
-                    .AddInlineField("Level", level)
-                    .AddInlineField("Messages Sent", messages)
-                    .AddInlineField("Server Total", $"{percent}%");
+                    .AddInlineField(Localization.Stats.Karma, karma?.Karma ?? 0)
+                    .AddInlineField(Localization.Stats.Level, level)
+                    .AddInlineField(Localization.Stats.MessagesSent, messages)
+                    .AddInlineField(Localization.Stats.ServerTotal, $"{percent}%");
 
-                if (correctRolls != null) eb.AddInlineField("Guessed Rolls", correctRolls.Rolls);
-                if (cookies > 0) eb.AddInlineField("Cookies", cookies);
+                if (correctRolls != null) eb.AddInlineField(Localization.Stats.GuessedRolls, correctRolls.Rolls);
+                if (cookies > 0) eb.AddInlineField(Localization.Stats.Cookies, cookies);
 
                 await ReplyAsync("", false, eb.Build());
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }

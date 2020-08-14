@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="OnDiscordSince" xml:space="preserve">
+        <value>On Discord Since</value>
+    </data>
+    <data name="JoinedServer" xml:space="preserve">
+        <value>Joined Server</value>
+    </data>
+    <data name="Karma" xml:space="preserve">
+        <value>Karma</value>
+    </data>
+    <data name="Level" xml:space="preserve">
+        <value>Level</value>
+    </data>
+    <data name="MessagesSent" xml:space="preserve">
+        <value>Messages Sent</value>
+    </data>
+    <data name="ServerTotal" xml:space="preserve">
+        <value>Server Total</value>
+    </data>
+    <data name="GuessedRolls" xml:space="preserve">
+        <value>Guessed Rolls</value>
+    </data>
+    <data name="Cookies" xml:space="preserve">
+        <value>Cookies</value>
+    </data>
+</root>

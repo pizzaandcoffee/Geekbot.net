@@ -81,6 +81,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Role.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Stats.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Stats.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Localization\Ship.Designer.cs">
@@ -135,6 +139,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Role.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Stats.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Stats.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>
