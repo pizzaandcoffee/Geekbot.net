@@ -12,5 +12,6 @@ namespace Geekbot.Core.Localization
         Task<TranslationGuildContext> GetGuildContext(ICommandContext context);
         Task<bool> SetLanguage(ulong guildId, string language);
         List<string> SupportedLanguages { get; }
+        string GetServerLanguage(ulong guildId);
     }
 }

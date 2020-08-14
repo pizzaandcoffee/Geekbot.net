@@ -1,0 +1,35 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="GetCookies" xml:space="preserve">
+        <value>Du häsch {0} guetzli becho, du häsch jetzt {1} guetzli ih dr büchse</value>
+    </data>
+    <data name="WaitForMoreCookies" xml:space="preserve">
+        <value>Du hesch scho guetzli becho hüt, du chasch meh ha in {0}</value>
+    </data>
+    <data name="InYourJar" xml:space="preserve">
+        <value>Es hät {0} guetzli ih dineri büchs</value>
+    </data>
+    <data name="Given" xml:space="preserve">
+        <value>Du hesch {1} {0} guetzli geh</value>
+    </data>
+    <data name="NotEnoughToGive" xml:space="preserve">
+        <value>Du hesch nid gnueg guetzli</value>
+    </data>
+    <data name="NotEnoughCookiesToEat" xml:space="preserve">
+        <value>Du hesch chuum no guetzli ih dineri büchs, du sötsch warschinli keini esse</value>
+    </data>
+    <data name="AteCookies" xml:space="preserve">
+        <value>Du hesch {0} guetzli gesse und hesch jezt no {1} übrig</value>
+    </data>
+</root>

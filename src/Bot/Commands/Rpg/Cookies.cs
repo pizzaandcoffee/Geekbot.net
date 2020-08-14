@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
@@ -16,18 +17,14 @@ namespace Geekbot.Bot.Commands.Rpg
     [DisableInDirectMessage]
     [Group("cookies")]
     [Alias("cookie")]
-    public class Cookies : ModuleBase
+    public class Cookies : GeekbotCommandBase
     {
         private readonly DatabaseContext _database;
-        private readonly IErrorHandler _errorHandler;
-        private readonly ITranslationHandler _translation;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Cookies(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translation , IRandomNumberGenerator randomNumberGenerator)
+        public Cookies(DatabaseContext database, IErrorHandler errorHandler, ITranslationHandler translations , IRandomNumberGenerator randomNumberGenerator) : base(errorHandler, translations)
         {
             _database = database;
-            _errorHandler = errorHandler;
-            _translation = translation;
             _randomNumberGenerator = randomNumberGenerator;
         }
 
@@ -37,23 +34,23 @@ namespace Geekbot.Bot.Commands.Rpg
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
+                var transContext = await Translations.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
                 if (actor.LastPayout.Value.AddDays(1).Date > DateTime.Now.Date)
                 {
                     var formatedWaitTime = transContext.FormatDateTimeAsRemaining(DateTimeOffset.Now.AddDays(1).Date);
-                    await ReplyAsync(transContext.GetString("WaitForMoreCookies", formatedWaitTime));
+                    await ReplyAsync(string.Format(Localization.Cookies.WaitForMoreCookies, formatedWaitTime));
                     return;
                 }
                 actor.Cookies += 10;
                 actor.LastPayout = DateTimeOffset.Now;
                 await SetUser(actor);
-                await ReplyAsync(transContext.GetString("GetCookies", 10, actor.Cookies));
+                await ReplyAsync(string.Format(Localization.Cookies.GetCookies, 10, actor.Cookies));
 
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -63,13 +60,12 @@ namespace Geekbot.Bot.Commands.Rpg
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
-                await ReplyAsync(transContext.GetString("InYourJar", actor.Cookies));
+                await ReplyAsync(string.Format(Localization.Cookies.InYourJar, actor.Cookies));
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -79,12 +75,11 @@ namespace Geekbot.Bot.Commands.Rpg
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var giver = await GetUser(Context.User.Id);
 
                 if (giver.Cookies < amount)
                 {
-                    await ReplyAsync(transContext.GetString("NotEnoughToGive"));
+                    await ReplyAsync(Localization.Cookies.NotEnoughToGive);
                     return;
                 }
 
@@ -96,11 +91,11 @@ namespace Geekbot.Bot.Commands.Rpg
                 await SetUser(giver);
                 await SetUser(taker);
                 
-                await ReplyAsync(transContext.GetString("Given", amount, user.Username));
+                await ReplyAsync(string.Format(Localization.Cookies.Given, amount, user.Username));
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
         
@@ -110,12 +105,11 @@ namespace Geekbot.Bot.Commands.Rpg
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var actor = await GetUser(Context.User.Id);
 
                 if (actor.Cookies < 5)
                 {
-                    await ReplyAsync(transContext.GetString("NotEnoughCookiesToEat"));
+                    await ReplyAsync(Localization.Cookies.NotEnoughCookiesToEat);
                     return;
                 }
 
@@ -124,14 +118,14 @@ namespace Geekbot.Bot.Commands.Rpg
                 
                 await SetUser(actor);
                 
-                await ReplyAsync(transContext.GetString("AteCookies", amount, actor.Cookies));
+                await ReplyAsync(string.Format(Localization.Cookies.AteCookies, amount, actor.Cookies));
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
-        
+
         private async Task<CookiesModel> GetUser(ulong userId)
         {
             var user = _database.Cookies.FirstOrDefault(u =>u.GuildId.Equals(Context.Guild.Id.AsLong()) && u.UserId.Equals(userId.AsLong())) ?? await CreateNewRow(userId);

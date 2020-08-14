@@ -15,13 +15,6 @@ dateTime:
   And:
     EN: "and"
     CHDE: "und"
-admin:
-  NewLanguageSet:
-    EN: "I will reply in english from now on"
-    CHDE: "I werd ab jetzt uf schwiizerdüütsch antworte, äuuä"
-  GetLanguage:
-    EN: "I'm talking english"
-    CHDE: "I red schwiizerdüütsch"
 errorHandler:
   SomethingWentWrong:
     EN: "Something went wrong :confused:"
@@ -30,86 +23,6 @@ httpErrors:
   403:
     EN: "Seems like i don't have enough permission to that :confused:"
     CHDE: "Gseht danach us das ich nid gnueg recht han zum das mache :confused:"
-choose:
-  Choice:
-    EN: "I Choose **{0}**"
-    CHDE: "I nimme **{0}**"
-good:
-  CannotChangeOwn:
-    EN: "Sorry {0}, but you can't give yourself karma"
-    CHDE: "Sorry {0}, aber du chasch dr selber kei karma geh"
-  WaitUntill:
-    EN: "Sorry {0}, but you have to wait {1} before you can give karma again..."
-    CHDE: "Sorry {0}, aber du musch no {1} warte bisch d wieder karma chasch geh..."
-  Increased:
-    EN: "Karma gained"
-    CHDE: "Karma becho"
-  By:
-    EN: "By"
-    CHDE: "Vo"
-  Amount:
-    EN: "Amount"
-    CHDE: "Mengi"
-  Current:
-    EN: "Current"
-    CHDE: "Jetzt"
-bad:
-  CannotChangeOwn:
-    EN: "Sorry {0}, but you can't lower your own karma"
-    CHDE: "Sorry {0}, aber du chasch dr din eigete karma nid weg neh"
-  WaitUntill:
-    EN: "Sorry {0}, but you have to wait {1} before you can lower karma again..."
-    CHDE: "Sorry {0}, aber du musch no {1} warte bisch d wieder karma chasch senke..."
-  Decreased:
-    EN: "Karma lowered"
-    CHDE: "Karma gsenkt"
-  By:
-    EN: "By"
-    CHDE: "Vo"
-  Amount:
-    EN: "Amount"
-    CHDE: "Mengi"
-  Current:
-    EN: "Current"
-    CHDE: "Jetzt"
-roll:
-  Rolled:
-    EN: "{0}, you rolled {1}, your guess was {2}"
-    CHDE: "{0}, du hesch {1} grollt und hesch {2} grate"
-  Gratz:
-    EN: "Congratulations {0}, your guess was correct!"
-    CHDE: "Gratuliere {0}, du hesch richtig grate!"
-  RolledNoGuess:
-    EN: "{0}, you rolled {1}"
-    CHDE: "{0}, du hesch {1} grollt"
-  NoPrevGuess:
-    EN: ":red_circle: {0}, you can't guess the same number again, guess another number or wait {1}"
-    CHDE: ":red_circle: {0}, du chasch nid nomol es gliche rate, rate öppis anders oder warte {1}"
-cookies: &cookiesAlias
-  GetCookies:
-    EN: "You got {0} cookies, there are now {1} cookies in you cookie jar"
-    CHDE: "Du häsch {0} guetzli becho, du häsch jetzt {1} guetzli ih dr büchse"
-  WaitForMoreCookies:
-    EN: "You already got cookies today, you can have more cookies in {0}"
-    CHDE: "Du hesch scho guetzli becho hüt, du chasch meh ha in {0}"
-  InYourJar:
-    EN: "There are {0} cookies in you cookie jar"
-    CHDE: "Es hät {0} guetzli ih dineri büchs"
-  Given:
-    EN: "You gave {0} cookies to {1}"
-    CHDE: "Du hesch {1} {0} guetzli geh"
-  NotEnoughToGive:
-    EN: "You don't have enough cookies"
-    CHDE: "Du hesch nid gnueg guetzli"
-  NotEnoughCookiesToEat:
-    EN: "Your cookie jar looks almost empty, you should probably not eat a cookie"
-    CHDE: "Du hesch chuum no guetzli ih dineri büchs, du sötsch warschinli keini esse"
-  AteCookies:
-    EN: "You ate {0} cookies, you've only got {1} cookies left"
-    CHDE: "Du hesch {0} guetzli gesse und hesch jezt no {1} übrig"
-cookie:
-  # because command aliases are to hard to deal with...
-  <<: *cookiesAlias
 role:
   NoRolesConfigured:
     EN: "There are no roles configured for this server"
@@ -141,73 +54,3 @@ role:
   RemovedRoleFromWhitelist:
     EN: "Removed {0} from the whitelist"
     CHDE: "{0} isch vo dr whitelist glöscht"
-quote:
-  NoQuotesFound:
-    EN: "This server doesn't seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save <messageId>`"
-    CHDE: "Dä server het no kei quotes. Du chasch quotes hinzuefüege mit `!quote save @user` oder `!quote save <messageId>`"
-  CannotSaveOwnQuotes:
-    EN: "You can't save your own quotes..."
-    CHDE: "Du chasch kei quotes vo dir selber speichere..."
-  CannotQuoteBots:
-    EN: "You can't save quotes by a bot..."
-    CHDE: "Du chasch kei quotes vomne bot speichere..."
-  QuoteAdded:
-    EN: "**Quote Added**"
-    CHDE: "**Quote hinzugfüegt**"
-  Removed:
-    EN: "**Removed #{0}**"
-    CHDE: "**#{0} glöscht**"
-  NotFoundWithId:
-    EN: "I couldn't find a quote with that ID :disappointed:"
-    CHDE: "Ich chan kei quote finde mit därri ID :disappointed:"
-  QuoteStats:
-    EN: "Quote Stats"
-    CHDE: "Quote statistike"
-  TotalQuotes:
-    EN: "Total"
-    CHDE: "Total"
-  MostQuotesPerson:
-    EN: "Most quoted person"
-    CHDE: "Meist quoteti person"
-  NotAValidMessageLink:
-    EN: "That is not a valid message link"
-    CHDE: "Das isch kei korrete nachrichtelink"
-  OnlyQuoteFromSameServer:
-    EN: "You can only quote messages from the same server"
-    CHDE: "Du chasch numme nachrichte vom gliche server quote"
-rank:
-  InvalidType:
-    EN: "Valid types are '`messages`' '`karma`', '`rolls`' and '`cookies`'"
-    CHDE: "Gültigi paramenter sind '`messages`' '`karma`', '`rolls`' und '`cookies`'"
-  LimitingTo20Warning:
-    EN: ":warning: Limiting to 20\n"
-    CHDE: ":warning: Limitiert uf 20\n"
-  NoTypeFoundForServer:
-    EN: "No {0} found on this server"
-    CHDE: "Kei {0} gfunde für dä server"
-  FailedToResolveAllUsernames:
-    EN: ":warning: I couldn't find all usernames. Maybe they left the server?\n"
-    CHDE: ":warning: Ich han nid alli benutzername gfunde. villiicht hend sie de server verlah?\n"
-  HighscoresFor:
-    EN: ":bar_chart: **{0} Highscore for {1}**"
-    CHDE: ":bar_chart: **{0} Highscore für {1}**"
-ship:
-  Matchmaking:
-    EN: "Matchmaking"
-    CHDE: "Verkupple"
-  NotGonnaToHappen:
-    EN: "Not gonna happen"
-    CHDE: "Wird nöd klappe"
-  NotSuchAGoodIdea:
-    EN: "Not such a good idea"
-    CHDE: "Nöd so ä gueti idee"
-  ThereMightBeAChance:
-    EN: "There might be a chance"
-    CHDE: "Es gid eventuel ä chance"
-  CouldWork:
-    EN: "Almost a match"
-    CHDE: "Fasch en match"
-  ItsAMatch:
-    EN: "It's a match"
-    CHDE: "Es isch es traumpaar"
-    

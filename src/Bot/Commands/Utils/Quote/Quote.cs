@@ -17,20 +17,16 @@ namespace Geekbot.Bot.Commands.Utils.Quote
 {
     [Group("quote")]
     [DisableInDirectMessage]
-    public class Quote : ModuleBase
+    public class Quote : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
-        private readonly ITranslationHandler _translationHandler;
         private readonly bool _isDev;
 
-        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translationHandler)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translationHandler) : base(errorHandler, translationHandler)
         {
-            _errorHandler = errorHandler;
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
-            _translationHandler = translationHandler;
             // to remove restrictions when developing
             _isDev = Constants.BotVersion() == "0.0.0-DEV";
         }
@@ -45,8 +41,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 
                 if (!s.Any())
                 {
-                    var transContext = await _translationHandler.GetGuildContext(Context);
-                    await ReplyAsync(transContext.GetString("NoQuotesFound"));
+                    await ReplyAsync(Localization.Quote.NoQuotesFound);
                     return;
                 }
 
@@ -58,7 +53,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
+                await ErrorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
             }
         }
 
@@ -117,23 +112,22 @@ namespace Geekbot.Bot.Commands.Utils.Quote
        {
            try
            {
-               var transContext = await _translationHandler.GetGuildContext(Context);
                var quote = _database.Quotes.Where(e => e.GuildId == Context.Guild.Id.AsLong() && e.InternalId == id)?.FirstOrDefault();
                if (quote != null)
                {
                    _database.Quotes.Remove(quote);
                    await _database.SaveChangesAsync();
                    var embed = QuoteBuilder(quote);
-                   await ReplyAsync(transContext.GetString("Removed", id), false, embed.Build());
+                   await ReplyAsync(string.Format(Localization.Quote.Removed, id), false, embed.Build());
                }
                else
                {
-                   await ReplyAsync(transContext.GetString("NotFoundWithId"));
+                   await ReplyAsync(Localization.Quote.NotFoundWithId);
                }
            }
            catch (Exception e)
            {
-               await _errorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
+               await ErrorHandler.HandleCommandException(e, Context, "I couldn't find a quote with that id :disappointed:");
            }
        }
 
@@ -144,12 +138,11 @@ namespace Geekbot.Bot.Commands.Utils.Quote
            try
            {
                // setup
-               var transContext = await _translationHandler.GetGuildContext(Context);
                var eb = new EmbedBuilder();
                eb.Author = new EmbedAuthorBuilder()
                {
                    IconUrl = Context.Guild.IconUrl,
-                   Name = $"{Context.Guild.Name} - {transContext.GetString("QuoteStats")}"
+                   Name = $"{Context.Guild.Name} - {Localization.Quote.QuoteStats}"
                };
 
                // gather data
@@ -157,7 +150,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                if (totalQuotes == 0)
                {
                    // no quotes, no stats, end of the road
-                   await ReplyAsync(transContext.GetString("NoQuotesFound"));
+                   await ReplyAsync(Localization.Quote.NoQuotesFound);
                    return;
                }
                
@@ -176,8 +169,8 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                    .OrderBy(row => row.year);
                
                // add data to the embed
-               eb.AddField(transContext.GetString("MostQuotesPerson"), $"{mostQuotedPersonUser.Username} ({mostQuotedPerson.amount})");
-               eb.AddInlineField(transContext.GetString("TotalQuotes"), totalQuotes);
+               eb.AddField(Localization.Quote.MostQuotesPerson, $"{mostQuotedPersonUser.Username} ({mostQuotedPerson.amount})");
+               eb.AddInlineField(Localization.Quote.TotalQuotes, totalQuotes);
 
                foreach (var year in quotesByYear)
                {
@@ -188,7 +181,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
            }
            catch (Exception e)
            {
-               await _errorHandler.HandleCommandException(e, Context);
+               await ErrorHandler.HandleCommandException(e, Context);
            }
        }
 
@@ -196,8 +189,6 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
-
                 var list = Context.Channel.GetMessagesAsync().Flatten();
                 var message = await list.FirstOrDefaultAsync(msg => 
                     msg.Author.Id == user.Id &&
@@ -206,11 +197,11 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                     !msg.Content.ToLower().StartsWith("!"));
                 if (message == null) return;
             
-                await ProcessQuote(message, saveToDb, transContext);
+                await ProcessQuote(message, saveToDb);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, $"No quoteable messages have been sent by {user.Username} in this channel");
+                await ErrorHandler.HandleCommandException(e, Context, $"No quoteable messages have been sent by {user.Username} in this channel");
             }
             
         }
@@ -219,14 +210,14 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
+                // var transContext = await _translationHandler.GetGuildContext(Context);
                 var message = await Context.Channel.GetMessageAsync(messageId);
 
-                await ProcessQuote(message, saveToDb, transContext);
+                await ProcessQuote(message, saveToDb);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "I couldn't find a message with that id :disappointed:");
+                await ErrorHandler.HandleCommandException(e, Context, "I couldn't find a message with that id :disappointed:");
             }
         }
         
@@ -234,18 +225,18 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                var transContext = await _translationHandler.GetGuildContext(Context);
+                // var transContext = await _translationHandler.GetGuildContext(Context);
 
                 if (!MessageLink.IsValid(messageLink))
                 {
-                    await ReplyAsync(transContext.GetString("NotAValidMessageLink"));
+                    await ReplyAsync(Localization.Quote.NotAValidMessageLink);
                     return;
                 }
 
                 var link = new MessageLink(messageLink);
                 if (link.GuildId != Context.Guild.Id)
                 {
-                    await ReplyAsync(transContext.GetString("OnlyQuoteFromSameServer"));
+                    await ReplyAsync(Localization.Quote.OnlyQuoteFromSameServer);
                     return;
                 }
 
@@ -255,25 +246,25 @@ namespace Geekbot.Bot.Commands.Utils.Quote
 
                 var message = await channel.GetMessageAsync(link.MessageId);
 
-                await ProcessQuote(message, saveToDb, transContext);
+                await ProcessQuote(message, saveToDb);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "I couldn't find that message :disappointed:");
+                await ErrorHandler.HandleCommandException(e, Context, "I couldn't find that message :disappointed:");
             }
         }
 
-        private async Task ProcessQuote(IMessage message, bool saveToDb, TranslationGuildContext transContext)
+        private async Task ProcessQuote(IMessage message, bool saveToDb)
         {
             if (message.Author.Id == Context.Message.Author.Id && saveToDb && !_isDev)
             {
-                await ReplyAsync(transContext.GetString("CannotSaveOwnQuotes"));
+                await ReplyAsync(Localization.Quote.CannotSaveOwnQuotes);
                 return;
             }
                 
             if (message.Author.IsBot && saveToDb  && !_isDev)
             {
-                await ReplyAsync(transContext.GetString("CannotQuoteBots"));
+                await ReplyAsync(Localization.Quote.CannotQuoteBots);
                 return;
             }
 
@@ -285,7 +276,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
 
             var embed = QuoteBuilder(quote);
-            await ReplyAsync(saveToDb ? transContext.GetString("QuoteAdded") : string.Empty, false, embed.Build());
+            await ReplyAsync(saveToDb ? Localization.Quote.QuoteAdded : string.Empty, false, embed.Build());
         }
 
         private EmbedBuilder QuoteBuilder(QuoteModel quote)

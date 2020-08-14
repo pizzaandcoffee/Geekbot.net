@@ -1,0 +1,38 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CannotChangeOwnUp" xml:space="preserve">
+        <value>Sorry {0}, aber du chasch dr selber kei karma geh</value>
+    </data>
+    <data name="WaitUntill" xml:space="preserve">
+        <value>Sorry {0}, aber du musch no {1} warte bisch d wieder karma chasch geh...</value>
+    </data>
+    <data name="Increased" xml:space="preserve">
+        <value>Karma becho</value>
+    </data>
+    <data name="By" xml:space="preserve">
+        <value>Vo</value>
+    </data>
+    <data name="Amount" xml:space="preserve">
+        <value>Mengi</value>
+    </data>
+    <data name="Current" xml:space="preserve">
+        <value>Jetzt</value>
+    </data>
+    <data name="CannotChangeOwnDown" xml:space="preserve">
+        <value>Sorry {0}, aber du chasch dr din eigete karma nid weg neh</value>
+    </data>
+    <data name="Decreased" xml:space="preserve">
+        <value>Karma gsenkt</value>
+    </data>
+</root>

@@ -89,7 +89,7 @@ namespace Geekbot.Core.Localization
             }
         }
         
-        private Task<string> GetServerLanguage(ulong guildId)
+        public string GetServerLanguage(ulong guildId)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Geekbot.Core.Localization
                     lang = _serverLanguages[guildId];
                     if (!string.IsNullOrEmpty(lang))
                     {
-                        return Task.FromResult(lang);
+                        return lang;
                     }
                     throw new Exception();
                 }
@@ -107,19 +107,19 @@ namespace Geekbot.Core.Localization
                 {
                     lang = _guildSettingsManager.GetSettings(guildId, false)?.Language ?? "EN";
                     _serverLanguages[guildId] = lang;
-                    return Task.FromResult(lang);
+                    return lang;
                 }
             }
             catch (Exception e)
             {
                 _logger.Error(LogSource.Geekbot, "Could not get guild language", e);
-                return Task.FromResult("EN");
+                return "EN";
             }
         }
 
         public async Task<string> GetString(ulong guildId, string command, string stringName)
         {
-            var serverLang = await GetServerLanguage(guildId);
+            var serverLang = GetServerLanguage(guildId);
             return GetString(serverLang, command, stringName);
         }
         
@@ -140,7 +140,7 @@ namespace Geekbot.Core.Localization
             try
             {
                 var command = context.Message.Content.Split(' ').First().TrimStart('!').ToLower();
-                var serverLanguage = await GetServerLanguage(context.Guild?.Id ?? 0);
+                var serverLanguage = GetServerLanguage(context.Guild?.Id ?? 0);
                 return _translations[serverLanguage][command];
             }
             catch (Exception e)
@@ -153,7 +153,7 @@ namespace Geekbot.Core.Localization
         public async Task<TranslationGuildContext> GetGuildContext(ICommandContext context)
         {
             var dict = await GetDict(context);
-            var language = await GetServerLanguage(context.Guild?.Id ?? 0);
+            var language = GetServerLanguage(context.Guild?.Id ?? 0);
             return new TranslationGuildContext(this, language, dict);
         }
         
@@ -161,7 +161,7 @@ namespace Geekbot.Core.Localization
         {
             try
             {
-                var serverLanguage = await GetServerLanguage(context.Guild?.Id ?? 0);
+                var serverLanguage = GetServerLanguage(context.Guild?.Id ?? 0);
                 return _translations[serverLanguage][command];
             }
             catch (Exception e)

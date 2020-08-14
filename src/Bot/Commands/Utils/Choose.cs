@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Choose : ModuleBase
+    public class Choose : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
-        private readonly ITranslationHandler _translation;
-
-        public Choose(IErrorHandler errorHandler, ITranslationHandler translation)
+        public Choose(IErrorHandler errorHandler, ITranslationHandler translation) : base(errorHandler, translation)
         {
-            _errorHandler = errorHandler;
-            _translation = translation;
         }
 
         [Command("choose", RunMode = RunMode.Async)]
@@ -24,14 +20,13 @@ namespace Geekbot.Bot.Commands.Utils
         {
             try
             {
-                var transContext = await _translation.GetGuildContext(Context);
                 var choicesArray = choices.Split(';');
                 var choice = new Random().Next(choicesArray.Length);
-                await ReplyAsync(transContext.GetString("Choice", choicesArray[choice].Trim()));
+                await ReplyAsync(string.Format(Localization.Choose.Choice, choicesArray[choice].Trim()));
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }

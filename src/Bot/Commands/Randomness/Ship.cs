@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
@@ -12,19 +13,15 @@ using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class Ship : ModuleBase
+    public class Ship : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
-        private readonly ITranslationHandler _translation;
         private readonly DatabaseContext _database;
 
-        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translation)
+        public Ship(DatabaseContext database, IErrorHandler errorHandler, IRandomNumberGenerator randomNumberGenerator, ITranslationHandler translations) : base(errorHandler, translations)
         {
             _database = database;
-            _errorHandler = errorHandler;
             _randomNumberGenerator = randomNumberGenerator;
-            _translation = translation;
         }
 
         [Command("Ship", RunMode = RunMode.Async)]
@@ -58,28 +55,26 @@ namespace Geekbot.Bot.Commands.Randomness
                     shippingRate = dbval.Strength;
                 }
 
-                var transContext = await _translation.GetGuildContext(Context);
-
-                var reply = $":heartpulse: **{transContext.GetString("Matchmaking")}** :heartpulse:\r\n";
+                var reply = $":heartpulse: **{Localization.Ship.Matchmaking}** :heartpulse:\r\n";
                 reply += $":two_hearts: {user1.Mention} :heart: {user2.Mention} :two_hearts:\r\n";
-                reply += $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate, transContext)}";
+                reply += $"0% [{BlockCounter(shippingRate)}] 100% - {DeterminateSuccess(shippingRate)}";
                 await ReplyAsync(reply);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
-        private string DeterminateSuccess(int rate, TranslationGuildContext transContext)
+        private string DeterminateSuccess(int rate)
         {
             return (rate / 20) switch
             {
-                0 => transContext.GetString("NotGonnaToHappen"),
-                1 => transContext.GetString("NotSuchAGoodIdea"),
-                2 => transContext.GetString("ThereMightBeAChance"),
-                3 => transContext.GetString("CouldWork"),
-                4 => transContext.GetString("ItsAMatch"),
+                0 => Localization.Ship.NotGoingToHappen,
+                1 => Localization.Ship.NotSuchAGoodIdea,
+                2 => Localization.Ship.ThereMightBeAChance,
+                3 => Localization.Ship.CouldWork,
+                4 => Localization.Ship.ItsAMatch,
                 _ => "nope"
             };
         }

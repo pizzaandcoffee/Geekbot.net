@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Resources;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
@@ -15,19 +21,15 @@ namespace Geekbot.Bot.Commands.Admin
     [Group("admin")]
     [RequireUserPermission(GuildPermission.Administrator)]
     [DisableInDirectMessage]
-    public class Admin : ModuleBase
+    public class Admin : GeekbotCommandBase
     {
         private readonly DiscordSocketClient _client;
-        private readonly IErrorHandler _errorHandler;
         private readonly IGuildSettingsManager _guildSettingsManager;
-        private readonly ITranslationHandler _translation;
 
-        public Admin(DiscordSocketClient client, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager, ITranslationHandler translationHandler)
+        public Admin(DiscordSocketClient client, IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager, ITranslationHandler translationHandler) : base(errorHandler, translationHandler)
         {
             _client = client;
-            _errorHandler = errorHandler;
             _guildSettingsManager = guildSettingsManager;
-            _translation = translationHandler;
         }
 
         [Command("welcome", RunMode = RunMode.Async)]
@@ -60,7 +62,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
+                await ErrorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
             }
         }
 
@@ -84,7 +86,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
+                await ErrorHandler.HandleCommandException(e, Context, "That channel doesn't seem to exist or i don't have write permissions");
             }
         }
 
@@ -107,7 +109,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -130,7 +132,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -141,24 +143,30 @@ namespace Geekbot.Bot.Commands.Admin
             try
             {
                 var language = languageRaw.ToUpper();
-                var success = await _translation.SetLanguage(Context.Guild.Id, language);
+                var success = await Translations.SetLanguage(Context.Guild.Id, language);
                 if (success)
                 {
                     var guild = _guildSettingsManager.GetSettings(Context.Guild.Id);
                     guild.Language = language;
                     await _guildSettingsManager.UpdateSettings(guild);
 
-                    var transContext = await _translation.GetGuildContext(Context);
-                    await ReplyAsync(transContext.GetString("NewLanguageSet"));
+                    if (language.ToLower() == "chde")
+                    {
+                        Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("de-ch");
+                    }
+                    
+                    await ReplyAsync(Localization.Admin.NewLanguageSet);
                     return;
                 }
 
-                await ReplyAsync(
-                    $"That doesn't seem to be a supported language\r\nSupported Languages are {string.Join(", ", _translation.SupportedLanguages)}");
+                var available = new List<string>();
+                available.Add("en-GB"); // default
+                available.AddRange(GetAvailableCultures().Select(culture => culture.Name));
+                await ReplyAsync($"That doesn't seem to be a supported language\nSupported Languages are {string.Join(", ", available)}");
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -177,7 +185,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -194,7 +202,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -211,7 +219,7 @@ namespace Geekbot.Bot.Commands.Admin
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
@@ -229,6 +237,31 @@ namespace Geekbot.Bot.Commands.Admin
                 await ReplyAsync("Modchannel doesn't seem to exist, please set one with `!admin modchannel [channelId]`");
                 return null;
             }
+        }
+        
+        private IEnumerable<CultureInfo> GetAvailableCultures()
+        {
+            var result = new List<CultureInfo>();
+            var rm = new ResourceManager(typeof(Localization.Admin));
+            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+            foreach (var culture in cultures)
+            {
+                try
+                {
+                    if (culture.Equals(CultureInfo.InvariantCulture)) continue; //do not use "==", won't work
+
+                    var rs = rm.GetResourceSet(culture, true, false);
+                    if (rs != null)
+                    {
+                        result.Add(culture);
+                    }
+                }
+                catch (CultureNotFoundException)
+                {
+                    //NOP
+                }
+            }
+            return result;
         }
     }
 }

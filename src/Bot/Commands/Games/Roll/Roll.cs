@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
@@ -12,21 +13,17 @@ using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Bot.Commands.Games.Roll
 {
-    public class Roll : ModuleBase
+    public class Roll : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly IKvInMemoryStore _kvInMemoryStore;
-        private readonly ITranslationHandler _translation;
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public Roll(IKvInMemoryStore kvInMemoryStore,IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
+        public Roll(IKvInMemoryStore kvInMemoryStore,IErrorHandler errorHandler, ITranslationHandler translation, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator) : base(errorHandler, translation)
         {
             _kvInMemoryStore = kvInMemoryStore;
-            _translation = translation;
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
-            _errorHandler = errorHandler;
         }
 
         [Command("roll", RunMode = RunMode.Async)]
@@ -37,7 +34,7 @@ namespace Geekbot.Bot.Commands.Games.Roll
             {
                 var number = _randomNumberGenerator.Next(1, 100);
                 int.TryParse(stuff, out var guess);
-                var transContext = await _translation.GetGuildContext(Context);
+                var transContext = await Translations.GetGuildContext(Context);
                 if (guess <= 100 && guess > 0)
                 {
                     var kvKey = $"{Context.Guild.Id}:{Context.User.Id}:RollsPrevious";
@@ -46,8 +43,8 @@ namespace Geekbot.Bot.Commands.Games.Roll
 
                     if (prevRoll?.LastGuess == guess && prevRoll?.GuessedOn.AddDays(1) > DateTime.Now)
                     {
-                        await ReplyAsync(transContext.GetString(
-                            "NoPrevGuess",
+                        await ReplyAsync(string.Format(
+                            Localization.Roll.NoPrevGuess,
                             Context.Message.Author.Mention,
                             transContext.FormatDateTimeAsRemaining(prevRoll.GuessedOn.AddDays(1))));
                         return;
@@ -55,10 +52,10 @@ namespace Geekbot.Bot.Commands.Games.Roll
 
                     _kvInMemoryStore.Set(kvKey, new RollTimeout { LastGuess = guess, GuessedOn = DateTime.Now });
 
-                    await ReplyAsync(transContext.GetString("Rolled", Context.Message.Author.Mention, number, guess));
+                    await ReplyAsync(string.Format(Localization.Roll.Rolled, Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
-                        await ReplyAsync(transContext.GetString("Gratz", Context.Message.Author));
+                        await ReplyAsync(string.Format(Localization.Roll.Gratz, Context.Message.Author));
                         var user = await GetUser(Context.User.Id);
                         user.Rolls += 1;
                         _database.Rolls.Update(user);
@@ -67,12 +64,12 @@ namespace Geekbot.Bot.Commands.Games.Roll
                 }
                 else
                 {
-                    await ReplyAsync(transContext.GetString("RolledNoGuess", Context.Message.Author.Mention, number));
+                    await ReplyAsync(string.Format(Localization.Roll.RolledNoGuess, Context.Message.Author.Mention, number));
                 }
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
         
