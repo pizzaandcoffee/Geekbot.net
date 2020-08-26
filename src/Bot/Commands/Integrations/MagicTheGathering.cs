@@ -28,7 +28,7 @@ namespace Geekbot.Bot.Commands.Integrations
         {
             try
             {
-                var message = await Context.Channel.SendMessageAsync($":mag: Looking up\"{cardName}\", please wait...");
+                var message = await Context.Channel.SendMessageAsync($":mag: Looking up \"{cardName}\", please wait...");
                 
                 var service = new CardService();
                 var result = service
@@ -36,7 +36,15 @@ namespace Geekbot.Bot.Commands.Integrations
                     // fewer cards less risk of deserialization problems, don't need more than one anyways...
                     .Where(x => x.PageSize, 1);
 
-                var card = result.All().Value.FirstOrDefault();
+                var cards = await result.AllAsync();
+                if (!cards.IsSuccess)
+                {
+                    await message.ModifyAsync(properties => properties.Content = $":warning: The Gatherer reacted in an unexpected way: {cards.Exception.Message}");
+                    return;
+                }
+
+                var card = cards.Value.FirstOrDefault();
+                
                 if (card == null)
                 {
                     await message.ModifyAsync(properties => properties.Content = ":red_circle: I couldn't find a card with that name...");
