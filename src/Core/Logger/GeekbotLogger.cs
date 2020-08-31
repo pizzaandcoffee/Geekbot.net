@@ -20,44 +20,25 @@ namespace Geekbot.Core.Logger
             };
             Information(LogSource.Geekbot, "Using GeekbotLogger");
         }
-        
+
         public void Trace(LogSource source, string message, object extra = null)
-        {
-            _logger.Trace(CreateLogString("Trace", source, message, null, extra));
-        }
-        
+            => _logger.Trace(CreateLogString("Trace", source, message, null, extra));
+
         public void Debug(LogSource source, string message, object extra = null)
-        {
-            if (_logAsJson) _logger.Info(CreateLogString("Debug", source, message, null, extra));
-            else _logger.Debug(CreateLogString("Debug", source, message, null, extra));
-        }
-        
+            => _logger.Debug(CreateLogString("Debug", source, message, null, extra));
+
         public void Information(LogSource source, string message, object extra = null)
-        {
-            _logger.Info(CreateLogString("Information", source, message, null, extra));
-        }
-        
+            => _logger.Info(CreateLogString("Information", source, message, null, extra));
+
         public void Warning(LogSource source, string message, Exception stackTrace = null, object extra = null)
-        {
-            if (_logAsJson) _logger.Info(CreateLogString("Warning", source, message, stackTrace, extra));
-            else _logger.Warn(CreateLogString("Warning", source, message, stackTrace, extra));
-        }
-        
+            => _logger.Warn(CreateLogString("Warning", source, message, stackTrace, extra));
+
         public void Error(LogSource source, string message, Exception stackTrace, object extra = null)
-        {
-            if (_logAsJson) _logger.Info(CreateLogString("Error", source, message, stackTrace, extra));
-            else _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
-        }
+            => _logger.Error(stackTrace, CreateLogString("Error", source, message, stackTrace, extra));
 
-        public NLog.Logger GetNLogger()
-        {
-            return _logger;
-        }
+        public NLog.Logger GetNLogger() => _logger;
 
-        public bool LogAsJson()
-        {
-            return _logAsJson;
-        }
+        public bool LogAsJson() => _logAsJson;
 
         private string CreateLogString(string type, LogSource source, string message, Exception stackTrace = null, object extra = null)
         {
@@ -74,10 +55,10 @@ namespace Geekbot.Core.Logger
                 };
                 return JsonConvert.SerializeObject(logObject, Formatting.None, _serializerSettings);
             }
-            
+
             if (source != LogSource.Message) return $"[{source}] - {message}";
-            
-            var m = (MessageDto) extra; 
+
+            var m = (MessageDto) extra;
             return $"[{source}] - [{m?.Guild.Name} - {m?.Channel.Name}] {m?.User.Name}: {m?.Message.Content}";
         }
     }

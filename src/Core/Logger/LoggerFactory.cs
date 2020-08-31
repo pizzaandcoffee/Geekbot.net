@@ -12,12 +12,13 @@ namespace Geekbot.Core.Logger
         public static NLog.Logger CreateNLog(RunParameters runParameters)
         {
             var config = new LoggingConfiguration();
+            var minLevel = runParameters.Verbose ? LogLevel.Trace : LogLevel.Info;
 
             if (!string.IsNullOrEmpty(runParameters.SumologicEndpoint))
             {
                 Console.WriteLine("Logging Geekbot Logs to Sumologic");
                 config.LoggingRules.Add(
-                    new LoggingRule("*", LogLevel.Debug, LogLevel.Fatal,
+                    new LoggingRule("*", minLevel, LogLevel.Fatal,
                         new SumoLogicTarget()
                         {
                             Url = runParameters.SumologicEndpoint,
@@ -27,11 +28,23 @@ namespace Geekbot.Core.Logger
                             OptimizeBufferReuse = true,
                             Name = "Geekbot"
                         })
-                    );
+                );
+            }
+            else if (runParameters.LogJson)
+            {
+                config.LoggingRules.Add(
+                    new LoggingRule("*", minLevel, LogLevel.Fatal,
+                        new ConsoleTarget
+                        {
+                            Name = "Console",
+                            Encoding = Encoding.UTF8,
+                            Layout = "${message}"
+                        }
+                    )
+                );
             }
             else
             {
-                var minLevel = runParameters.Verbose ? LogLevel.Trace : LogLevel.Info;
                 config.LoggingRules.Add(
                     new LoggingRule("*", minLevel, LogLevel.Fatal,
                         new ColoredConsoleTarget
@@ -39,27 +52,12 @@ namespace Geekbot.Core.Logger
                             Name = "Console",
                             Encoding = Encoding.UTF8,
                             Layout = "[${longdate} ${level:format=FirstCharacter}] ${message} ${exception:format=toString}"
-                        })
-                    );
-                
-                config.LoggingRules.Add(
-                    new LoggingRule("*", minLevel, LogLevel.Fatal,
-                        new FileTarget
-                        {
-                            Name = "File",
-                            Layout = "[${longdate} ${level}] ${message}",
-                            Encoding = Encoding.UTF8,
-                            LineEnding = LineEndingMode.Default,
-                            MaxArchiveFiles = 30,
-                            ArchiveNumbering = ArchiveNumberingMode.Date,
-                            ArchiveEvery = FileArchivePeriod.Day,
-                            ArchiveFileName = "./Logs/Archive/{#####}.log",
-                            FileName = "./Logs/Geekbot.log"
-                        })
-                    );
+                        }
+                    )
+                );
             }
-            
-            var loggerConfig = new LogFactory { Configuration = config };
+
+            var loggerConfig = new LogFactory {Configuration = config};
             return loggerConfig.GetCurrentClassLogger();
         }
     }
