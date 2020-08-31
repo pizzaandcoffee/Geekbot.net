@@ -70,8 +70,14 @@ namespace Geekbot.Core.ErrorHandling
             }
             catch (Exception ex)
             {
-                await context.Channel.SendMessageAsync("Something went really really wrong here");
-                _logger.Error(LogSource.Geekbot, "Errorception", ex);
+                try
+                {
+                    await context.Channel.SendMessageAsync("Something went really really wrong here");
+                }
+                finally
+                {
+                    _logger.Error(LogSource.Geekbot, "Errorception", ex);                    
+                }
             }
         }
 
