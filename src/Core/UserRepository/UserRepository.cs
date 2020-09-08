@@ -48,7 +48,7 @@ namespace Geekbot.Core.UserRepository
 
                 await _database.SaveChangesAsync();
 
-                _logger.Information(LogSource.UserRepository, "Updated User", savedUser);
+                _logger.Debug(LogSource.UserRepository, "Updated User", savedUser);
                 await Task.Delay(500);
                 return true;
             }
