@@ -8,6 +8,7 @@
         
         // Geekbot Internals
         TranslationsFailed = 201,
+        KilledByApiCall = 210,
         
         // Dependent Services
         /* 301 not in use anymore (redis) */
