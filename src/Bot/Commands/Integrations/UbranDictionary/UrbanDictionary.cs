@@ -33,12 +33,6 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
 
                 var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
 
-                var description = definition.Definition;
-                if (description.Length > 1801)
-                {
-                    description = description.Substring(0, 1800) + " [...]";
-                }
-                    
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder
                 {
@@ -46,8 +40,11 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
                     Url = definition.Permalink
                 });
                 eb.WithColor(new Color(239, 255, 0));
-                if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = description;
-                if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", definition.Example ?? "(no example given...)");
+
+                static string ShortenIfToLong(string str, int maxLength) => str.Length > maxLength ? $"{str.Substring(0, maxLength - 5)}[...]" : str;
+
+                if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = ShortenIfToLong(definition.Definition, 1800);
+                if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", ShortenIfToLong(definition.Example, 1024));
                 if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
                 if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
                 if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
