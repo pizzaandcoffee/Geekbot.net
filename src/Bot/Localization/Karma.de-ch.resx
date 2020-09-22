@@ -30,7 +30,7 @@
         <value>Jetzt</value>
     </data>
     <data name="CannotChangeOwnDown" xml:space="preserve">
-        <value>Sorry {0}, aber du chasch dr din eigete karma nid weg neh</value>
+        <value>Sorry {0}, aber du chasch dis eigete karma nid senke</value>
     </data>
     <data name="Decreased" xml:space="preserve">
         <value>Karma gsenkt</value>
