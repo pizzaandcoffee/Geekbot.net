@@ -18,6 +18,9 @@ namespace Geekbot.Web
 {
     public static class WebApiStartup
     {
+        // Using the "Microsoft.NET.Sdk.Web" SDK requires a static main function...
+        public static void Main() {}
+        
         public static void StartWebApi(IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
             DatabaseContext databaseContext, DiscordSocketClient client, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
         {
@@ -28,22 +31,27 @@ namespace Geekbot.Web
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddMvc();
-                    services.AddSingleton(commandService);
-                    services.AddSingleton(databaseContext);
-                    services.AddSingleton(client);
-                    services.AddSingleton(globalSettings);
-                    services.AddSingleton(highscoreManager);
+                    services.AddControllers();
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowSpecificOrigin",
                             builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
                     });
+
+                    services.AddSingleton(commandService);
+                    services.AddSingleton(databaseContext);
+                    services.AddSingleton(client);
+                    services.AddSingleton(globalSettings);
+                    services.AddSingleton(highscoreManager);
                 })
                 .Configure(app =>
                 {
-                    app.UseMvc();
+                    app.UseRouting();
                     app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build());
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllers();
+                    });
                 })
                 .ConfigureLogging(logging =>
                 {

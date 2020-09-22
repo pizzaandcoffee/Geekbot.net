@@ -10,7 +10,7 @@ variables:
 
 Build:
   stage: build
-  image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal
+  image: mcr.microsoft.com/dotnet/sdk:5.0
   artifacts:
     expire_in: 1h
     paths:
