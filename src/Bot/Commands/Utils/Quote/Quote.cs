@@ -46,7 +46,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                     return;
                 }
 
-                var random = _randomNumberGenerator.Next(0, s.Count);
+                var random = _randomNumberGenerator.Next(0, s.Count - 1);
                 var quote = s[random];
                 
                 var embed = QuoteBuilder(quote);

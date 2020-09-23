@@ -1,5 +1,7 @@
 using Geekbot.Core.DiceParser;
+using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.RandomNumberGenerator;
+using Moq;
 using Xunit;
 
 namespace Tests.Core.DiceParser
@@ -43,7 +45,7 @@ namespace Tests.Core.DiceParser
         [Theory, MemberData(nameof(SingleDieNameTestData))]
         public void SingleDieNameTestFunc(string testName, SingleDieNameTestDto testData)
         {
-            var die = new SingleDie(new RandomNumberGenerator()) {AdvantageType = testData.AdvantageType};
+            var die = new SingleDie(new RandomNumberGenerator(new Mock<IGlobalSettings>().Object)) {AdvantageType = testData.AdvantageType};
             Assert.Equal(die.DiceName, testData.Expected);
         }
 
@@ -106,7 +108,7 @@ namespace Tests.Core.DiceParser
         [Theory, MemberData(nameof(SingleDieValidationTestData))]
         public void SingleDieValidationTestFunc(string testName, SingleDieValidationTestDto testData)
         {
-            var die = new SingleDie(new RandomNumberGenerator())
+            var die = new SingleDie(new RandomNumberGenerator(new Mock<IGlobalSettings>().Object))
             {
                 Amount = testData.Amount,
                 Sides = testData.Sides

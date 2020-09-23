@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Geekbot.Core.DiceParser;
+using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.RandomNumberGenerator;
+using Moq;
 using Xunit;
 
 namespace Tests.Core.DiceParser
 {
     public class DiceParserTest
     {
-        private static readonly RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator();
-        
+        private static readonly RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator(new Mock<IGlobalSettings>().Object);
+
         public struct DiceParserTestDto
         {
             public string Input { get; set; }

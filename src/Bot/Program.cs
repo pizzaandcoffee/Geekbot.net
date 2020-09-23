@@ -164,7 +164,7 @@ namespace Geekbot.Bot
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
             var wikipediaClient = new WikipediaClient();
-            var randomNumberGenerator = new RandomNumberGenerator();
+            var randomNumberGenerator = new RandomNumberGenerator(_globalSettings);
             var mediaProvider = new MediaProvider(_logger, randomNumberGenerator);
             var kvMemoryStore = new KvInInMemoryStore();
             var errorHandler = new ErrorHandler(_logger, _runParameters, () => Localization.Internal.SomethingWentWrong);

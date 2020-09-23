@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Anemonis.RandomOrg" Version="1.14.0" />
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
         <PackageReference Include="Discord.Net" Version="2.2.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-rc.1.*" />
