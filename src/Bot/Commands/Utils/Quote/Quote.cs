@@ -33,23 +33,23 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         }
 
         [Command]
-        [Summary("Return a random quoute from the database")]
+        [Summary("Return a random quote from the database")]
         public async Task GetRandomQuote()
         {
             try
             {
-                var s = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).ToList();
+                var totalQuotes = await _database.Quotes.CountAsync(e => e.GuildId.Equals(Context.Guild.Id.AsLong()));
                 
-                if (!s.Any())
+                if (totalQuotes == 0)
                 {
                     await ReplyAsync(Localization.Quote.NoQuotesFound);
                     return;
                 }
 
-                var random = _randomNumberGenerator.Next(0, s.Count - 1);
-                var quote = s[random];
-                
-                var embed = QuoteBuilder(quote);
+                var random = _randomNumberGenerator.Next(0, totalQuotes - 1);
+                var quote = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).Skip(random).Take(1);
+
+                var embed = QuoteBuilder(quote.FirstOrDefault());
                 await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
