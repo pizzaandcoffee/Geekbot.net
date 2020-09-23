@@ -79,6 +79,15 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to :warning: Creating quotes by message ID is deprecated in favour of message links and will be removed on 1 December 2020.
+        /// </summary>
+        internal static string MessageIdDeprecation {
+            get {
+                return ResourceManager.GetString("MessageIdDeprecation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Most quoted person.
         /// </summary>
         internal static string MostQuotesPerson {

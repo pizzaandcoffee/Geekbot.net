@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -211,10 +212,9 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                // var transContext = await _translationHandler.GetGuildContext(Context);
                 var message = await Context.Channel.GetMessageAsync(messageId);
 
-                await ProcessQuote(message, saveToDb);
+                await ProcessQuote(message, saveToDb, true);
             }
             catch (Exception e)
             {
@@ -226,8 +226,6 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                // var transContext = await _translationHandler.GetGuildContext(Context);
-
                 if (!MessageLink.IsValid(messageLink))
                 {
                     await ReplyAsync(Localization.Quote.NotAValidMessageLink);
@@ -255,7 +253,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
         }
 
-        private async Task ProcessQuote(IMessage message, bool saveToDb)
+        private async Task ProcessQuote(IMessage message, bool saveToDb, bool showMessageIdWarning = false)
         {
             if (message.Author.Id == Context.Message.Author.Id && saveToDb && !_isDev)
             {
@@ -277,7 +275,12 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
 
             var embed = QuoteBuilder(quote);
-            await ReplyAsync(saveToDb ? Localization.Quote.QuoteAdded : string.Empty, false, embed.Build());
+            
+            var sb = new StringBuilder();
+            if (saveToDb) sb.AppendLine(Localization.Quote.QuoteAdded);
+            if (showMessageIdWarning) sb.AppendLine(Localization.Quote.MessageIdDeprecation);
+            
+            await ReplyAsync(sb.ToString(), false, embed.Build());
         }
 
         private EmbedBuilder QuoteBuilder(QuoteModel quote)
