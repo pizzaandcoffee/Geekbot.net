@@ -18,7 +18,6 @@ using Geekbot.Core.Highscores;
 using Geekbot.Core.KvInMemoryStore;
 using Geekbot.Core.Levels;
 using Geekbot.Core.Logger;
-using Geekbot.Core.MalClient;
 using Geekbot.Core.Media;
 using Geekbot.Core.RandomNumberGenerator;
 using Geekbot.Core.ReactionListener;
@@ -159,7 +158,6 @@ namespace Geekbot.Bot
             _reactionListener = new ReactionListener(_databaseInitializer.Initialize());
             _guildSettingsManager = new GuildSettingsManager(_databaseInitializer.Initialize());
             var fortunes = new FortunesProvider(_logger);
-            var malClient = new MalClient(_globalSettings, _logger);
             var levelCalc = new LevelCalc();
             var emojiConverter = new EmojiConverter();
             var mtgManaConverter = new MtgManaConverter();
@@ -176,7 +174,6 @@ namespace Geekbot.Bot
             services.AddSingleton<IEmojiConverter>(emojiConverter);
             services.AddSingleton<IFortunesProvider>(fortunes);
             services.AddSingleton<IMediaProvider>(mediaProvider);
-            services.AddSingleton<IMalClient>(malClient);
             services.AddSingleton<IMtgManaConverter>(mtgManaConverter);
             services.AddSingleton<IWikipediaClient>(wikipediaClient);
             services.AddSingleton<IRandomNumberGenerator>(randomNumberGenerator);
