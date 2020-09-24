@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Discord;
 using Discord.Commands;
 using Geekbot.Core;
@@ -32,22 +31,19 @@ namespace Geekbot.Bot.Commands.Integrations
                 var anime = results.Results.FirstOrDefault();
                 if (anime != null)
                 {
-                    var eb = new EmbedBuilder();
-
-                    var description = HttpUtility.HtmlDecode(anime.Description)
-                        .Replace("<br />", "")
-                        .Replace("[i]", "*")
-                        .Replace("[/i]", "*");
-
-                    eb.Title = anime.Title;
-                    eb.Description = description;
-                    eb.ImageUrl = anime.ImageURL;
-                    eb.AddInlineField("Premiered", FormatDate(anime.StartDate));
-                    eb.AddInlineField("Ended", anime.Airing ? "Present" : FormatDate(anime.EndDate));
-                    eb.AddInlineField("Episodes", anime.Episodes);
-                    eb.AddInlineField("MAL Score", anime.Score);
-                    eb.AddInlineField("Type", anime.Type);
-                    eb.AddField("MAL Link", $"https://myanimelist.net/anime/{anime.MalId}");
+                    var eb = new EmbedBuilder
+                    {
+                        Title = anime.Title,
+                        Description = anime.Description,
+                        ImageUrl = anime.ImageURL
+                    };
+                    
+                    eb.AddInlineField("Premiere", FormatDate(anime.StartDate))
+                        .AddInlineField("Ended", anime.Airing ? "-" : FormatDate(anime.EndDate))
+                        .AddInlineField("Episodes", anime.Episodes)
+                        .AddInlineField("MAL Score", anime.Score)
+                        .AddInlineField("Type", anime.Type)
+                        .AddField("MAL Link", $"https://myanimelist.net/anime/{anime.MalId}");
 
                     await ReplyAsync("", false, eb.Build());
                 }
@@ -72,23 +68,20 @@ namespace Geekbot.Bot.Commands.Integrations
                 var manga = results.Results.FirstOrDefault();
                 if (manga != null)
                 {
-                    var eb = new EmbedBuilder();
-    
-                    var description = HttpUtility.HtmlDecode(manga.Description)
-                        .Replace("<br />", "")
-                        .Replace("[i]", "*")
-                        .Replace("[/i]", "*");
-    
-                    eb.Title = manga.Title;
-                    eb.Description = description;
-                    eb.ImageUrl = manga.ImageURL;
-                    eb.AddInlineField("Premiered", FormatDate(manga.StartDate));
-                    eb.AddInlineField("Ended", manga.Publishing ? "Present" : FormatDate(manga.EndDate));
-                    eb.AddInlineField("Volumes", manga.Volumes);
-                    eb.AddInlineField("Chapters", manga.Chapters);
-                    eb.AddInlineField("MAL Score", manga.Score);
-                    eb.AddField("MAL Link", $"https://myanimelist.net/manga/{manga.MalId}");
-    
+                    var eb = new EmbedBuilder
+                    {
+                        Title = manga.Title,
+                        Description = manga.Description,
+                        ImageUrl = manga.ImageURL
+                    };
+
+                    eb.AddInlineField("Premiere", FormatDate(manga.StartDate))
+                        .AddInlineField("Ended", manga.Publishing ? "-" : FormatDate(manga.EndDate))
+                        .AddInlineField("Volumes", manga.Volumes)
+                        .AddInlineField("Chapters", manga.Chapters)
+                        .AddInlineField("MAL Score", manga.Score)
+                        .AddField("MAL Link", $"https://myanimelist.net/manga/{manga.MalId}");
+
                     await ReplyAsync("", false, eb.Build());
                 }
                 else
@@ -108,7 +101,7 @@ namespace Geekbot.Bot.Commands.Integrations
             {
                 return DateTime.MinValue.ToString("d", Thread.CurrentThread.CurrentUICulture);
             }
-            
+
             return dateTime.Value.ToString("d", Thread.CurrentThread.CurrentUICulture);
         }
     }
