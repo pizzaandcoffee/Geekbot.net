@@ -58,7 +58,8 @@ namespace Geekbot.Bot.Handlers
                     _ => 0 // DM Channel
                 };
                 
-                if (IsIgnoredGuild(guildId, message.Author.Id)) return Task.CompletedTask;
+                // temp hack, will fix later
+                if (IsIgnoredGuild(guildId, message.Author.Id) || messageParam.Author.Id == 93061333972455424) return Task.CompletedTask;
 
                 var lowCaseMsg = message.ToString().ToLower();
                 if (ShouldHui(lowCaseMsg, guildId))
