@@ -32,6 +32,14 @@ namespace Geekbot.Bot.Commands.Utils
 
                 await ReplyAsync($"{Context.User.Username}#{Context.User.Discriminator} said:");
                 await ReplyAsync(emojis);
+                try
+                {
+                    await Context.Message.DeleteAsync();
+                }
+                catch
+                {
+                    // bot may not have enough permission, doesn't matter if it fails
+                }
             }
             catch (Exception e)
             {
