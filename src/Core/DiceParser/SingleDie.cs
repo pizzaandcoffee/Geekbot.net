@@ -32,7 +32,7 @@ namespace Geekbot.Core.DiceParser
             {
                 var result = new DieResult
                 {
-                    Roll1 = _random.Next(1, Sides + 1),
+                    Roll1 = _random.Next(1, Sides),
                     AdvantageType = AdvantageType
                 };
 
