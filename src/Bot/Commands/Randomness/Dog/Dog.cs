@@ -23,11 +23,7 @@ namespace Geekbot.Bot.Commands.Randomness.Dog
             try
             {
                 var response = await HttpAbstractions.Get<DogResponseDto>(new Uri("http://random.dog/woof.json"));
-                var eb = new EmbedBuilder
-                {
-                    ImageUrl = response.Url
-                };
-                await ReplyAsync("", false, eb.Build());
+                await ReplyAsync(response.Url);
             }
             catch (Exception e)
             {
