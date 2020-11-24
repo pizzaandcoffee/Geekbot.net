@@ -21,8 +21,8 @@ namespace Geekbot.Bot.Commands.Utils
         {
             try
             {
-                if (user == null) user = Context.User;
-                var url = user.GetAvatarUrl().Replace("128", "1024");
+                user ??= Context.User;
+                var url = user.GetAvatarUrl(ImageFormat.Auto, 1024);
                 await ReplyAsync(url);
             }
             catch (Exception e)
