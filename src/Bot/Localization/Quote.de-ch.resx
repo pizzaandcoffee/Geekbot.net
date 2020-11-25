@@ -44,7 +44,4 @@
     <data name="OnlyQuoteFromSameServer" xml:space="preserve">
         <value>Du chasch numme nachrichte vom gliche server quote</value>
     </data>
-    <data name="MessageIdDeprecation" xml:space="preserve">
-        <value>:warning: Es mache vo quotes mit message-IDs isch zgunste vo message-links veraltet und wird am 1. dezember 2020 entfernt</value>
-    </data>
 </root>
