@@ -51,7 +51,4 @@
     <data name="OnlyQuoteFromSameServer" xml:space="preserve">
         <value>You can only quote messages from the same server</value>
     </data>
-    <data name="MessageIdDeprecation" xml:space="preserve">
-        <value>:warning: Creating quotes by message ID is deprecated in favour of message links and will be removed on 1 December 2020</value>
-    </data>
 </root>

@@ -74,22 +74,6 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             await QuoteFromMention(user, false);
         }
-
-        [Command("add")]
-        [Alias("save")]
-        [Summary("Add a quote from a message id")]
-        public async Task AddQuote([Summary("message-ID")] ulong messageId)
-        {
-            await QuoteFromMessageId(messageId, true);
-        }
-        
-        [Command("make")]
-        [Alias("preview")]
-        [Summary("Preview a quote from a message id")]
-        public async Task ReturnSpecifiedQuote([Summary("message-ID")] ulong messageId)
-        {
-            await QuoteFromMessageId(messageId, false);
-        }
         
         [Command("add")]
         [Alias("save")]
@@ -208,21 +192,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             
         }
 
-        private async Task QuoteFromMessageId(ulong messageId, bool saveToDb)
-        {
-            try
-            {
-                var message = await Context.Channel.GetMessageAsync(messageId);
-
-                await ProcessQuote(message, saveToDb, true);
-            }
-            catch (Exception e)
-            {
-                await ErrorHandler.HandleCommandException(e, Context, "I couldn't find a message with that id :disappointed:");
-            }
-        }
-        
-        private async Task QuoteFromMessageLink(string messageLink, bool saveToDb)
+       private async Task QuoteFromMessageLink(string messageLink, bool saveToDb)
         {
             try
             {
@@ -253,7 +223,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             }
         }
 
-        private async Task ProcessQuote(IMessage message, bool saveToDb, bool showMessageIdWarning = false)
+        private async Task ProcessQuote(IMessage message, bool saveToDb)
         {
             if (message.Author.Id == Context.Message.Author.Id && saveToDb && !_isDev)
             {
@@ -278,7 +248,6 @@ namespace Geekbot.Bot.Commands.Utils.Quote
             
             var sb = new StringBuilder();
             if (saveToDb) sb.AppendLine(Localization.Quote.QuoteAdded);
-            if (showMessageIdWarning) sb.AppendLine(Localization.Quote.MessageIdDeprecation);
             
             await ReplyAsync(sb.ToString(), false, embed.Build());
         }
