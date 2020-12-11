@@ -63,9 +63,9 @@ namespace Geekbot.Core.DiceParser
                 throw new DiceException("Die must have at least 2 sides") { DiceName = DiceName };
             }
             
-            if (Sides > 144)
+            if (Sides > 145)
             {
-                throw new DiceException("Die can not have more than 144 sides") { DiceName = DiceName };
+                throw new DiceException("Die can not have more than 145 sides") { DiceName = DiceName };
             }
         }
     }
