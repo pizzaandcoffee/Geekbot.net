@@ -13,6 +13,7 @@ using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Polyfills;
 using Geekbot.Core.RandomNumberGenerator;
+using Geekbot.Core.UserRepository;
 
 namespace Geekbot.Bot.Commands.Utils.Quote
 {
@@ -22,13 +23,15 @@ namespace Geekbot.Bot.Commands.Utils.Quote
     {
         private readonly DatabaseContext _database;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
+        private readonly IUserRepository _userRepository;
         private readonly bool _isDev;
 
-        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, IGuildSettingsManager guildSettingsManager)
+        public Quote(IErrorHandler errorHandler, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator, IGuildSettingsManager guildSettingsManager, IUserRepository userRepository)
             : base(errorHandler, guildSettingsManager)
         {
             _database = database;
             _randomNumberGenerator = randomNumberGenerator;
+            _userRepository = userRepository;
             // to remove restrictions when developing
             _isDev = Constants.BotVersion() == "0.0.0-DEV";
         }
@@ -254,7 +257,16 @@ namespace Geekbot.Bot.Commands.Utils.Quote
 
         private EmbedBuilder QuoteBuilder(QuoteModel quote)
         {
-            var user = Context.Client.GetUserAsync(quote.UserId.AsUlong()).Result ?? new UserPolyfillDto { Username = "Unknown User" };
+            var user = Context.Client.GetUserAsync(quote.UserId.AsUlong()).Result;
+            if (user == null)
+            {
+                var fallbackUserFromRepo = _userRepository.Get(quote.UserId.AsUlong());
+                user = new UserPolyfillDto()
+                {
+                    Username = fallbackUserFromRepo?.Username ?? "Unknown User",
+                    AvatarUrl = fallbackUserFromRepo?.AvatarUrl
+                };
+            }
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
             if (quote.InternalId == 0)

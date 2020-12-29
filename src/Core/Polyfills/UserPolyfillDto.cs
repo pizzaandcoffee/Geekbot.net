@@ -14,6 +14,7 @@ namespace Geekbot.Core.Polyfills
         public UserStatus Status { get; set; }
         public IImmutableSet<ClientType> ActiveClients { get; }
         public string AvatarId { get; set; }
+        public string AvatarUrl { get; set; }
         public string Discriminator { get; set; }
         public ushort DiscriminatorValue { get; set; }
         public bool IsBot { get; set; }
@@ -22,7 +23,7 @@ namespace Geekbot.Core.Polyfills
         
         public string GetAvatarUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128)
         {
-            return "https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png";
+            return AvatarUrl ?? "https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png";
         }
 
         public string GetDefaultAvatarUrl()
