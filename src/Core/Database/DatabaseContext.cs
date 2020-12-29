@@ -11,6 +11,7 @@ namespace Geekbot.Core.Database
         public DbSet<KarmaModel> Karma { get; set; }
         public DbSet<ShipsModel> Ships { get; set; }
         public DbSet<RollsModel> Rolls { get; set; }
+        public DbSet<MessageSeasonsModel> MessagesSeasons { get; set; }
         public DbSet<MessagesModel> Messages { get; set; }
         public DbSet<SlapsModel> Slaps { get; set; }
         public DbSet<GlobalsModel> Globals { get; set; }
