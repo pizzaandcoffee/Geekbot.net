@@ -30,7 +30,7 @@ namespace Geekbot.Bot.Handlers
             {
                 Enabled = true,
                 AutoReset = true,
-                Interval = TimeSpan.FromHours(1).TotalMilliseconds
+                Interval = TimeSpan.FromMinutes(5).TotalMilliseconds
             };
             timer.Elapsed += (sender, args) =>
             {
