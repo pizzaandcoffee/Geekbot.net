@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord.WebSocket;
@@ -25,7 +26,7 @@ namespace Geekbot.Bot.Handlers
             _database = database;
             _season = SeasonsUtils.GetCurrentSeason();
             _seasonsStarted = DateTime.Now.Year == 2021;
-            
+
             var timer = new Timer()
             {
                 Enabled = true,
@@ -53,6 +54,14 @@ namespace Geekbot.Bot.Handlers
                 }
 
                 var channel = (SocketGuildChannel) message.Channel;
+
+                // ignore the discord bots server
+                // ToDo: create a clean solution for this...
+                if (channel.Guild.Id == 110373943822540800)
+                {
+                    return;
+                }
+                
                 await UpdateTotalTable(message, channel);  
                 if (_seasonsStarted)
                 {
