@@ -147,8 +147,8 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                    .Where(row => row.GuildId == Context.Guild.Id.AsLong())
                    .GroupBy(row => row.UserId)
                    .Select(row => new { userId = row.Key, amount = row.Count()})
-                   .OrderBy(row => row.amount)
-                   .Last();
+                   .OrderByDescending(row => row.amount)
+                   .First();
                var mostQuotedPersonUser = Context.Client.GetUserAsync(mostQuotedPerson.userId.AsUlong()).Result ?? new UserPolyfillDto {Username = "Unknown User"};
 
                var quotesByYear = _database.Quotes

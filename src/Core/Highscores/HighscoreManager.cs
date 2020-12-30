@@ -27,6 +27,7 @@ namespace Geekbot.Core.Highscores
                 HighscoreTypes.rolls => GetRollsList(guildId, amount),
                 HighscoreTypes.cookies => GetCookiesList(guildId, amount),
                 HighscoreTypes.seasons => GetMessageSeasonList(guildId, amount, season),
+                HighscoreTypes.quotes => GetQuotesList(guildId, amount),
                 _ => new Dictionary<ulong, int>()
             };
 
@@ -114,6 +115,17 @@ namespace Geekbot.Core.Highscores
                 .OrderByDescending(o => o.Cookies)
                 .Take(amount)
                 .ToDictionary(key => key.UserId.AsUlong(), key => key.Cookies);
+        }
+        
+        private Dictionary<ulong, int> GetQuotesList(ulong guildId, int amount)
+        {
+            return _database.Quotes
+                .Where(row => row.GuildId == guildId.AsLong())
+                .GroupBy(row => row.UserId)
+                .Select(row => new { userId = row.Key, amount = row.Count()})
+                .OrderByDescending(row => row.amount)
+                .Take(amount)
+                .ToDictionary(key => key.userId.AsUlong(), key => key.amount);
         }
     }
 }

@@ -6,6 +6,7 @@
         karma,
         rolls,
         cookies,
-        seasons
+        seasons,
+        quotes
     }
 }
