@@ -24,6 +24,6 @@
         <value>:bar_chart: **{0} Highscore für {1}**</value>
     </data>
     <data name="InvalidType" xml:space="preserve">
-        <value>Gültigi paramenter sind '`messages`' '`karma`', '`rolls`' und '`cookies`</value>
+        <value>Gültigi paramenter sind '`messages`' '`karma`', '`rolls`', '`cookies`', '`seasons`' und '`quotes`'</value>
     </data>
 </root>

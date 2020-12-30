@@ -79,7 +79,7 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Valid types are &apos;`messages`&apos; &apos;`karma`&apos;, &apos;`rolls`&apos; and &apos;`cookies`&apos;.
+        ///   Looks up a localized string similar to Valid types are &apos;`messages`&apos; &apos;`karma`&apos;, &apos;`rolls`&apos;, &apos;`cookies`&apos;, &apos;`seasons`&apos; and &apos;`quotes`&apos;.
         /// </summary>
         internal static string InvalidType {
             get {
