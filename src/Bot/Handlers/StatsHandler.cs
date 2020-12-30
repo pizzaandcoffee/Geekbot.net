@@ -1,11 +1,11 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord.WebSocket;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.Highscores;
 using Geekbot.Core.Logger;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +23,7 @@ namespace Geekbot.Bot.Handlers
         {
             _logger = logger;
             _database = database;
-            _season = GetSeason();
+            _season = SeasonsUtils.GetCurrentSeason();
             _seasonsStarted = DateTime.Now.Year == 2021;
             
             var timer = new Timer()
@@ -34,7 +34,9 @@ namespace Geekbot.Bot.Handlers
             };
             timer.Elapsed += (sender, args) =>
             {
-                _season = GetSeason();
+                var current = SeasonsUtils.GetCurrentSeason();
+                if (current == _season) return;
+                _season = SeasonsUtils.GetCurrentSeason();
                 _seasonsStarted = DateTime.Now.Year == 2021;
             };
         }
@@ -107,14 +109,6 @@ namespace Geekbot.Bot.Handlers
                 });
                 await _database.SaveChangesAsync();
             }
-        }
-
-        private static string GetSeason()
-        {
-            var now = DateTime.Now;
-            var year = (now.Year - 2000).ToString(CultureInfo.InvariantCulture);
-            var quarter = Math.Ceiling(now.Month / 3.0).ToString(CultureInfo.InvariantCulture);
-            return $"{year}Q{quarter}";
         }
     }
 }

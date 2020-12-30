@@ -30,9 +30,12 @@ namespace Geekbot.Bot.Commands.User.Ranking
         }
 
         [Command("rank", RunMode = RunMode.Async)]
-        [Summary("get user top 10 in messages or karma")]
+        [Summary("Get the highscore for various stats like message count, karma, correctly guessed roles, etc...")]
         [DisableInDirectMessage]
-        public async Task RankCmd([Summary("type")] string typeUnformated = "messages", [Summary("amount")] int amount = 10)
+        public async Task RankCmd(
+            [Summary("type")] string typeUnformated = "messages",
+            [Summary("amount")] int amount = 10,
+            [Summary("season")] string season = null)
         {
             try
             {
@@ -59,7 +62,7 @@ namespace Geekbot.Bot.Commands.User.Ranking
                 Dictionary<HighscoreUserDto, int> highscoreUsers;
                 try
                 {
-                    highscoreUsers = _highscoreManager.GetHighscoresWithUserData(type, guildId, amount);
+                    highscoreUsers = _highscoreManager.GetHighscoresWithUserData(type, guildId, amount, season);
                 }
                 catch (HighscoreListEmptyException)
                 {
@@ -80,7 +83,18 @@ namespace Geekbot.Bot.Commands.User.Ranking
 
                 if (failedToRetrieveUser) replyBuilder.AppendLine(Localization.Rank.FailedToResolveAllUsernames).AppendLine();
 
-                replyBuilder.AppendLine(string.Format(Localization.Rank.HighscoresFor, type.ToString().CapitalizeFirst(), Context.Guild.Name));
+                if (type == HighscoreTypes.seasons)
+                {
+                    if (string.IsNullOrEmpty(season))
+                    {
+                        season = SeasonsUtils.GetCurrentSeason();
+                    }
+                    replyBuilder.AppendLine(string.Format(Localization.Rank.HighscoresFor, $"{type.ToString().CapitalizeFirst()} ({season})", Context.Guild.Name));
+                }
+                else
+                {
+                    replyBuilder.AppendLine(string.Format(Localization.Rank.HighscoresFor, type.ToString().CapitalizeFirst(), Context.Guild.Name));                    
+                }
 
                 var highscorePlace = 1;
                 foreach (var (user, value) in highscoreUsers)

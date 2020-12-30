@@ -18,7 +18,7 @@ namespace Geekbot.Core.Highscores
             
         }
 
-        public Dictionary<HighscoreUserDto, int> GetHighscoresWithUserData(HighscoreTypes type, ulong guildId, int amount)
+        public Dictionary<HighscoreUserDto, int> GetHighscoresWithUserData(HighscoreTypes type, ulong guildId, int amount, string season = null)
         {
             var list = type switch
             {
@@ -26,6 +26,7 @@ namespace Geekbot.Core.Highscores
                 HighscoreTypes.karma => GetKarmaList(guildId, amount),
                 HighscoreTypes.rolls => GetRollsList(guildId, amount),
                 HighscoreTypes.cookies => GetCookiesList(guildId, amount),
+                HighscoreTypes.seasons => GetMessageSeasonList(guildId, amount, season),
                 _ => new Dictionary<ulong, int>()
             };
 
@@ -70,6 +71,19 @@ namespace Geekbot.Core.Highscores
         {
             return _database.Messages
                 .Where(k => k.GuildId.Equals(guildId.AsLong()))
+                .OrderByDescending(o => o.MessageCount)
+                .Take(amount)
+                .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);
+        }
+        
+        public Dictionary<ulong, int> GetMessageSeasonList(ulong guildId, int amount, string season)
+        {
+            if (string.IsNullOrEmpty(season))
+            {
+                season = SeasonsUtils.GetCurrentSeason();
+            }
+            return _database.MessagesSeasons
+                .Where(k => k.GuildId.Equals(guildId.AsLong()) && k.Season.Equals(season))
                 .OrderByDescending(o => o.MessageCount)
                 .Take(amount)
                 .ToDictionary(key => key.UserId.AsUlong(), key => key.MessageCount);

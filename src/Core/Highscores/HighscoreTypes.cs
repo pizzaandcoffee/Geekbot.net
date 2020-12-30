@@ -5,6 +5,7 @@
         messages,
         karma,
         rolls,
-        cookies
+        cookies,
+        seasons
     }
 }
