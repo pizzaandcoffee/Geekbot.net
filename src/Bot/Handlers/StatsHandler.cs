@@ -17,15 +17,12 @@ namespace Geekbot.Bot.Handlers
         private readonly IGeekbotLogger _logger;
         private readonly DatabaseContext _database;
         private string _season;
-        // ToDo: Clean up in 2021
-        private bool _seasonsStarted;
 
         public StatsHandler(IGeekbotLogger logger, DatabaseContext database)
         {
             _logger = logger;
             _database = database;
             _season = SeasonsUtils.GetCurrentSeason();
-            _seasonsStarted = DateTime.Now.Year == 2021;
 
             var timer = new Timer()
             {
@@ -38,7 +35,6 @@ namespace Geekbot.Bot.Handlers
                 var current = SeasonsUtils.GetCurrentSeason();
                 if (current == _season) return;
                 _season = SeasonsUtils.GetCurrentSeason();
-                _seasonsStarted = DateTime.Now.Year == 2021;
             };
         }
         
@@ -62,11 +58,8 @@ namespace Geekbot.Bot.Handlers
                     return;
                 }
                 
-                await UpdateTotalTable(message, channel);  
-                if (_seasonsStarted)
-                {
-                    await UpdateSeasonsTable(message, channel);
-                }
+                await UpdateTotalTable(message, channel);
+                await UpdateSeasonsTable(message, channel);
                 
 
                 if (message.Author.IsBot) return;
