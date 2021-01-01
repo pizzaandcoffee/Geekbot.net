@@ -106,10 +106,13 @@ namespace Geekbot.Bot.Commands.User.Ranking
                     replyBuilder.Append(user.Username != null
                         ? $"**{user.Username}#{user.Discriminator}**"
                         : $"**{user.Id}**");
-
-                    replyBuilder.Append(type == HighscoreTypes.messages
-                        ? $" - {value} {type} - {Math.Round((double) (100 * value) / guildMessages, 2)}%\n"
-                        : $" - {value} {type}\n");
+                    
+                    replyBuilder.Append(type switch
+                    {
+                        HighscoreTypes.messages => $" - {value} {HighscoreTypes.messages} - {Math.Round((double) (100 * value) / guildMessages, 2)}%\n",
+                        HighscoreTypes.seasons => $" - {value} {HighscoreTypes.messages}\n",
+                        _ => $" - {value} {type}\n"
+                    });
 
                     highscorePlace++;
                 }
