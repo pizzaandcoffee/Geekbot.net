@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.Core;
+using Geekbot.Core.Converters;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 
@@ -13,10 +15,12 @@ namespace Geekbot.Bot.Commands.Utils.Corona
     public class CoronaStats : ModuleBase
     {
         private readonly IErrorHandler _errorHandler;
+        private readonly IEmojiConverter _emojiConverter;
 
-        public CoronaStats(IErrorHandler errorHandler)
+        public CoronaStats(IErrorHandler errorHandler, IEmojiConverter emojiConverter)
         {
             _errorHandler = errorHandler;
+            _emojiConverter = emojiConverter;
         }
 
         [Command("corona", RunMode = RunMode.Async)]
@@ -45,11 +49,19 @@ namespace Geekbot.Bot.Commands.Utils.Corona
                 var recoveredFormatted = summary.Recovered.ToString(numberFormat);
                 var deathsFormatted = summary.Deaths.ToString(numberFormat);
 
+                var embedTitleBuilder = new StringBuilder();
+                embedTitleBuilder.Append("Confirmed Corona Cases");
+                if (!string.IsNullOrEmpty(summary.Country))
+                {
+                    embedTitleBuilder.Append(" - ");
+                    embedTitleBuilder.Append(_emojiConverter.CountryCodeToEmoji(summary.Country));
+                }
+
                 var eb = new EmbedBuilder
                 {
                     Author = new EmbedAuthorBuilder
                     {
-                        Name = "Confirmed Corona Cases",
+                        Name = embedTitleBuilder.ToString(),
                         IconUrl = "https://www.redcross.org/content/dam/icons/disasters/virus/Virus-1000x1000-R-Pl.png"
                     },
                     Footer = new EmbedFooterBuilder
@@ -103,6 +115,7 @@ namespace Geekbot.Bot.Commands.Utils.Corona
 
             return new CoronaTotalDto()
             {
+                Country = upcasedCountryCode,
                 Cases = countryStats.Cases,
                 Deaths = countryStats.Deaths,
                 Recovered = countryStats.Recovered,
