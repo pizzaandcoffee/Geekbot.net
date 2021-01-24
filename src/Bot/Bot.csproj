@@ -7,7 +7,7 @@
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <RootNamespace>Geekbot.Bot</RootNamespace>
         <AssemblyName>Geekbot</AssemblyName>
-            <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
+        <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
         <Company>Pizza and Coffee Studios</Company>
         <Authors>Pizza and Coffee Studios</Authors>
