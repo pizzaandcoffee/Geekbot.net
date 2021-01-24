@@ -4,5 +4,6 @@
     {
         string NumberToEmoji(int number);
         string TextToEmoji(string text);
+        string CountryCodeToEmoji(string countryCode);
     }
 }
