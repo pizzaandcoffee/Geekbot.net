@@ -84,6 +84,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Stats.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Corona.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Corona.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Localization\Ship.Designer.cs">
@@ -143,6 +147,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Stats.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Localization\Corona.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Corona.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

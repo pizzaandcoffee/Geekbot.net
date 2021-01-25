@@ -9,17 +9,16 @@ using Geekbot.Core;
 using Geekbot.Core.Converters;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.GuildSettingsManager;
 
 namespace Geekbot.Bot.Commands.Utils.Corona
 {
-    public class CoronaStats : ModuleBase
+    public class CoronaStats : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
         private readonly IEmojiConverter _emojiConverter;
 
-        public CoronaStats(IErrorHandler errorHandler, IEmojiConverter emojiConverter)
+        public CoronaStats(IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager, IEmojiConverter emojiConverter) : base(errorHandler, guildSettingsManager)
         {
-            _errorHandler = errorHandler;
             _emojiConverter = emojiConverter;
         }
 
@@ -50,7 +49,7 @@ namespace Geekbot.Bot.Commands.Utils.Corona
                 var deathsFormatted = summary.Deaths.ToString(numberFormat);
 
                 var embedTitleBuilder = new StringBuilder();
-                embedTitleBuilder.Append("Confirmed Corona Cases");
+                embedTitleBuilder.Append(Localization.Corona.ConfirmedCases);
                 if (!string.IsNullOrEmpty(summary.Country))
                 {
                     embedTitleBuilder.Append(" - ");
@@ -66,20 +65,20 @@ namespace Geekbot.Bot.Commands.Utils.Corona
                     },
                     Footer = new EmbedFooterBuilder
                     {
-                        Text = "Source: covid19-api.org",
+                        Text = $"{Localization.Corona.Source}: covid19-api.org",
                     },
                     Color = Color.Red
                 };
-                eb.AddField("Total", totalFormatted);
-                eb.AddInlineField("Active", $"{activeFormatted} ({activePercent})");
-                eb.AddInlineField("Recovered", $"{recoveredFormatted} ({recoveredPercentage})");
-                eb.AddInlineField("Deaths", $"{deathsFormatted} ({deathsPercentage})");
+                eb.AddField(Localization.Corona.Total, totalFormatted);
+                eb.AddInlineField(Localization.Corona.Active, $"{activeFormatted} ({activePercent})");
+                eb.AddInlineField(Localization.Corona.Recovered, $"{recoveredFormatted} ({recoveredPercentage})");
+                eb.AddInlineField(Localization.Corona.Deaths, $"{deathsFormatted} ({deathsPercentage})");
 
                 await Context.Channel.SendMessageAsync(String.Empty, false, eb.Build());
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
 
