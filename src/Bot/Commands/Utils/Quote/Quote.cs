@@ -14,6 +14,7 @@ using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Polyfills;
 using Geekbot.Core.RandomNumberGenerator;
 using Geekbot.Core.UserRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Geekbot.Bot.Commands.Utils.Quote
 {

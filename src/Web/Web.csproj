@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>

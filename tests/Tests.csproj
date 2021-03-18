@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <NoWarn>NU1701</NoWarn>
     <NoWarn>xUnit1026</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0002" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0-preview-20210219-03" />
     <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />

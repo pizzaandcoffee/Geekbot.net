@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
@@ -14,18 +14,24 @@
         <PackageReference Include="Anemonis.RandomOrg" Version="1.14.0" />
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
         <PackageReference Include="Discord.Net" Version="2.3.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0-rc.1.*" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0-rc.1.*" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-preview.2.21154.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-preview.2.21154.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0-preview.2.21154.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0-preview.2.21154.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0-preview.2.21154.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0-preview.2.21154.6" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0-preview.2.21154.6" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0-preview.2.21154.6" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="NLog" Version="4.7.2" />
         <PackageReference Include="NLog.Config" Version="4.7.2" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-rc1" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-preview2" />
         <PackageReference Include="SharpRaven" Version="2.4.0" />
         <PackageReference Include="SumoLogic.Logging.NLog" Version="1.0.1.3" />
     </ItemGroup>
