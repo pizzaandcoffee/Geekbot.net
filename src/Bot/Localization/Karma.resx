@@ -42,4 +42,7 @@
     <data name="Decreased" xml:space="preserve">
         <value>Karma lowered</value>
     </data>
+    <data name="Neutral" xml:space="preserve">
+        <value>Neutral Karma</value>
+    </data>
 </root>

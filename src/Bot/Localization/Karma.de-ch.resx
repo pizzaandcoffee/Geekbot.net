@@ -35,4 +35,7 @@
     <data name="Decreased" xml:space="preserve">
         <value>Karma gsenkt</value>
     </data>
+    <data name="Neutral" xml:space="preserve">
+        <value>Neutral Karma</value>
+    </data>
 </root>

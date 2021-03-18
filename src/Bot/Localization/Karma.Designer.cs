@@ -124,6 +124,15 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Neutral Karma.
+        /// </summary>
+        internal static string Neutral {
+            get {
+                return ResourceManager.GetString("Neutral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry {0}, but you have to wait {1} before you can give karma again....
         /// </summary>
         internal static string WaitUntill {

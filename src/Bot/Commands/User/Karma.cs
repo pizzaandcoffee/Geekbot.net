@@ -115,6 +115,47 @@ namespace Geekbot.Bot.Commands.User
                 await ErrorHandler.HandleCommandException(e, Context);
             }
         }
+        
+        [Command("neutral", RunMode = RunMode.Async)]
+        [Summary("Do nothing to someones karma")]
+        public async Task Neutral([Summary("@someone")] IUser user)
+        {
+            try
+            {
+                var actor = await GetUser(Context.User.Id);
+                if (user.Id == Context.User.Id)
+                {
+                    await ReplyAsync(string.Format(Localization.Karma.CannotChangeOwnDown, Context.User.Username));
+                    return;
+                }
+                
+                if (TimeoutFinished(actor.TimeOut))
+                {
+                    var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(actor.TimeOut.AddMinutes(3));
+                    await ReplyAsync(string.Format(Localization.Karma.WaitUntill, Context.User.Username, formatedWaitTime));
+                    return;
+                }
+                
+                var target = await GetUser(user.Id);
+
+                var eb = new EmbedBuilder();
+                eb.WithAuthor(new EmbedAuthorBuilder()
+                    .WithIconUrl(user.GetAvatarUrl())
+                    .WithName(user.Username));
+
+                eb.WithColor(new Color(138, 219, 146));
+                eb.Title = Localization.Karma.Neutral;
+                eb.AddInlineField(Localization.Karma.By, Context.User.Username);
+                eb.AddInlineField(Localization.Karma.Amount, "0");
+                eb.AddInlineField(Localization.Karma.Current, target.Karma);
+                await ReplyAsync("", false, eb.Build());
+                
+            }
+            catch (Exception e)
+            {
+                await ErrorHandler.HandleCommandException(e, Context);
+            }
+        }
 
         private bool TimeoutFinished(DateTimeOffset lastKarma)
         {
