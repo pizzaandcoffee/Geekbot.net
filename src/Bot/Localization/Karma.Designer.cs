@@ -88,6 +88,15 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself neutral karma.
+        /// </summary>
+        internal static string CannotChangeOwnSame {
+            get {
+                return ResourceManager.GetString("CannotChangeOwnSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself karma.
         /// </summary>
         internal static string CannotChangeOwnUp {

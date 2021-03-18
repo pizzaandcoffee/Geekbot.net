@@ -125,7 +125,7 @@ namespace Geekbot.Bot.Commands.User
                 var actor = await GetUser(Context.User.Id);
                 if (user.Id == Context.User.Id)
                 {
-                    await ReplyAsync(string.Format(Localization.Karma.CannotChangeOwnDown, Context.User.Username));
+                    await ReplyAsync(string.Format(Localization.Karma.CannotChangeOwnSame, Context.User.Username));
                     return;
                 }
                 

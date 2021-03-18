@@ -45,4 +45,7 @@
     <data name="Neutral" xml:space="preserve">
         <value>Neutral Karma</value>
     </data>
+    <data name="CannotChangeOwnSame" xml:space="preserve">
+        <value>Sorry {0}, but you can't give yourself neutral karma</value>
+    </data>
 </root>

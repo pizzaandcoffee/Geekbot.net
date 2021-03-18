@@ -38,4 +38,7 @@
     <data name="Neutral" xml:space="preserve">
         <value>Neutral Karma</value>
     </data>
+    <data name="CannotChangeOwnSame" xml:space="preserve">
+        <value>Sorry {0}, aber du chasch dr selber kei neutrals karma geh</value>
+    </data>
 </root>
