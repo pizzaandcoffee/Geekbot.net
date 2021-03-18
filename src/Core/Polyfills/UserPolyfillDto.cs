@@ -13,6 +13,7 @@ namespace Geekbot.Core.Polyfills
         public IActivity Activity { get; }
         public UserStatus Status { get; set; }
         public IImmutableSet<ClientType> ActiveClients { get; }
+        public IImmutableList<IActivity> Activities { get; }
         public string AvatarId { get; set; }
         public string AvatarUrl { get; set; }
         public string Discriminator { get; set; }
@@ -20,7 +21,8 @@ namespace Geekbot.Core.Polyfills
         public bool IsBot { get; set; }
         public bool IsWebhook { get; set; }
         public string Username { get; set; }
-        
+        public UserProperties? PublicFlags { get; }
+
         public string GetAvatarUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128)
         {
             return AvatarUrl ?? "https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png";
