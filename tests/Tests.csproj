@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <RuntimeIdentifiers>win10-x64;linux-x64;linux-musl-x64</RuntimeIdentifiers>
     <IsPackable>false</IsPackable>
     <NoWarn>NU1701</NoWarn>
     <NoWarn>xUnit1026</NoWarn>
