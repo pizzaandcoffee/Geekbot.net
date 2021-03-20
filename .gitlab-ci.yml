@@ -18,7 +18,7 @@ Build:
   script:
     - dotnet restore
     - dotnet test tests
-    - dotnet publish --version-suffix "$VERSION" -r linux-x64 -p:PublishSingleFile=true --self-contained true -c Release -o ./app ./src/Bot/
+    - dotnet publish --version-suffix "$VERSION" -r linux-x64 -c Release -o ./app ./src/Bot/
 
 Package:
   stage: docker
