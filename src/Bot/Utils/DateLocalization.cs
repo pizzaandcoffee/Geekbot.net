@@ -7,7 +7,11 @@ namespace Geekbot.Bot.Utils
     {
         public static string FormatDateTimeAsRemaining(DateTimeOffset dateTime)
         {
-            var remaining = dateTime - DateTimeOffset.Now;
+            return FormatDateTimeAsRemaining(dateTime - DateTimeOffset.Now);
+        }
+        
+        public static string FormatDateTimeAsRemaining(TimeSpan remaining)
+        {
             const string formattable = "{0} {1}";
             var sb = new StringBuilder();
             
