@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Discord.Commands;
-using Geekbot.Bot.Utils;
 using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.GuildSettingsManager;
@@ -29,17 +30,30 @@ namespace Geekbot.Bot.Commands.Utils
                 
                 var doc = new HtmlDocument();
                 doc.LoadHtml(stringResponse);
-                var yesOrNoNode = doc.DocumentNode.SelectNodes("//a").FirstOrDefault();
+                var statusNode = doc.DocumentNode.SelectNodes("//a").FirstOrDefault();
 
-                if (yesOrNoNode?.InnerHtml == "Yes.")
+                if (statusNode == null)
                 {
-                    var stuckSince = DateTime.Now - new DateTime(2021, 03, 23, 10, 39, 0);
-                    var formatted = DateLocalization.FormatDateTimeAsRemaining(stuckSince);
-                    await ReplyAsync(string.Format(Localization.Evergiven.StillStuck, formatted));// $"Ever Given is **still stuck** in the suez canal! It has been stuck for {formatted}");
+                    await ReplyAsync("Maybe, check <https://istheshipstillstuck.com/>");
                     return;
                 }
 
-                await ReplyAsync(Localization.Evergiven.NotStuckAnymore);
+                var sb = new StringBuilder();
+
+                sb.Append($"Is that ship still stuck? {statusNode.InnerHtml}");
+                if (statusNode.Attributes.Contains("href"))
+                {
+                    sb.Append($" {statusNode.Attributes["href"].Value}");
+                }
+                
+                var stuckTimer = doc.DocumentNode.SelectNodes("//p")?.First(node => node.Attributes.First(attr => attr.Name == "style")?.Value == "text-align:center");
+                if (stuckTimer != null)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine(HttpUtility.HtmlDecode(stuckTimer.InnerText));
+                }
+                
+                await ReplyAsync(sb.ToString());
             }
             catch (Exception e)
             {

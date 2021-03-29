@@ -88,10 +88,6 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Corona.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-      <EmbeddedResource Update="Localization\Evergiven.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Evergiven.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Localization\Ship.Designer.cs">
@@ -156,11 +152,6 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Corona.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Localization\Evergiven.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Evergiven.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>
