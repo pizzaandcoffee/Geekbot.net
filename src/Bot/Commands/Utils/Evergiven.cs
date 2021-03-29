@@ -23,35 +23,12 @@ namespace Geekbot.Bot.Commands.Utils
         {
             try
             {
-                var httpClient = HttpAbstractions.CreateDefaultClient();
-                var response = await httpClient.GetAsync("https://istheshipstillstuck.com/");
-                response.EnsureSuccessStatusCode();
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                
-                var doc = new HtmlDocument();
-                doc.LoadHtml(stringResponse);
-                var statusNode = doc.DocumentNode.SelectNodes("//a").FirstOrDefault();
-
-                if (statusNode == null)
-                {
-                    await ReplyAsync("Maybe, check <https://istheshipstillstuck.com/>");
-                    return;
-                }
-
                 var sb = new StringBuilder();
 
-                sb.Append($"Is that ship still stuck? {statusNode.InnerHtml}");
-                if (statusNode.Attributes.Contains("href"))
-                {
-                    sb.Append($" {statusNode.Attributes["href"].Value}");
-                }
-                
-                var stuckTimer = doc.DocumentNode.SelectNodes("//p")?.First(node => node.Attributes.First(attr => attr.Name == "style")?.Value == "text-align:center");
-                if (stuckTimer != null)
-                {
-                    sb.AppendLine();
-                    sb.AppendLine(HttpUtility.HtmlDecode(stuckTimer.InnerText));
-                }
+                sb.AppendLine("Is that ship still stuck?");
+                sb.AppendLine("**No!**");
+                sb.AppendLine("It was stuck for 6 days, 3 hours and 38 minutes. It (probably) cost \"us\" $59 billion.");
+                sb.AppendLine("You can follow it here: <https://www.vesselfinder.com/?imo=9811000>");
                 
                 await ReplyAsync(sb.ToString());
             }
