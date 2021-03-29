@@ -1,0 +1,94 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ItIsCertain" xml:space="preserve">
+    <value>Es isch sicher</value>
+    <comment/>
+  </data>
+  <data name="ItIsDecidedlySo" xml:space="preserve">
+    <value>So isch es entschiede worde</value>
+    <comment/>
+  </data>
+  <data name="WithoutADoubt" xml:space="preserve">
+    <value>Ohni zwifel</value>
+    <comment/>
+  </data>
+  <data name="YesDefinitely" xml:space="preserve">
+    <value>Ja, absolut</value>
+    <comment/>
+  </data>
+  <data name="YouMayRelyOnIt" xml:space="preserve">
+    <value>Chasch davo usgoh</value>
+    <comment/>
+  </data>
+  <data name="AsISeeItYes" xml:space="preserve">
+    <value>Wie ich es gsehn, ja</value>
+    <comment/>
+  </data>
+  <data name="MostLikely" xml:space="preserve">
+    <value>Sehr waschinli</value>
+    <comment/>
+  </data>
+  <data name="OutlookGood" xml:space="preserve">
+    <value>Ussicht isch guet</value>
+    <comment/>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+    <comment/>
+  </data>
+  <data name="SignsPointToYes" xml:space="preserve">
+    <value>Ahzeiche zeigend uf ja</value>
+    <comment/>
+  </data>
+  <data name="ReplyHazyTryAgain" xml:space="preserve">
+    <value>Antwort isch verschwumme, versuechs nomol</value>
+    <comment/>
+  </data>
+  <data name="AskAgainLater" xml:space="preserve">
+    <value>Frög spöter nomol</value>
+    <comment/>
+  </data>
+  <data name="BetterNotTellYouNow" xml:space="preserve">
+    <value>Segs dir jetzt besser nid</value>
+    <comment/>
+  </data>
+  <data name="CannotPredictNow" xml:space="preserve">
+    <value>Im mommnet chani das nid vorussege</value>
+    <comment/>
+  </data>
+  <data name="ConcentrateAndAskAgain" xml:space="preserve">
+    <value>Konzentrier di und frog nomol</value>
+    <comment/>
+  </data>
+  <data name="DontCountOnIt" xml:space="preserve">
+    <value>Zähl nid druf</value>
+    <comment/>
+  </data>
+  <data name="MyReplyIsNo" xml:space="preserve">
+    <value>Mini antwort isch nei</value>
+    <comment/>
+  </data>
+  <data name="MySourcesSayNo" xml:space="preserve">
+    <value>Mini quellene seged nei</value>
+    <comment/>
+  </data>
+  <data name="OutlookNotSoGood" xml:space="preserve">
+    <value>Ussicht isch ned so guet</value>
+    <comment/>
+  </data>
+  <data name="VeryDoubtful" xml:space="preserve">
+    <value>Sehr froglich</value>
+    <comment/>
+  </data>
+</root>

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
+using Geekbot.Core.GuildSettingsManager;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class EightBall : ModuleBase
+    public class EightBall : GeekbotCommandBase
     {
-        private readonly IErrorHandler _errorHandler;
-
-        public EightBall(IErrorHandler errorHandler)
+        public EightBall(IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
-            _errorHandler = errorHandler;
         }
 
         [Command("8ball", RunMode = RunMode.Async)]
@@ -21,36 +21,19 @@ namespace Geekbot.Bot.Commands.Randomness
         {
             try
             {
-                var replies = new List<string>
+                var enumerator = Localization.EightBall.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true).GetEnumerator();
+                var replies = new List<string>();
+                while (enumerator.MoveNext())
                 {
-                    "It is certain",
-                    "It is decidedly so",
-                    "Without a doubt",
-                    "Yes, definitely",
-                    "You may rely on it",
-                    "As I see it, yes",
-                    "Most likely",
-                    "Outlook good",
-                    "Yes",
-                    "Signs point to yes",
-                    "Reply hazy try again",
-                    "Ask again later",
-                    "Better not tell you now",
-                    "Cannot predict now",
-                    "Concentrate and ask again",
-                    "Don't count on it",
-                    "My reply is no",
-                    "My sources say no",
-                    "Outlook not so good",
-                    "Very doubtful"
-                };
-
+                    replies.Add(enumerator.Value?.ToString());
+                }
+                
                 var answer = new Random().Next(replies.Count);
                 await ReplyAsync(replies[answer]);
             }
             catch (Exception e)
             {
-                await _errorHandler.HandleCommandException(e, Context);
+                await ErrorHandler.HandleCommandException(e, Context);
             }
         }
     }
