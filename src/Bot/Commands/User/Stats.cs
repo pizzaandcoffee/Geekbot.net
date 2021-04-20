@@ -54,6 +54,8 @@ namespace Geekbot.Bot.Commands.User
                       ?.FirstOrDefault(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()))
                       ?.Cookies ?? 0;
 
+                var quotes = _database.Quotes.Count(e => e.GuildId.Equals(Context.Guild.Id.AsLong()) && e.UserId.Equals(userInfo.Id.AsLong()));
+
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder()
                     .WithIconUrl(userInfo.GetAvatarUrl())
@@ -68,9 +70,9 @@ namespace Geekbot.Bot.Commands.User
                     e.UserId.Equals(userInfo.Id.AsLong()));
 
                 eb.AddInlineField(Localization.Stats.OnDiscordSince,
-                        $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} days)")
+                        $"{createdAt.Day}.{createdAt.Month}.{createdAt.Year} ({age} {Localization.Stats.Days})")
                     .AddInlineField(Localization.Stats.JoinedServer,
-                        $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} days)")
+                        $"{joinedAt.Day}.{joinedAt.Month}.{joinedAt.Year} ({joinedDayAgo} {Localization.Stats.Days})")
                     .AddInlineField(Localization.Stats.Karma, karma?.Karma ?? 0)
                     .AddInlineField(Localization.Stats.Level, level)
                     .AddInlineField(Localization.Stats.MessagesSent, messages)
@@ -78,6 +80,7 @@ namespace Geekbot.Bot.Commands.User
 
                 if (correctRolls != null) eb.AddInlineField(Localization.Stats.GuessedRolls, correctRolls.Rolls);
                 if (cookies > 0) eb.AddInlineField(Localization.Stats.Cookies, cookies);
+                if (quotes > 0) eb.AddInlineField(Localization.Stats.Quotes, quotes);
 
                 await ReplyAsync("", false, eb.Build());
             }

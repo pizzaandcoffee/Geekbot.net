@@ -35,4 +35,10 @@
     <data name="Cookies" xml:space="preserve">
         <value>Guetzli</value>
     </data>
+    <data name="Days" xml:space="preserve">
+        <value>Täg</value>
+    </data>
+    <data name="Quotes" xml:space="preserve">
+        <value>Quotes</value>
+    </data>
 </root>

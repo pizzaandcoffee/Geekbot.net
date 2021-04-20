@@ -70,6 +70,15 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Days.
+        /// </summary>
+        internal static string Days {
+            get {
+                return ResourceManager.GetString("Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Guessed Rolls.
         /// </summary>
         internal static string GuessedRolls {
@@ -120,6 +129,15 @@ namespace Geekbot.Bot.Localization {
         internal static string OnDiscordSince {
             get {
                 return ResourceManager.GetString("OnDiscordSince", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quotes.
+        /// </summary>
+        internal static string Quotes {
+            get {
+                return ResourceManager.GetString("Quotes", resourceCulture);
             }
         }
         
