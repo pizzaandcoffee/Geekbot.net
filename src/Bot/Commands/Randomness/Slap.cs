@@ -76,7 +76,8 @@ namespace Geekbot.Bot.Commands.Randomness
                     "teapot",
                     "candle",
                     "dictionary",
-                    "powerless banhammer"
+                    "powerless banhammer",
+                    "piece of low fat mozzarella"
                 };
 
                 await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[new Random().Next(things.Count - 1)]}");
