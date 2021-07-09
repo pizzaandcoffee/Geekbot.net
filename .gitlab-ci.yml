@@ -7,6 +7,8 @@ stages:
 variables:
   VERSION: 4.3.0-V$CI_COMMIT_SHORT_SHA
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  # ToDo: Remove when .net6 is released
+  MSBuildEnableWorkloadResolver: false
 
 Build:
   stage: build
