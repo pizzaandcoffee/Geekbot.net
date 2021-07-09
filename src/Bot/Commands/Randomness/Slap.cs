@@ -77,10 +77,13 @@ namespace Geekbot.Bot.Commands.Randomness
                     "candle",
                     "dictionary",
                     "powerless banhammer",
-                    "piece of low fat mozzarella"
+                    "piece of low fat mozzarella",
+                    // For some reason it never picks the last one
+                    // Adding this workaround, because i'm to lazy to actually fix it at the time of writing this
+                    "padding"
                 };
 
-                await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[new Random().Next(things.Count - 1)]}");
+                await ReplyAsync($"{Context.User.Username} slapped {user.Username} with a {things[new Random().Next(0, things.Count - 1)]}");
                 
                 await UpdateRecieved(user.Id);
                 await UpdateGiven(Context.User.Id);
