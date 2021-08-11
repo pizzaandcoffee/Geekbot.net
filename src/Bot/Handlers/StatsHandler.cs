@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Timers;
 using Discord.WebSocket;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
@@ -24,7 +22,7 @@ namespace Geekbot.Bot.Handlers
             _database = database;
             _season = SeasonsUtils.GetCurrentSeason();
 
-            var timer = new Timer()
+            var timer = new System.Timers.Timer()
             {
                 Enabled = true,
                 AutoReset = true,
