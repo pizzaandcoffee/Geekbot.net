@@ -14,7 +14,7 @@
     <ItemGroup>
         <PackageReference Include="Anemonis.RandomOrg" Version="1.14.0" />
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
-        <PackageReference Include="Discord.Net" Version="2.3.1" />
+        <PackageReference Include="Discord.Net" Version="2.4.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-preview.2.21154.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-preview.2.21154.2">
           <PrivateAssets>all</PrivateAssets>
