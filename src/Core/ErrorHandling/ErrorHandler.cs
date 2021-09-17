@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.Core.Logger;
@@ -19,17 +18,6 @@ namespace Geekbot.Core.ErrorHandling
             _logger = logger;
             _getDefaultErrorText = getDefaultErrorText;
             _errorsInChat = runParameters.ExposeErrors;
-
-            var sentryDsn = runParameters.SentryEndpoint;
-            if (string.IsNullOrEmpty(sentryDsn)) return;
-            
-            SentrySdk.Init(o =>
-            {
-                o.Dsn = sentryDsn;
-                o.Release = Constants.BotVersion();
-                o.Environment = "Production";
-            });
-            _logger.Information(LogSource.Geekbot, $"Command Errors will be logged to Sentry: {sentryDsn}");
         }
 
         public async Task HandleCommandException(Exception e, ICommandContext context, string errorMessage = "def")

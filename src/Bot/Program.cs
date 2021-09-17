@@ -26,6 +26,8 @@ using Geekbot.Core.WikipediaClient;
 using Geekbot.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
+using Constants = Geekbot.Core.Constants;
 
 namespace Geekbot.Bot
 {
@@ -90,7 +92,9 @@ namespace Geekbot.Bot
 
             _logger.Information(LogSource.Api, "Starting Web API");
             StartWebApi();
-            
+
+            RegisterSentry();
+
             _logger.Information(LogSource.Geekbot, "Done and ready for use");
 
             await Task.Delay(-1);
@@ -223,6 +227,20 @@ namespace Geekbot.Bot
             
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
+        }
+
+        private void RegisterSentry()
+        {
+            var sentryDsn = _runParameters.SentryEndpoint;
+            if (string.IsNullOrEmpty(sentryDsn)) return;
+            SentrySdk.Init(o =>
+            {
+                o.Dsn = sentryDsn;
+                o.Release = Constants.BotVersion();
+                o.Environment = "Production";
+                o.TracesSampleRate = 1.0;
+            });
+            _logger.Information(LogSource.Geekbot, $"Command Errors will be logged to Sentry: {sentryDsn}");
         }
     }
 }
