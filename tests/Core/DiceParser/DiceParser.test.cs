@@ -10,7 +10,7 @@ namespace Tests.Core.DiceParser
 {
     public class DiceParserTest
     {
-        private static readonly RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator(new Mock<IGlobalSettings>().Object);
+        private static readonly RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator();
 
         public struct DiceParserTestDto
         {

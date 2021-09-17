@@ -1,25 +1,14 @@
 using System;
-using Anemonis.RandomOrg;
-using Geekbot.Core.GlobalSettings;
 
 namespace Geekbot.Core.RandomNumberGenerator
 {
     public class RandomNumberGenerator : IRandomNumberGenerator
     {
         private readonly System.Security.Cryptography.RandomNumberGenerator rng;
-        private readonly bool _canUseRandomOrg;
-        private readonly RandomOrgClient _randomOrgClient;
 
-        public RandomNumberGenerator(IGlobalSettings globalSettings)
+        public RandomNumberGenerator()
         {
             rng = System.Security.Cryptography.RandomNumberGenerator.Create();
-
-            var randomOrgApiKey = globalSettings.GetKey("RandomOrgApiKey");
-            if (!string.IsNullOrEmpty(randomOrgApiKey))
-            {
-                _canUseRandomOrg = true;
-                _randomOrgClient = new RandomOrgClient(randomOrgApiKey);
-            }
         }
 
         public int Next(int minValue, int maxInclusiveValue)
@@ -33,29 +22,8 @@ namespace Geekbot.Core.RandomNumberGenerator
             {
                 throw new ArgumentOutOfRangeException("minValue", "must be lower than maxExclusiveValue");
             }
-            
-            if (_canUseRandomOrg)
-            {
-                try
-                {
-                    return GetFromRandomOrg(minValue, maxInclusiveValue);
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
 
             return GetFromCrypto(minValue, maxInclusiveValue);
-        }
-
-        private int GetFromRandomOrg(int minValue, int maxInclusiveValue)
-        {
-            return _randomOrgClient
-                .GenerateIntegersAsync(1, minValue, maxInclusiveValue, false)
-                .Result
-                .Random
-                .Data[0];
         }
 
         private int GetFromCrypto(int minValue, int maxInclusiveValue)
