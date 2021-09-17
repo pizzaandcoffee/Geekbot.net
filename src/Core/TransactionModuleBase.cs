@@ -26,6 +26,7 @@ namespace Geekbot.Core
                 Id = Context.User.Id.ToString(),
                 Username = Context.User.Username,
             };
+            Transaction.Status = SpanStatus.Ok;
         }
 
         protected override void AfterExecute(CommandInfo command)

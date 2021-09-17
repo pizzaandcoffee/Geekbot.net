@@ -76,8 +76,6 @@ namespace Geekbot.Bot.Commands.Games.Roll
                 {
                     await ReplyAsync(string.Format(Localization.Roll.RolledNoGuess, Context.Message.Author.Mention, number));
                 }
-
-                Transaction.Status = SpanStatus.Ok;
             }
             catch (Exception e)
             {

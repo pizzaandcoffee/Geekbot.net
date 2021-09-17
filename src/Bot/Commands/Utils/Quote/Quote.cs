@@ -65,7 +65,6 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 var embed = QuoteBuilder(quote.FirstOrDefault());
                 await ReplyAsync("", false, embed.Build());
                 replySpan.Finish();
-                Transaction.Status = SpanStatus.Ok;
             }
             catch (Exception e)
             {
