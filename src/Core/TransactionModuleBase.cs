@@ -18,7 +18,6 @@ namespace Geekbot.Core
             Transaction = SentrySdk.StartTransaction(new Transaction(command.Name, "Exec"));
             Transaction.SetTags(new []
             {
-                new KeyValuePair<string, string>("GuildId", Context.Guild.Id.ToString()),
                 new KeyValuePair<string, string>("Guild", Context.Guild.Name),
             });
             Transaction.User = new User()
