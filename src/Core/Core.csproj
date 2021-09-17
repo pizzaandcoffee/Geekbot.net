@@ -34,7 +34,7 @@
         <PackageReference Include="NLog.Config" Version="4.7.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-preview2" />
         <PackageReference Include="SharpRaven" Version="2.4.0" />
-        <PackageReference Include="SumoLogic.Logging.NLog" Version="1.0.1.3" />
+        <PackageReference Include="SumoLogic.Logging.NLog" Version="1.0.1.4" />
     </ItemGroup>
 
 </Project>
