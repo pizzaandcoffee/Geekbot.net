@@ -15,6 +15,8 @@ using Geekbot.Core.Polyfills;
 using Geekbot.Core.RandomNumberGenerator;
 using Geekbot.Core.UserRepository;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
+using Constants = Geekbot.Core.Constants;
 
 namespace Geekbot.Bot.Commands.Utils.Quote
 {
@@ -43,23 +45,32 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
+                var getTotalSpan = Transaction.StartChild("TotalQuotes");
                 var totalQuotes = await _database.Quotes.CountAsync(e => e.GuildId.Equals(Context.Guild.Id.AsLong()));
+                getTotalSpan.Finish();
                 
                 if (totalQuotes == 0)
                 {
                     await ReplyAsync(Localization.Quote.NoQuotesFound);
+                    Transaction.Status = SpanStatus.NotFound;
                     return;
                 }
 
+                var getQuoteFromDbSpan = Transaction.StartChild("GetQuoteFromDB");
                 var random = _randomNumberGenerator.Next(0, totalQuotes - 1);
                 var quote = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).Skip(random).Take(1);
+                getQuoteFromDbSpan.Finish();
 
+                var replySpan = Transaction.StartChild("Reply");
                 var embed = QuoteBuilder(quote.FirstOrDefault());
                 await ReplyAsync("", false, embed.Build());
+                replySpan.Finish();
+                Transaction.Status = SpanStatus.Ok;
             }
             catch (Exception e)
             {
                 await ErrorHandler.HandleCommandException(e, Context, "Whoops, seems like the quote was to edgy to return");
+                Transaction.Status = SpanStatus.InternalError;
             }
         }
 
