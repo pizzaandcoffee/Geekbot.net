@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography;
 using Anemonis.RandomOrg;
 using Geekbot.Core.GlobalSettings;
 
@@ -7,13 +6,13 @@ namespace Geekbot.Core.RandomNumberGenerator
 {
     public class RandomNumberGenerator : IRandomNumberGenerator
     {
-        private readonly RNGCryptoServiceProvider csp;
+        private readonly System.Security.Cryptography.RandomNumberGenerator rng;
         private readonly bool _canUseRandomOrg;
         private readonly RandomOrgClient _randomOrgClient;
 
         public RandomNumberGenerator(IGlobalSettings globalSettings)
         {
-            csp = new RNGCryptoServiceProvider();
+            rng = System.Security.Cryptography.RandomNumberGenerator.Create();
 
             var randomOrgApiKey = globalSettings.GetKey("RandomOrgApiKey");
             if (!string.IsNullOrEmpty(randomOrgApiKey))
@@ -32,7 +31,7 @@ namespace Geekbot.Core.RandomNumberGenerator
             
             if (minValue >= maxInclusiveValue)
             {
-                throw new ArgumentOutOfRangeException("minValue must be lower than maxExclusiveValue");
+                throw new ArgumentOutOfRangeException("minValue", "must be lower than maxExclusiveValue");
             }
             
             if (_canUseRandomOrg)
@@ -84,7 +83,7 @@ namespace Geekbot.Core.RandomNumberGenerator
         private byte[] GenerateRandomBytes(int bytesNumber)
         {
             var buffer = new byte[bytesNumber];
-            csp.GetBytes(buffer);
+            rng.GetBytes(buffer);
             return buffer;
         }
     }
