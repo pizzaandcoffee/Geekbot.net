@@ -6,7 +6,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Randomness.Dad
 {
-    public class DadJokes : ModuleBase
+    public class DadJokes : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

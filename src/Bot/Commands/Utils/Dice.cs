@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.DiceParser;
 using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Dice : ModuleBase
+    public class Dice : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IDiceParser _diceParser;

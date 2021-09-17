@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Converters;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
@@ -11,7 +12,7 @@ using MtgApiManager.Lib.Service;
 
 namespace Geekbot.Bot.Commands.Integrations
 {
-    public class MagicTheGathering : ModuleBase
+    public class MagicTheGathering : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IMtgManaConverter _manaConverter;

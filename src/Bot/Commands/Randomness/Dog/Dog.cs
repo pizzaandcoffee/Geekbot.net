@@ -7,7 +7,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Randomness.Dog
 {
-    public class Dog : ModuleBase
+    public class Dog : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

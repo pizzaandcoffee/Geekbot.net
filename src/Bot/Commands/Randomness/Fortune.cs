@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Media;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class Fortune : ModuleBase
+    public class Fortune : TransactionModuleBase
     {
         private readonly IFortunesProvider _fortunes;
 

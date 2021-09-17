@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.ErrorHandling;
@@ -11,7 +12,7 @@ using Geekbot.Core.Extensions;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class Slap : ModuleBase
+    public class Slap : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;

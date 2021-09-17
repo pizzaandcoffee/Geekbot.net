@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class AvatarGetter : ModuleBase
+    public class AvatarGetter : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

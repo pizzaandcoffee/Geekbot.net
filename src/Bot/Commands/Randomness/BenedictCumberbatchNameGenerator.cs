@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class BenedictCumberbatchNameGenerator : ModuleBase
+    public class BenedictCumberbatchNameGenerator : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IRandomNumberGenerator _randomNumberGenerator;

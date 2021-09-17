@@ -7,7 +7,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Randomness.Chuck
 {
-    public class ChuckNorrisJokes : ModuleBase
+    public class ChuckNorrisJokes : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
@@ -14,7 +15,7 @@ using HtmlAgilityPack;
 
 namespace Geekbot.Bot.Commands.Integrations
 {
-    public class Wikipedia : ModuleBase
+    public class Wikipedia : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly IWikipediaClient _wikipediaClient;

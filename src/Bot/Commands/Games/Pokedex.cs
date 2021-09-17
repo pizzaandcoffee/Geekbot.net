@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 using PokeAPI;
 
 namespace Geekbot.Bot.Commands.Games
 {
-    public class Pokedex : ModuleBase
+    public class Pokedex : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

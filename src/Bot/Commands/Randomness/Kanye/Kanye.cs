@@ -6,7 +6,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Randomness.Kanye
 {
-    public class Kanye : ModuleBase
+    public class Kanye : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

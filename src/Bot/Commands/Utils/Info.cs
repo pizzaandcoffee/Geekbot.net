@@ -11,7 +11,7 @@ using Geekbot.Core.Extensions;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Info : ModuleBase
+    public class Info : TransactionModuleBase
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;

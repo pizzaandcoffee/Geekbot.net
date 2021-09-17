@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Media;
 
 namespace Geekbot.Bot.Commands.Randomness
 {
-    public class RandomAnimals : ModuleBase
+    public class RandomAnimals : TransactionModuleBase
     {
         private readonly IMediaProvider _mediaProvider;
 

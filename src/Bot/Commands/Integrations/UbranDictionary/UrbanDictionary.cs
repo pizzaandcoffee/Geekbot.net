@@ -9,7 +9,7 @@ using Geekbot.Core.Extensions;
 
 namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
 {
-    public class UrbanDictionary : ModuleBase
+    public class UrbanDictionary : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

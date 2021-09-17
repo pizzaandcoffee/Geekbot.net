@@ -2,11 +2,12 @@ using System;
 using System.Threading.Tasks;
 using System.Web;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Lmgtfy : ModuleBase
+    public class Lmgtfy : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

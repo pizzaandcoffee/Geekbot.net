@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.Converters;
 using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Emojify : ModuleBase
+    public class Emojify : TransactionModuleBase
     {
         private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;

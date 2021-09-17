@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
@@ -11,7 +12,7 @@ using Geekbot.Core.Levels;
 
 namespace Geekbot.Bot.Commands.User
 {
-    public class GuildInfo : ModuleBase
+    public class GuildInfo : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
         private readonly DatabaseContext _database;

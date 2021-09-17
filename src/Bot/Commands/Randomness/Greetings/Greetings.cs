@@ -8,7 +8,7 @@ using Geekbot.Core.Extensions;
 
 namespace Geekbot.Bot.Commands.Randomness.Greetings
 {
-    public class Greetings : ModuleBase
+    public class Greetings : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

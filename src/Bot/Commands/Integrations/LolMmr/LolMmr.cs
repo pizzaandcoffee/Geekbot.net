@@ -10,7 +10,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Integrations.LolMmr
 {
-    public class LolMmr : ModuleBase
+    public class LolMmr : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

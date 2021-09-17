@@ -3,11 +3,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils
 {
-    public class Help : ModuleBase
+    public class Help : TransactionModuleBase
     {
         private readonly IErrorHandler _errorHandler;
 

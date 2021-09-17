@@ -11,7 +11,7 @@ using Geekbot.Core.ErrorHandling;
 
 namespace Geekbot.Bot.Commands.Utils.Changelog
 {
-    public class Changelog : ModuleBase
+    public class Changelog : TransactionModuleBase
     {
         private readonly DiscordSocketClient _client;
         private readonly IErrorHandler _errorHandler;

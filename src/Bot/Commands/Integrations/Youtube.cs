@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.GlobalSettings;
 using Google.Apis.Services;
@@ -8,7 +9,7 @@ using Google.Apis.YouTube.v3;
 
 namespace Geekbot.Bot.Commands.Integrations
 {
-    public class Youtube : ModuleBase
+    public class Youtube : TransactionModuleBase
     {
         private readonly IGlobalSettings _globalSettings;
         private readonly IErrorHandler _errorHandler;
