@@ -85,6 +85,8 @@ namespace Geekbot.Bot
             await Login();
             _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
             await _client.SetGameAsync(_globalSettings.GetKey("Game"));
+            
+            RegisterSentry();
 
             _logger.Information(LogSource.Geekbot, "Loading Dependencies and Handlers");
             RegisterDependencies();
@@ -92,8 +94,6 @@ namespace Geekbot.Bot
 
             _logger.Information(LogSource.Api, "Starting Web API");
             StartWebApi();
-
-            RegisterSentry();
 
             _logger.Information(LogSource.Geekbot, "Done and ready for use");
 
