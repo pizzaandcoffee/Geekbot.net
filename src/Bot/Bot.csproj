@@ -29,7 +29,7 @@
         <PackageReference Include="MtgApiManager.Lib" Version="1.2.2" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="PokeApi.NET" Version="1.1.2" />
-        <PackageReference Include="SharpRaven" Version="2.4.0" />
+        <PackageReference Include="Sentry" Version="3.9.2" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="Storage\*">
