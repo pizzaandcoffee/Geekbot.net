@@ -61,10 +61,10 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 var quote = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).Skip(random).Take(1);
                 getQuoteFromDbSpan.Finish();
 
-                var replySpan = Transaction.StartChild("Reply");
+                var buildQuoteEmbedSpan = Transaction.StartChild("BuildQuoteEmbed");
                 var embed = QuoteBuilder(quote.FirstOrDefault());
+                buildQuoteEmbedSpan.Finish();
                 await ReplyAsync("", false, embed.Build());
-                replySpan.Finish();
             }
             catch (Exception e)
             {
