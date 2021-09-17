@@ -11,6 +11,7 @@ using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.KvInMemoryStore;
 using Geekbot.Core.RandomNumberGenerator;
+using Sentry;
 
 namespace Geekbot.Bot.Commands.Games.Roll
 {
@@ -34,43 +35,54 @@ namespace Geekbot.Bot.Commands.Games.Roll
         {
             try
             {
+                var inputSpan = Transaction.StartChild("CommandInput");
                 var number = _randomNumberGenerator.Next(1, 100);
                 int.TryParse(stuff, out var guess);
+                inputSpan.Finish();
+                
                 if (guess <= 100 && guess > 0)
                 {
+                    var prevRollCheckSpan = Transaction.StartChild("PrevRollCheck");
                     var kvKey = $"{Context?.Guild?.Id ?? 0}:{Context.User.Id}:RollsPrevious";
-
+                    
                     var prevRoll = _kvInMemoryStore.Get<RollTimeout>(kvKey);
-
+                    
                     if (prevRoll?.LastGuess == guess && prevRoll?.GuessedOn.AddDays(1) > DateTime.Now)
                     {
                         await ReplyAsync(string.Format(
                             Localization.Roll.NoPrevGuess,
                             Context.Message.Author.Mention,
                             DateLocalization.FormatDateTimeAsRemaining(prevRoll.GuessedOn.AddDays(1))));
+                        Transaction.Status = SpanStatus.InvalidArgument;
                         return;
                     }
 
                     _kvInMemoryStore.Set(kvKey, new RollTimeout {LastGuess = guess, GuessedOn = DateTime.Now});
+                    prevRollCheckSpan.Finish();
 
                     await ReplyAsync(string.Format(Localization.Roll.Rolled, Context.Message.Author.Mention, number, guess));
                     if (guess == number)
                     {
+                        var correctGuessSpan = Transaction.StartChild("CorrectGuess");
                         await ReplyAsync(string.Format(Localization.Roll.Gratz, Context.Message.Author));
                         var user = await GetUser(Context.User.Id);
                         user.Rolls += 1;
                         _database.Rolls.Update(user);
                         await _database.SaveChangesAsync();
+                        correctGuessSpan.Finish();
                     }
                 }
                 else
                 {
                     await ReplyAsync(string.Format(Localization.Roll.RolledNoGuess, Context.Message.Author.Mention, number));
                 }
+
+                Transaction.Status = SpanStatus.Ok;
             }
             catch (Exception e)
             {
                 await ErrorHandler.HandleCommandException(e, Context);
+                Transaction.Status = SpanStatus.InternalError;
             }
         }
 
