@@ -268,29 +268,32 @@ namespace Geekbot.Bot.Commands.Utils.Quote
 
         private EmbedBuilder QuoteBuilder(QuoteModel quote)
         {
+            var getEmbedUserSpan = Transaction.StartChild("GetEmbedUser");
             var user = Context.Client.GetUserAsync(quote.UserId.AsUlong()).Result;
             if (user == null)
             {
+                var getEmbedUserFromRepoSpan = Transaction.StartChild("GetEmbedUserFromRepo");
                 var fallbackUserFromRepo = _userRepository.Get(quote.UserId.AsUlong());
                 user = new UserPolyfillDto()
                 {
                     Username = fallbackUserFromRepo?.Username ?? "Unknown User",
                     AvatarUrl = fallbackUserFromRepo?.AvatarUrl
                 };
+                getEmbedUserFromRepoSpan.Finish();
             }
+            getEmbedUserSpan.Finish();
+
+            var embedBuilderSpan = Transaction.StartChild("EmbedBuilder");
             var eb = new EmbedBuilder();
             eb.WithColor(new Color(143, 167, 232));
-            if (quote.InternalId == 0)
-            {
-                eb.Title = $"{user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";                
-            }
-            else
-            {
-                eb.Title = $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";                
-            }
+            eb.Title = quote.InternalId == 0
+                ? $"{user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}"
+                : $"#{quote.InternalId} | {user.Username} @ {quote.Time.Day}.{quote.Time.Month}.{quote.Time.Year}";
             eb.Description = quote.Quote;
             eb.ThumbnailUrl = user.GetAvatarUrl();
             if (quote.Image != null) eb.ImageUrl = quote.Image;
+            embedBuilderSpan.Finish();
+
             return eb;
         }
 
