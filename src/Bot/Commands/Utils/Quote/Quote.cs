@@ -45,21 +45,16 @@ namespace Geekbot.Bot.Commands.Utils.Quote
         {
             try
             {
-                var getTotalSpan = Transaction.StartChild("TotalQuotes");
-                var totalQuotes = await _database.Quotes.CountAsync(e => e.GuildId.Equals(Context.Guild.Id.AsLong()));
-                getTotalSpan.Finish();
-                
-                if (totalQuotes == 0)
+                var getQuoteFromDbSpan = Transaction.StartChild("GetQuoteFromDB");
+                var quote = _database.Quotes.FromSqlInterpolated($"select * from \"Quotes\" where \"GuildId\" = {Context.Guild.Id} order by random() limit 1");
+                getQuoteFromDbSpan.Finish();
+
+                if (!quote.Any())
                 {
                     await ReplyAsync(Localization.Quote.NoQuotesFound);
                     Transaction.Status = SpanStatus.NotFound;
                     return;
                 }
-
-                var getQuoteFromDbSpan = Transaction.StartChild("GetQuoteFromDB");
-                var random = _randomNumberGenerator.Next(0, totalQuotes - 1);
-                var quote = _database.Quotes.Where(e => e.GuildId.Equals(Context.Guild.Id.AsLong())).Skip(random).Take(1);
-                getQuoteFromDbSpan.Finish();
 
                 var buildQuoteEmbedSpan = Transaction.StartChild("BuildQuoteEmbed");
                 var embed = QuoteBuilder(quote.FirstOrDefault());
