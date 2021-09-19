@@ -16,4 +16,8 @@
         <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Sodium.Core" Version="1.2.3" />
+    </ItemGroup>
+
 </Project>

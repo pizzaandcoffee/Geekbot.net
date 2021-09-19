@@ -31,7 +31,10 @@ namespace Geekbot.Web
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddControllers();
+                    services.AddControllers().AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    });
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowSpecificOrigin",
