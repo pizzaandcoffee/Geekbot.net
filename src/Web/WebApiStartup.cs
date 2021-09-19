@@ -40,6 +40,7 @@ namespace Geekbot.Web
                         options.AddPolicy("AllowSpecificOrigin",
                             builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
                     });
+                    services.AddSentry();
                     
                     services.AddSingleton(databaseContext);
                     services.AddSingleton(globalSettings);

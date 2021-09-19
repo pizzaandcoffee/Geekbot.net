@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Sentry.AspNetCore" Version="3.9.2" />
       <PackageReference Include="Sodium.Core" Version="1.2.3" />
     </ItemGroup>
 
