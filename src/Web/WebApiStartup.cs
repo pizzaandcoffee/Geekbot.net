@@ -6,6 +6,7 @@ using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.Highscores;
+using Geekbot.Core.Interactions;
 using Geekbot.Core.Logger;
 using Geekbot.Web.Logging;
 using Microsoft.AspNetCore;
@@ -41,10 +42,14 @@ namespace Geekbot.Web
                             builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
                     });
                     services.AddSentry();
-                    
+
+                    var interactionCommandManager = new InteractionCommandManager();
+
                     services.AddSingleton(databaseContext);
                     services.AddSingleton(globalSettings);
                     services.AddSingleton(highscoreManager);
+                    services.AddSingleton(logger);
+                    services.AddSingleton<IInteractionCommandManager>(interactionCommandManager);
 
                     if (runParameters.DisableGateway) return;
                     services.AddSingleton(commandService);

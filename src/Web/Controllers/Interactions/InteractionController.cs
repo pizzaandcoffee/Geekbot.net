@@ -4,7 +4,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Geekbot.Core.GlobalSettings;
-using Geekbot.Web.Controllers.Interactions.Model;
+using Geekbot.Core.Interactions;
+using Geekbot.Core.Interactions.Request;
+using Geekbot.Core.Interactions.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sodium;
@@ -13,14 +15,16 @@ namespace Geekbot.Web.Controllers.Interactions
 {
     public class InteractionController : Controller
     {
-        private readonly byte[] publicKeyBytes;
-        
-        public InteractionController(IGlobalSettings globalSettings)
+        private readonly IInteractionCommandManager _interactionCommandManager;
+        private readonly byte[] _publicKeyBytes;
+
+        public InteractionController(IGlobalSettings globalSettings, IInteractionCommandManager interactionCommandManager)
         {
+            _interactionCommandManager = interactionCommandManager;
             var publicKey = globalSettings.GetKey("DiscordPublicKey");
-            publicKeyBytes = Convert.FromHexString(publicKey.AsSpan());
+            _publicKeyBytes = Convert.FromHexString(publicKey.AsSpan());
         }
-        
+
         [HttpPost]
         [Route("/interactions")]
         public async Task<IActionResult> HandleInteraction(
@@ -32,7 +36,7 @@ namespace Geekbot.Web.Controllers.Interactions
             {
                 return BadRequest();
             }
-            
+
             Request.EnableBuffering();
             if (!(await HasValidSignature(signature, timestamp)))
             {
@@ -46,7 +50,7 @@ namespace Geekbot.Web.Controllers.Interactions
             return (interaction.Type, interaction.Version) switch
             {
                 (InteractionType.Ping, 1) => Ping(),
-                (InteractionType.ApplicationCommand, 1) => ApplicationCommand(interaction),
+                (InteractionType.ApplicationCommand, 1) => await ApplicationCommand(interaction),
                 (InteractionType.MessageComponent, 1) => MessageComponent(interaction),
                 _ => StatusCode(501)
             };
@@ -61,9 +65,16 @@ namespace Geekbot.Web.Controllers.Interactions
             return Ok(response);
         }
 
-        private IActionResult ApplicationCommand(Interaction interaction)
+        private async Task<IActionResult> ApplicationCommand(Interaction interaction)
         {
-            return StatusCode(501);
+            var result = await _interactionCommandManager.RunCommand(interaction);
+
+            if (result == null)
+            {
+                return StatusCode(501);                
+            }
+
+            return Ok(result);
         }
 
         private IActionResult MessageComponent(Interaction interaction)
@@ -75,7 +86,7 @@ namespace Geekbot.Web.Controllers.Interactions
         {
             var timestampBytes = Encoding.Default.GetBytes(timestamp);
             var signatureBytes = Convert.FromHexString(signature.AsSpan());
-            
+
             var memoryStream = new MemoryStream();
             await Request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
             var body = memoryStream.ToArray();
@@ -84,7 +95,7 @@ namespace Geekbot.Web.Controllers.Interactions
             Array.Resize(ref timestampBytes, timestampLength + body.Length);
             Array.Copy(body, 0, timestampBytes, timestampLength, body.Length);
 
-            return PublicKeyAuth.VerifyDetached(signatureBytes, timestampBytes, publicKeyBytes);
+            return PublicKeyAuth.VerifyDetached(signatureBytes, timestampBytes, _publicKeyBytes);
         }
     }
 }

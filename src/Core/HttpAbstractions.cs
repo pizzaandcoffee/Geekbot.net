@@ -1,6 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -22,7 +25,7 @@ namespace Geekbot.Core
             return client;
         }
 
-        public static async Task<T> Get<T>(Uri location, HttpClient httpClient = null, bool disposeClient = true)
+        public static async Task<TResponse> Get<TResponse>(Uri location, HttpClient httpClient = null, bool disposeClient = true)
         {
             httpClient ??= CreateDefaultClient();
             httpClient.BaseAddress = location;
@@ -36,7 +39,83 @@ namespace Geekbot.Core
                 httpClient.Dispose();
             }
 
-            return JsonConvert.DeserializeObject<T>(stringResponse);
+            return JsonConvert.DeserializeObject<TResponse>(stringResponse);
+        }
+        
+        public static async Task<TResponse> Post<TResponse>(Uri location, object data, HttpClient httpClient = null, bool disposeClient = true)
+        {
+            httpClient ??= CreateDefaultClient();
+            httpClient.BaseAddress = location;
+
+            var content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                Encoding.UTF8,
+                "application/json"
+            );
+            var response = await httpClient.PostAsync(location.PathAndQuery, content);
+            response.EnsureSuccessStatusCode();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+
+            if (disposeClient)
+            {
+                httpClient.Dispose();
+            }
+
+            return JsonConvert.DeserializeObject<TResponse>(stringResponse);
+        }
+        
+        public static async Task Post(Uri location, object data, HttpClient httpClient = null, bool disposeClient = true)
+        {
+            httpClient ??= CreateDefaultClient();
+            httpClient.BaseAddress = location;
+
+            var content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await httpClient.PostAsync(location, content);
+            response.EnsureSuccessStatusCode();
+
+            if (disposeClient)
+            {
+                httpClient.Dispose();
+            }
+        }
+        
+        public static async Task Patch(Uri location, object data, HttpClient httpClient = null, bool disposeClient = true)
+        {
+            httpClient ??= CreateDefaultClient();
+            httpClient.BaseAddress = location;
+
+            var content = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await httpClient.PatchAsync(location, content);
+            response.EnsureSuccessStatusCode();
+
+            if (disposeClient)
+            {
+                httpClient.Dispose();
+            }
+        }
+        
+        public static async Task Delete(Uri location, HttpClient httpClient = null, bool disposeClient = true)
+        {
+            httpClient ??= CreateDefaultClient();
+            httpClient.BaseAddress = location;
+
+            var response = await httpClient.DeleteAsync(location);
+            response.EnsureSuccessStatusCode();
+
+            if (disposeClient)
+            {
+                httpClient.Dispose();
+            }
         }
     }
 }

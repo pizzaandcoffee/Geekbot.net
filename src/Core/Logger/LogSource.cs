@@ -17,6 +17,7 @@ namespace Geekbot.Core.Logger
         Api,
         Migration,
         HighscoreManager,
+        Interaction,
         Other
     }
 }
