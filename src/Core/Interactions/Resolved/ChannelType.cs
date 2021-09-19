@@ -1,4 +1,4 @@
-namespace Geekbot.Web.Controllers.Interactions.Model.Resolved
+namespace Geekbot.Core.Interactions.Resolved
 {
     public enum ChannelType
     {
