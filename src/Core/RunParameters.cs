@@ -20,6 +20,9 @@ namespace Geekbot.Core
 
         [Option('e', "expose-errors", HelpText = "Shows internal errors in the chat (default: false) (env: EXPOSE_ERRORS)")]
         public bool ExposeErrors { get; set; } = ParamFallback("EXPOSE_ERRORS", false);
+        
+        [Option("disable-gateway", HelpText = "Disables the Discord Gateway (default: false) (env: GATEWAY_DISABLE)")]
+        public bool DisableGateway { get; set; } = ParamFallback("GATEWAY_DISABLE", false);
 
         /************************************
          * Database                         *

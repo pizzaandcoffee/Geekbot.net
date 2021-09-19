@@ -80,17 +80,20 @@ namespace Geekbot.Bot
             var database = ConnectToDatabase();
             _globalSettings = new GlobalSettings(database);
 
-            logger.Information(LogSource.Geekbot, "Connecting to Discord");
-            SetupDiscordClient();
-            await Login();
-            _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
-            await _client.SetGameAsync(_globalSettings.GetKey("Game"));
+            if (!runParameters.DisableGateway)
+            {
+                logger.Information(LogSource.Geekbot, "Connecting to Discord");
+                SetupDiscordClient();
+                await Login();
+                _logger.Information(LogSource.Geekbot, $"Now Connected as {_client.CurrentUser.Username} to {_client.Guilds.Count} Servers");
+                await _client.SetGameAsync(_globalSettings.GetKey("Game"));
+            }
             
             RegisterSentry();
 
             _logger.Information(LogSource.Geekbot, "Loading Dependencies and Handlers");
             RegisterDependencies();
-            await RegisterHandlers();
+            if (!runParameters.DisableGateway) await RegisterHandlers();
 
             _logger.Information(LogSource.Api, "Starting Web API");
             StartWebApi();
@@ -187,9 +190,9 @@ namespace Geekbot.Bot
             services.AddSingleton<IDiceParser>(diceParser);
             services.AddSingleton<IReactionListener>(_reactionListener);
             services.AddSingleton<IGuildSettingsManager>(_guildSettingsManager);
-            services.AddSingleton(_client);
             services.AddTransient<IHighscoreManager>(e => new HighscoreManager(_databaseInitializer.Initialize(), _userRepository));
             services.AddTransient(e => _databaseInitializer.Initialize());
+            if (!_runParameters.DisableGateway) services.AddSingleton(_client);
             
             _servicesProvider = services.BuildServiceProvider();
         }

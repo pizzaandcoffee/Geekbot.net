@@ -37,12 +37,14 @@ namespace Geekbot.Web
                         options.AddPolicy("AllowSpecificOrigin",
                             builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
                     });
-
-                    services.AddSingleton(commandService);
+                    
                     services.AddSingleton(databaseContext);
-                    services.AddSingleton(client);
                     services.AddSingleton(globalSettings);
                     services.AddSingleton(highscoreManager);
+
+                    if (runParameters.DisableGateway) return;
+                    services.AddSingleton(commandService);
+                    services.AddSingleton(client);
                 })
                 .Configure(app =>
                 {
