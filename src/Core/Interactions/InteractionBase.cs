@@ -22,7 +22,7 @@ namespace Geekbot.Core.Interactions
         }
 
         public abstract Command GetCommandInfo();
-        public abstract Task<InteractionResponse> Exec(InteractionData interaction);
+        public abstract Task<InteractionResponse> Exec(Interaction interaction);
         
         void IInteractionBase.BeforeExecute() => this.BeforeExecute();
         void IInteractionBase.AfterExecute() => this.AfterExecute();
