@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Geekbot.Core.Interactions.Resolved
 {
-    public record User
+    public class User
     {
        [JsonPropertyName("id")]
        public string Id { get; set; }
@@ -48,5 +48,7 @@ namespace Geekbot.Core.Interactions.Resolved
        
        [JsonPropertyName("public_flags")]
        public int PublicFlags { get; set; }
+
+       public string Mention => $"<@{Id}>";
     }
 }
