@@ -23,5 +23,8 @@ namespace Geekbot.Core.Interactions.Resolved
         
         [JsonPropertyName("permissions")]
         public string Permissions { get; set; }
+        
+        [JsonPropertyName("user")]
+        public User User { get; set; }
     }
 }

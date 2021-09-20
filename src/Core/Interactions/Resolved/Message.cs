@@ -6,7 +6,6 @@ namespace Geekbot.Core.Interactions.Resolved
 {
     public record Message
     {
-        
         [JsonPropertyName("id")]
         public string Id { get; set; }
         
