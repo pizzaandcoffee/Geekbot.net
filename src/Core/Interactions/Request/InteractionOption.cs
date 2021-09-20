@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Geekbot.Core.Interactions.ApplicationCommand;
 
@@ -23,7 +24,7 @@ namespace Geekbot.Core.Interactions.Request
         /// the value of the pair
         /// </summary>
         [JsonPropertyName("value")]
-        public object Value { get; set; }
+        public JsonElement Value { get; set; }
         
         /// <summary>
         /// present if this option is a group or subcommand
