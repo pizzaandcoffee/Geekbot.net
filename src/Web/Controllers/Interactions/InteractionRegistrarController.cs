@@ -20,7 +20,6 @@ namespace Geekbot.Web.Controllers.Interactions
         private readonly IGeekbotLogger _logger;
         private readonly IInteractionCommandManager _interactionCommandManager;
         private readonly string _discordToken;
-        // private readonly string _applicationId;
         private readonly Uri _guildCommandUri;
 
         public InteractionRegistrarController(IGlobalSettings globalSettings, IGeekbotLogger logger, IInteractionCommandManager interactionCommandManager)
@@ -29,8 +28,12 @@ namespace Geekbot.Web.Controllers.Interactions
             _interactionCommandManager = interactionCommandManager;
             _discordToken = globalSettings.GetKey("DiscordToken");
             var applicationId = globalSettings.GetKey("DiscordApplicationId");
-            var runesPlayground = "131827972083548160";
-            _guildCommandUri = new Uri($"https://discord.com/api/v8/applications/{applicationId}/guilds/{runesPlayground}/commands");
+            var betaGuilds = new Dictionary<string, string>()
+            {
+                { "171249478546882561", "93070552863870976" }, // Prod / Swiss Geeks
+                { "181092911243329537", "131827972083548160" }, // Dev / Rune's Playground
+            };
+            _guildCommandUri = new Uri($"https://discord.com/api/v8/applications/{applicationId}/guilds/{betaGuilds[applicationId]}/commands");
         }
         
         [HttpPost]
@@ -57,23 +60,6 @@ namespace Geekbot.Web.Controllers.Interactions
             {
                 operations.Remove.Add(registeredInteraction.Id);
             }
-
-            // foreach (var (_, command) in _interactionCommandManager.CommandsInfo)
-            // {
-            //     try
-            //     {
-            //         var httpClient = HttpAbstractions.CreateDefaultClient();
-            //         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", _discordToken);
-            //         
-            //         await HttpAbstractions.Post(_guildCommandUri, command, httpClient);
-            //         
-            //         _logger.Information(LogSource.Interaction, $"Registered Interaction: {command.Name}");
-            //     }
-            //     catch (Exception e)
-            //     {
-            //         _logger.Error(LogSource.Interaction, $"Failed to register Interaction: {command.Name}", e);
-            //     }
-            // }
 
             await Task.WhenAll(new[]
             {
