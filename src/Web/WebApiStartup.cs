@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Reflection;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -22,7 +23,7 @@ namespace Geekbot.Web
         // Using the "Microsoft.NET.Sdk.Web" SDK requires a static main function...
         public static void Main() {}
         
-        public static void StartWebApi(IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
+        public static void StartWebApi(IServiceProvider commandProvider, IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
             DatabaseContext databaseContext, DiscordSocketClient client, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
         {
             WebHost.CreateDefaultBuilder()
@@ -43,7 +44,7 @@ namespace Geekbot.Web
                     });
                     services.AddSentry();
 
-                    var interactionCommandManager = new InteractionCommandManager();
+                    var interactionCommandManager = new InteractionCommandManager(commandProvider);
 
                     services.AddSingleton(databaseContext);
                     services.AddSingleton(globalSettings);

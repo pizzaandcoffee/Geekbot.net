@@ -229,7 +229,7 @@ namespace Geekbot.Bot
             }
             
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
-            WebApiStartup.StartWebApi(_logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
+            WebApiStartup.StartWebApi(_servicesProvider, _logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
         }
 
         private void RegisterSentry()
