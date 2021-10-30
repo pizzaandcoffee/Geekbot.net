@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Geekbot.Bot.Utils;
+using Geekbot.Commands.Roll;
 using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;

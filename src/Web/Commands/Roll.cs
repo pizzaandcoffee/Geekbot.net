@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Geekbot.Commands.Roll;
 using Geekbot.Core.Database;
 using Geekbot.Core.Interactions;
 using Geekbot.Core.Interactions.ApplicationCommand;
