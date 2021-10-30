@@ -1,16 +1,26 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
+using Geekbot.Core.Database;
 using Geekbot.Core.Interactions;
 using Geekbot.Core.Interactions.ApplicationCommand;
 using Geekbot.Core.Interactions.Request;
-using Geekbot.Core.Interactions.Resolved;
 using Geekbot.Core.Interactions.Response;
+using Geekbot.Core.KvInMemoryStore;
 using Geekbot.Core.RandomNumberGenerator;
 
 namespace Geekbot.Web.Commands
 {
     public class Roll : InteractionBase
     {
+        private readonly IKvInMemoryStore _kvInMemoryStore;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
+
+        public Roll(IKvInMemoryStore kvInMemoryStore, DatabaseContext database, IRandomNumberGenerator randomNumberGenerator)
+        {
+            _kvInMemoryStore = kvInMemoryStore;
+            _randomNumberGenerator = randomNumberGenerator;
+        }
+        
         public override Command GetCommandInfo()
         {
             return new Command()
@@ -36,13 +46,27 @@ namespace Geekbot.Web.Commands
             var guessOption = interaction.Data.Options.Find(o => o.Name == "guess");
             var guess = guessOption.Value.GetInt32();
 
-            var number = new RandomNumberGenerator().Next(1, 100);
+            var number = _randomNumberGenerator.Next(1, 100);
 
             var replyContent = "";
             
             if (guess <= 100 && guess > 0)
             {
-                replyContent = $"{interaction?.Member?.User?.Mention}, you rolled {number}, your guess was {guess}";
+                var kvKey = $"{interaction.GuildId}:{interaction.Member.User.Id}:RollsPrevious";
+                var prevRoll = _kvInMemoryStore.Get<RollTimeout>(kvKey);
+
+                if (prevRoll?.LastGuess == guess && prevRoll?.GuessedOn.AddDays(1) > DateTime.Now)
+                {
+                    replyContent = string.Format(
+                        ":red_circle: {0}, you can't guess the same number again, guess another number or wait {1}",
+                        interaction.Member.Nick ?? interaction.Member.User.Username,
+                        prevRoll.GuessedOn.AddDays(1));
+                }
+                else
+                {
+                    _kvInMemoryStore.Set(kvKey, new RollTimeout {LastGuess = guess, GuessedOn = DateTime.Now});
+                    replyContent = $"{interaction.Member?.User?.Mention}, you rolled {number}, your guess was {guess}";
+                }
             }
             else
             {
