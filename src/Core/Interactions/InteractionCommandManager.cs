@@ -40,8 +40,23 @@ namespace Geekbot.Core.Interactions
         {
             var type = _commands[interaction.Data.Name];
             var command = (InteractionBase)Activator.CreateInstance(type);
-            
-            return await command.Exec(interaction);
+
+            InteractionResponse response;
+            command.BeforeExecute();
+            try
+            {
+                response = await command.Exec(interaction);
+            }
+            catch (Exception e)
+            {
+                command.OnException(e);
+                response = command.GetExceptionResponse();
+            }
+            finally
+            {
+                command.AfterExecute();
+            }
+            return response;
         }
     }
 }

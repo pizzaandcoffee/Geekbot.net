@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Geekbot.Core.Interactions.ApplicationCommand;
 using Geekbot.Core.Interactions.Request;
@@ -7,18 +8,33 @@ namespace Geekbot.Core.Interactions
 {
     public abstract class InteractionBase : IInteractionBase
     {
-        protected virtual void BeforeExecute()
+        public InteractionBase() {}
+        
+        public virtual void BeforeExecute()
         {
+            
         }
 
-        protected virtual void AfterExecute()
+        public virtual void AfterExecute()
         {
             
         }
         
-        protected virtual void OnException()
+        public virtual void OnException(Exception exception)
         {
             
+        }
+
+        public virtual InteractionResponse GetExceptionResponse()
+        {
+            return new InteractionResponse()
+            {
+                Type = InteractionResponseType.ChannelMessageWithSource,
+                Data = new()
+                {
+                    Content = "Something went wrong :confused:"
+                }
+            };
         }
 
         public abstract Command GetCommandInfo();
@@ -26,6 +42,7 @@ namespace Geekbot.Core.Interactions
         
         void IInteractionBase.BeforeExecute() => this.BeforeExecute();
         void IInteractionBase.AfterExecute() => this.AfterExecute();
-        void IInteractionBase.OnException() => this.OnException();
+        void IInteractionBase.OnException(Exception e) => this.OnException(e);
+        InteractionResponse IInteractionBase.GetExceptionResponse() => this.GetExceptionResponse();
     }
 }
