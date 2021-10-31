@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Quote {
+    public class Stats {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Quote() {
+        public Stats() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Quote", typeof(Quote).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Stats", typeof(Stats).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,101 +58,92 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t save quotes by a bot....
+        ///   Looks up a localized string similar to Cookies.
         /// </summary>
-        internal static string CannotQuoteBots {
+        public static string Cookies {
             get {
-                return ResourceManager.GetString("CannotQuoteBots", resourceCulture);
+                return ResourceManager.GetString("Cookies", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t save your own quotes....
+        ///   Looks up a localized string similar to Days.
         /// </summary>
-        internal static string CannotSaveOwnQuotes {
+        public static string Days {
             get {
-                return ResourceManager.GetString("CannotSaveOwnQuotes", resourceCulture);
+                return ResourceManager.GetString("Days", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Most quoted person.
+        ///   Looks up a localized string similar to Guessed Rolls.
         /// </summary>
-        internal static string MostQuotesPerson {
+        public static string GuessedRolls {
             get {
-                return ResourceManager.GetString("MostQuotesPerson", resourceCulture);
+                return ResourceManager.GetString("GuessedRolls", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This server doesn&apos;t seem to have any quotes yet. You can add a quote with `!quote save @user` or `!quote save &lt;messageId&gt;`.
+        ///   Looks up a localized string similar to Joined Server.
         /// </summary>
-        internal static string NoQuotesFound {
+        public static string JoinedServer {
             get {
-                return ResourceManager.GetString("NoQuotesFound", resourceCulture);
+                return ResourceManager.GetString("JoinedServer", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to That is not a valid message link.
+        ///   Looks up a localized string similar to Karma.
         /// </summary>
-        internal static string NotAValidMessageLink {
+        public static string Karma {
             get {
-                return ResourceManager.GetString("NotAValidMessageLink", resourceCulture);
+                return ResourceManager.GetString("Karma", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I couldn&apos;t find a quote with that ID :disappointed:.
+        ///   Looks up a localized string similar to Level.
         /// </summary>
-        internal static string NotFoundWithId {
+        public static string Level {
             get {
-                return ResourceManager.GetString("NotFoundWithId", resourceCulture);
+                return ResourceManager.GetString("Level", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can only quote messages from the same server.
+        ///   Looks up a localized string similar to Messages Sent.
         /// </summary>
-        internal static string OnlyQuoteFromSameServer {
+        public static string MessagesSent {
             get {
-                return ResourceManager.GetString("OnlyQuoteFromSameServer", resourceCulture);
+                return ResourceManager.GetString("MessagesSent", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to **Quote Added**.
+        ///   Looks up a localized string similar to On Discord Since.
         /// </summary>
-        internal static string QuoteAdded {
+        public static string OnDiscordSince {
             get {
-                return ResourceManager.GetString("QuoteAdded", resourceCulture);
+                return ResourceManager.GetString("OnDiscordSince", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Quote Stats.
+        ///   Looks up a localized string similar to Quotes.
         /// </summary>
-        internal static string QuoteStats {
+        public static string Quotes {
             get {
-                return ResourceManager.GetString("QuoteStats", resourceCulture);
+                return ResourceManager.GetString("Quotes", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to **Removed #{0}**.
+        ///   Looks up a localized string similar to Server Total.
         /// </summary>
-        internal static string Removed {
+        public static string ServerTotal {
             get {
-                return ResourceManager.GetString("Removed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total.
-        /// </summary>
-        internal static string TotalQuotes {
-            get {
-                return ResourceManager.GetString("TotalQuotes", resourceCulture);
+                return ResourceManager.GetString("ServerTotal", resourceCulture);
             }
         }
     }

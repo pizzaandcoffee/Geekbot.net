@@ -17,6 +17,7 @@ using Geekbot.Core.UserRepository;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
 using Constants = Geekbot.Core.Constants;
+using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Utils.Quote
 {

@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class EightBall {
+    public class EightBall {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal EightBall() {
+        public EightBall() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.EightBall", typeof(EightBall).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.EightBall", typeof(EightBall).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +60,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to As I see it, yes.
         /// </summary>
-        internal static string AsISeeItYes {
+        public static string AsISeeItYes {
             get {
                 return ResourceManager.GetString("AsISeeItYes", resourceCulture);
             }
@@ -72,7 +69,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Ask again later.
         /// </summary>
-        internal static string AskAgainLater {
+        public static string AskAgainLater {
             get {
                 return ResourceManager.GetString("AskAgainLater", resourceCulture);
             }
@@ -81,7 +78,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Better not tell you now.
         /// </summary>
-        internal static string BetterNotTellYouNow {
+        public static string BetterNotTellYouNow {
             get {
                 return ResourceManager.GetString("BetterNotTellYouNow", resourceCulture);
             }
@@ -90,7 +87,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Cannot predict now.
         /// </summary>
-        internal static string CannotPredictNow {
+        public static string CannotPredictNow {
             get {
                 return ResourceManager.GetString("CannotPredictNow", resourceCulture);
             }
@@ -99,7 +96,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Concentrate and ask again.
         /// </summary>
-        internal static string ConcentrateAndAskAgain {
+        public static string ConcentrateAndAskAgain {
             get {
                 return ResourceManager.GetString("ConcentrateAndAskAgain", resourceCulture);
             }
@@ -108,7 +105,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Don&apos;t count on it.
         /// </summary>
-        internal static string DontCountOnIt {
+        public static string DontCountOnIt {
             get {
                 return ResourceManager.GetString("DontCountOnIt", resourceCulture);
             }
@@ -117,7 +114,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to It is certain.
         /// </summary>
-        internal static string ItIsCertain {
+        public static string ItIsCertain {
             get {
                 return ResourceManager.GetString("ItIsCertain", resourceCulture);
             }
@@ -126,7 +123,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to It is decidedly so.
         /// </summary>
-        internal static string ItIsDecidedlySo {
+        public static string ItIsDecidedlySo {
             get {
                 return ResourceManager.GetString("ItIsDecidedlySo", resourceCulture);
             }
@@ -135,7 +132,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Most likely.
         /// </summary>
-        internal static string MostLikely {
+        public static string MostLikely {
             get {
                 return ResourceManager.GetString("MostLikely", resourceCulture);
             }
@@ -144,7 +141,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to My reply is no.
         /// </summary>
-        internal static string MyReplyIsNo {
+        public static string MyReplyIsNo {
             get {
                 return ResourceManager.GetString("MyReplyIsNo", resourceCulture);
             }
@@ -153,7 +150,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to My sources say no.
         /// </summary>
-        internal static string MySourcesSayNo {
+        public static string MySourcesSayNo {
             get {
                 return ResourceManager.GetString("MySourcesSayNo", resourceCulture);
             }
@@ -162,7 +159,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Outlook good.
         /// </summary>
-        internal static string OutlookGood {
+        public static string OutlookGood {
             get {
                 return ResourceManager.GetString("OutlookGood", resourceCulture);
             }
@@ -171,7 +168,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Outlook not so good.
         /// </summary>
-        internal static string OutlookNotSoGood {
+        public static string OutlookNotSoGood {
             get {
                 return ResourceManager.GetString("OutlookNotSoGood", resourceCulture);
             }
@@ -180,7 +177,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Reply hazy try again.
         /// </summary>
-        internal static string ReplyHazyTryAgain {
+        public static string ReplyHazyTryAgain {
             get {
                 return ResourceManager.GetString("ReplyHazyTryAgain", resourceCulture);
             }
@@ -189,7 +186,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Signs point to yes.
         /// </summary>
-        internal static string SignsPointToYes {
+        public static string SignsPointToYes {
             get {
                 return ResourceManager.GetString("SignsPointToYes", resourceCulture);
             }
@@ -198,7 +195,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Very doubtful.
         /// </summary>
-        internal static string VeryDoubtful {
+        public static string VeryDoubtful {
             get {
                 return ResourceManager.GetString("VeryDoubtful", resourceCulture);
             }
@@ -207,7 +204,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Without a doubt.
         /// </summary>
-        internal static string WithoutADoubt {
+        public static string WithoutADoubt {
             get {
                 return ResourceManager.GetString("WithoutADoubt", resourceCulture);
             }
@@ -216,7 +213,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
-        internal static string Yes {
+        public static string Yes {
             get {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
@@ -225,7 +222,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Yes, definitely.
         /// </summary>
-        internal static string YesDefinitely {
+        public static string YesDefinitely {
             get {
                 return ResourceManager.GetString("YesDefinitely", resourceCulture);
             }
@@ -234,7 +231,7 @@ namespace Geekbot.Bot.Localization {
         /// <summary>
         ///   Looks up a localized string similar to You may rely on it.
         /// </summary>
-        internal static string YouMayRelyOnIt {
+        public static string YouMayRelyOnIt {
             get {
                 return ResourceManager.GetString("YouMayRelyOnIt", resourceCulture);
             }

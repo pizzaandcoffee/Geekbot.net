@@ -172,7 +172,7 @@ namespace Geekbot.Bot
             var randomNumberGenerator = new RandomNumberGenerator();
             var mediaProvider = new MediaProvider(_logger, randomNumberGenerator);
             var kvMemoryStore = new KvInInMemoryStore();
-            var errorHandler = new ErrorHandler(_logger, _runParameters, () => Localization.Internal.SomethingWentWrong);
+            var errorHandler = new ErrorHandler(_logger, _runParameters, () => Geekbot.Core.Localization.Internal.SomethingWentWrong);
             var diceParser = new DiceParser(randomNumberGenerator);
             
             services.AddSingleton(_userRepository);

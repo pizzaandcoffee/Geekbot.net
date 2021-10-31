@@ -6,6 +6,7 @@ using Discord.Commands;
 using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.GuildSettingsManager;
+using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Randomness
 {

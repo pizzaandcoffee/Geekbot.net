@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Admin {
+    public class Internal {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Admin() {
+        public Internal() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Admin", typeof(Admin).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Internal", typeof(Internal).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,20 +58,65 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I&apos;m talking english.
+        ///   Looks up a localized string similar to and.
         /// </summary>
-        internal static string GetLanguage {
+        public static string And {
             get {
-                return ResourceManager.GetString("GetLanguage", resourceCulture);
+                return ResourceManager.GetString("And", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I will reply in english from now on.
+        ///   Looks up a localized string similar to day|days.
         /// </summary>
-        internal static string NewLanguageSet {
+        public static string Days {
             get {
-                return ResourceManager.GetString("NewLanguageSet", resourceCulture);
+                return ResourceManager.GetString("Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hour|hours.
+        /// </summary>
+        public static string Hours {
+            get {
+                return ResourceManager.GetString("Hours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seems like i don&apos;t have enough permission to that :confused:.
+        /// </summary>
+        public static string Http403 {
+            get {
+                return ResourceManager.GetString("Http403", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minute|minutes.
+        /// </summary>
+        public static string Minutes {
+            get {
+                return ResourceManager.GetString("Minutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to second|seconds.
+        /// </summary>
+        public static string Seconds {
+            get {
+                return ResourceManager.GetString("Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong :confused:.
+        /// </summary>
+        public static string SomethingWentWrong {
+            get {
+                return ResourceManager.GetString("SomethingWentWrong", resourceCulture);
             }
         }
     }

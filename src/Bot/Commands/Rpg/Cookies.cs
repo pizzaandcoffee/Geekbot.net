@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Geekbot.Bot.Utils;
 using Geekbot.Core;
 using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
@@ -12,6 +11,7 @@ using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.RandomNumberGenerator;
+using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Rpg
 {

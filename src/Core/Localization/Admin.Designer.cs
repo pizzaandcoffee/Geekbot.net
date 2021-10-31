@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Rank {
+    public class Admin {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Rank() {
+        public Admin() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Rank", typeof(Rank).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Admin", typeof(Admin).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,47 +58,20 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to :warning: I couldn&apos;t find all usernames. Maybe they left the server?.
+        ///   Looks up a localized string similar to I&apos;m talking english.
         /// </summary>
-        internal static string FailedToResolveAllUsernames {
+        public static string GetLanguage {
             get {
-                return ResourceManager.GetString("FailedToResolveAllUsernames", resourceCulture);
+                return ResourceManager.GetString("GetLanguage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to :bar_chart: **{0} Highscore for {1}**.
+        ///   Looks up a localized string similar to I will reply in english from now on.
         /// </summary>
-        internal static string HighscoresFor {
+        public static string NewLanguageSet {
             get {
-                return ResourceManager.GetString("HighscoresFor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Valid types are &apos;`messages`&apos; &apos;`karma`&apos;, &apos;`rolls`&apos;, &apos;`cookies`&apos;, &apos;`seasons`&apos; and &apos;`quotes`&apos;.
-        /// </summary>
-        internal static string InvalidType {
-            get {
-                return ResourceManager.GetString("InvalidType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to :warning: Limiting to 20.
-        /// </summary>
-        internal static string LimitingTo20Warning {
-            get {
-                return ResourceManager.GetString("LimitingTo20Warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No {0} found on this server.
-        /// </summary>
-        internal static string NoTypeFoundForServer {
-            get {
-                return ResourceManager.GetString("NoTypeFoundForServer", resourceCulture);
+                return ResourceManager.GetString("NewLanguageSet", resourceCulture);
             }
         }
     }

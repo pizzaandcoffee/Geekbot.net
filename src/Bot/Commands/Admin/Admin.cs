@@ -14,6 +14,7 @@ using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
+using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.Admin
 {

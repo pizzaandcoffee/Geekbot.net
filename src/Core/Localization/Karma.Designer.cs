@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Role {
+    public class Karma {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Role() {
+        public Karma() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Role", typeof(Role).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Karma", typeof(Karma).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,92 +58,92 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Added {0} to the whitelist.
+        ///   Looks up a localized string similar to Amount.
         /// </summary>
-        internal static string AddedRoleToWhitelist {
+        public static string Amount {
             get {
-                return ResourceManager.GetString("AddedRoleToWhitelist", resourceCulture);
+                return ResourceManager.GetString("Amount", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Added you to {0}.
+        ///   Looks up a localized string similar to By.
         /// </summary>
-        internal static string AddedUserFromRole {
+        public static string By {
             get {
-                return ResourceManager.GetString("AddedUserFromRole", resourceCulture);
+                return ResourceManager.GetString("By", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You cannot add that role to self service because it contains one or more dangerous permissions.
+        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t lower your own karma.
         /// </summary>
-        internal static string CannotAddDangerousRole {
+        public static string CannotChangeOwnDown {
             get {
-                return ResourceManager.GetString("CannotAddDangerousRole", resourceCulture);
+                return ResourceManager.GetString("CannotChangeOwnDown", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t add a role that is managed by discord.
+        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself neutral karma.
         /// </summary>
-        internal static string CannotAddManagedRole {
+        public static string CannotChangeOwnSame {
             get {
-                return ResourceManager.GetString("CannotAddManagedRole", resourceCulture);
+                return ResourceManager.GetString("CannotChangeOwnSame", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to **Self Service Roles on {0}**.
+        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself karma.
         /// </summary>
-        internal static string ListHeader {
+        public static string CannotChangeOwnUp {
             get {
-                return ResourceManager.GetString("ListHeader", resourceCulture);
+                return ResourceManager.GetString("CannotChangeOwnUp", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To get a role, use `!role [name]`.
+        ///   Looks up a localized string similar to Current.
         /// </summary>
-        internal static string ListInstruction {
+        public static string Current {
             get {
-                return ResourceManager.GetString("ListInstruction", resourceCulture);
+                return ResourceManager.GetString("Current", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no roles configured for this server.
+        ///   Looks up a localized string similar to Karma lowered.
         /// </summary>
-        internal static string NoRolesConfigured {
+        public static string Decreased {
             get {
-                return ResourceManager.GetString("NoRolesConfigured", resourceCulture);
+                return ResourceManager.GetString("Decreased", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removed {0} from the whitelist.
+        ///   Looks up a localized string similar to Gained Karma.
         /// </summary>
-        internal static string RemovedRoleFromWhitelist {
+        public static string Increased {
             get {
-                return ResourceManager.GetString("RemovedRoleFromWhitelist", resourceCulture);
+                return ResourceManager.GetString("Increased", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removed you from {0}.
+        ///   Looks up a localized string similar to Neutral Karma.
         /// </summary>
-        internal static string RemovedUserFromRole {
+        public static string Neutral {
             get {
-                return ResourceManager.GetString("RemovedUserFromRole", resourceCulture);
+                return ResourceManager.GetString("Neutral", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to That role doesn&apos;t exist or is not on the whitelist.
+        ///   Looks up a localized string similar to Sorry {0}, but you have to wait {1} before you can give karma again....
         /// </summary>
-        internal static string RoleNotFound {
+        public static string WaitUntill {
             get {
-                return ResourceManager.GetString("RoleNotFound", resourceCulture);
+                return ResourceManager.GetString("WaitUntill", resourceCulture);
             }
         }
     }

@@ -36,4 +36,59 @@
         <PackageReference Include="SumoLogic.Logging.NLog" Version="1.0.1.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Localization\Admin.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Admin.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Choose.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Choose.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Cookies.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Cookies.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Corona.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Corona.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\EightBall.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>EightBall.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Internal.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Internal.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Karma.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Karma.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Quote.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Quote.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Rank.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Rank.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Role.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Role.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Roll.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Roll.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Ship.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Ship.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Localization\Stats.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Stats.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

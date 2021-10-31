@@ -12,6 +12,7 @@ using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
+using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Bot.Commands.User.Ranking
 {

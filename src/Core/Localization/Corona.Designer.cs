@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Ship {
+    public class Corona {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Ship() {
+        public Corona() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Ship", typeof(Ship).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Corona", typeof(Corona).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,56 +58,56 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Almost a match.
+        ///   Looks up a localized string similar to Active.
         /// </summary>
-        internal static string CouldWork {
+        public static string Active {
             get {
-                return ResourceManager.GetString("CouldWork", resourceCulture);
+                return ResourceManager.GetString("Active", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It&apos;s a match.
+        ///   Looks up a localized string similar to Confirmed Corona Cases.
         /// </summary>
-        internal static string ItsAMatch {
+        public static string ConfirmedCases {
             get {
-                return ResourceManager.GetString("ItsAMatch", resourceCulture);
+                return ResourceManager.GetString("ConfirmedCases", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Matchmaking.
+        ///   Looks up a localized string similar to Deaths.
         /// </summary>
-        internal static string Matchmaking {
+        public static string Deaths {
             get {
-                return ResourceManager.GetString("Matchmaking", resourceCulture);
+                return ResourceManager.GetString("Deaths", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not going happen.
+        ///   Looks up a localized string similar to Recovered.
         /// </summary>
-        internal static string NotGoingToHappen {
+        public static string Recovered {
             get {
-                return ResourceManager.GetString("NotGoingToHappen", resourceCulture);
+                return ResourceManager.GetString("Recovered", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not such a good idea.
+        ///   Looks up a localized string similar to Source.
         /// </summary>
-        internal static string NotSuchAGoodIdea {
+        public static string Source {
             get {
-                return ResourceManager.GetString("NotSuchAGoodIdea", resourceCulture);
+                return ResourceManager.GetString("Source", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There might be a chance.
+        ///   Looks up a localized string similar to Total.
         /// </summary>
-        internal static string ThereMightBeAChance {
+        public static string Total {
             get {
-                return ResourceManager.GetString("ThereMightBeAChance", resourceCulture);
+                return ResourceManager.GetString("Total", resourceCulture);
             }
         }
     }

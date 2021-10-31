@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Geekbot.Bot.Localization {
-    using System;
-    
-    
+namespace Geekbot.Core.Localization {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,24 +19,24 @@ namespace Geekbot.Bot.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Karma {
+    public class Ship {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Karma() {
+        public Ship() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Bot.Localization.Karma", typeof(Karma).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Geekbot.Core.Localization.Ship", typeof(Ship).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +48,7 @@ namespace Geekbot.Bot.Localization {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,92 +58,56 @@ namespace Geekbot.Bot.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Amount.
+        ///   Looks up a localized string similar to Almost a match.
         /// </summary>
-        internal static string Amount {
+        public static string CouldWork {
             get {
-                return ResourceManager.GetString("Amount", resourceCulture);
+                return ResourceManager.GetString("CouldWork", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to By.
+        ///   Looks up a localized string similar to It&apos;s a match.
         /// </summary>
-        internal static string By {
+        public static string ItsAMatch {
             get {
-                return ResourceManager.GetString("By", resourceCulture);
+                return ResourceManager.GetString("ItsAMatch", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t lower your own karma.
+        ///   Looks up a localized string similar to Matchmaking.
         /// </summary>
-        internal static string CannotChangeOwnDown {
+        public static string Matchmaking {
             get {
-                return ResourceManager.GetString("CannotChangeOwnDown", resourceCulture);
+                return ResourceManager.GetString("Matchmaking", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself neutral karma.
+        ///   Looks up a localized string similar to Not going happen.
         /// </summary>
-        internal static string CannotChangeOwnSame {
+        public static string NotGoingToHappen {
             get {
-                return ResourceManager.GetString("CannotChangeOwnSame", resourceCulture);
+                return ResourceManager.GetString("NotGoingToHappen", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sorry {0}, but you can&apos;t give yourself karma.
+        ///   Looks up a localized string similar to Not such a good idea.
         /// </summary>
-        internal static string CannotChangeOwnUp {
+        public static string NotSuchAGoodIdea {
             get {
-                return ResourceManager.GetString("CannotChangeOwnUp", resourceCulture);
+                return ResourceManager.GetString("NotSuchAGoodIdea", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Current.
+        ///   Looks up a localized string similar to There might be a chance.
         /// </summary>
-        internal static string Current {
+        public static string ThereMightBeAChance {
             get {
-                return ResourceManager.GetString("Current", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Karma lowered.
-        /// </summary>
-        internal static string Decreased {
-            get {
-                return ResourceManager.GetString("Decreased", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gained Karma.
-        /// </summary>
-        internal static string Increased {
-            get {
-                return ResourceManager.GetString("Increased", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Neutral Karma.
-        /// </summary>
-        internal static string Neutral {
-            get {
-                return ResourceManager.GetString("Neutral", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sorry {0}, but you have to wait {1} before you can give karma again....
-        /// </summary>
-        internal static string WaitUntill {
-            get {
-                return ResourceManager.GetString("WaitUntill", resourceCulture);
+                return ResourceManager.GetString("ThereMightBeAChance", resourceCulture);
             }
         }
     }

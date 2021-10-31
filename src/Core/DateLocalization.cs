@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Geekbot.Bot.Utils
+namespace Geekbot.Core
 {
     public class DateLocalization
     {
