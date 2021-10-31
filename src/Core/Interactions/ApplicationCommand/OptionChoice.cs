@@ -13,5 +13,11 @@ namespace Geekbot.Core.Interactions.ApplicationCommand
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; }
+        
+        /// <summary>
+        /// value of the choice, up to 100 characters if string
+        /// </summary>
+        [JsonPropertyName("value")]
+        public string Value { get; set; }
     }
 }
