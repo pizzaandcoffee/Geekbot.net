@@ -22,9 +22,9 @@ namespace Geekbot.Web.Commands
             _randomNumberGenerator = randomNumberGenerator;
         }
         
-        private enum Options
+        private struct Options
         {
-            Guess
+            internal const string Guess = "guess";
         }
         
         public override Command GetCommandInfo()
@@ -38,7 +38,7 @@ namespace Geekbot.Web.Commands
                 {
                     new Option()
                     {
-                        Name = Options.Guess.ToString().ToLower(),
+                        Name = Options.Guess,
                         Description = "A number between 1 and 100 (inclusive)",
                         Required = true,
                         Type = OptionType.Integer
@@ -49,7 +49,7 @@ namespace Geekbot.Web.Commands
 
         public override async Task<InteractionResponse> Exec(Interaction interaction)
         {
-            var guessOption = interaction.Data.Options.Find(o => o.Name == Options.Guess.ToString().ToLower());
+            var guessOption = interaction.Data.Options.Find(o => o.Name == Options.Guess);
             var guess = guessOption.Value.GetInt32();
             
             var res = await new Geekbot.Commands.Roll.Roll(_kvInMemoryStore, _database, _randomNumberGenerator)

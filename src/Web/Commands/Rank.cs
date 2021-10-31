@@ -25,11 +25,11 @@ namespace Geekbot.Web.Commands
             _highscoreManager = highscoreManager;
         }
 
-        private enum Options
+        private struct Options
         {
-            Counter,
-            Amount,
-            Season
+            internal const string Counter = "counter";
+            internal const string Amount = "amount";
+            internal const string Season = "season";
         }
         
         public override Command GetCommandInfo()
@@ -43,7 +43,7 @@ namespace Geekbot.Web.Commands
                 {
                     new ()
                     {
-                        Name = Options.Counter.ToString().ToLower(),
+                        Name = Options.Counter,
                         Description = "The counter to show",
                         Required = true,
                         Type = OptionType.String,
@@ -57,14 +57,14 @@ namespace Geekbot.Web.Commands
                     },
                     new ()
                     {
-                        Name = Options.Amount.ToString().ToLower(),
+                        Name = Options.Amount,
                         Description = "Amount of positions to show in the list",
                         Required = false,
                         Type = OptionType.Integer
                     },
                     new ()
                     {
-                        Name = Options.Season.ToString().ToLower(),
+                        Name = Options.Season,
                         Description = "Select the season, only applies for the seasons counter",
                         Required = false,
                         Type = OptionType.String
@@ -75,9 +75,9 @@ namespace Geekbot.Web.Commands
 
         public override Task<InteractionResponse> Exec(Interaction interaction)
         {
-            var counterTypeOption = interaction.Data.Options.Find(o => o.Name == Options.Counter.ToString().ToLower());
-            var amountOption = interaction.Data.Options.Find(o => o.Name == Options.Amount.ToString().ToLower());
-            var seasonOption = interaction.Data.Options.Find(o => o.Name == Options.Season.ToString().ToLower());
+            var counterTypeOption = interaction.Data.Options.Find(o => o.Name == Options.Counter);
+            var amountOption = interaction.Data.Options.Find(o => o.Name == Options.Amount);
+            var seasonOption = interaction.Data.Options.Find(o => o.Name == Options.Season);
             
             var res = new Geekbot.Commands.Rank(_database, _emojiConverter, _highscoreManager)
                 .Run(
