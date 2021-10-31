@@ -1,5 +1,6 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Geekbot.Core.Logger
 {
@@ -7,16 +8,16 @@ namespace Geekbot.Core.Logger
     {
         private readonly bool _logAsJson;
         private readonly NLog.Logger _logger;
-        private readonly JsonSerializerSettings _serializerSettings;
+        private readonly JsonSerializerOptions _serializerSettings;
 
         public GeekbotLogger(RunParameters runParameters)
         {
             _logAsJson = !string.IsNullOrEmpty(runParameters.SumologicEndpoint) || runParameters.LogJson;
             _logger = LoggerFactory.CreateNLog(runParameters);
-            _serializerSettings = new JsonSerializerSettings
+            _serializerSettings = new JsonSerializerOptions
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                NullValueHandling = NullValueHandling.Include
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never,
             };
             Information(LogSource.Geekbot, "Using GeekbotLogger");
         }
@@ -53,7 +54,7 @@ namespace Geekbot.Core.Logger
                     StackTrace = stackTrace,
                     Extra = extra
                 };
-                return JsonConvert.SerializeObject(logObject, Formatting.None, _serializerSettings);
+                return JsonSerializer.Serialize(logObject, _serializerSettings);
             }
 
             if (source != LogSource.Message) return $"[{source}] - {message}";
