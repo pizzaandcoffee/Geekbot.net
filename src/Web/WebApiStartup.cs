@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.GlobalSettings;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
 using Geekbot.Core.Interactions;
 using Geekbot.Core.Logger;
@@ -24,7 +25,7 @@ namespace Geekbot.Web
         public static void Main() {}
         
         public static void StartWebApi(IServiceProvider commandProvider, IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
-            DatabaseContext databaseContext, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
+            DatabaseContext databaseContext, IGlobalSettings globalSettings, IHighscoreManager highscoreManager, IGuildSettingsManager guildSettingsManager)
         {
             WebHost.CreateDefaultBuilder()
                 .UseKestrel(options =>
@@ -44,7 +45,7 @@ namespace Geekbot.Web
                     });
                     services.AddSentry();
 
-                    var interactionCommandManager = new InteractionCommandManager(commandProvider);
+                    var interactionCommandManager = new InteractionCommandManager(commandProvider, guildSettingsManager);
 
                     services.AddSingleton(databaseContext);
                     services.AddSingleton(globalSettings);

@@ -227,7 +227,7 @@ namespace Geekbot.Bot
         private void StartWebApi()
         {
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
-            WebApiStartup.StartWebApi(_servicesProvider, _logger, _runParameters, _commands, _databaseInitializer.Initialize(), _globalSettings, highscoreManager);
+            WebApiStartup.StartWebApi(_servicesProvider, _logger, _runParameters, _commands, _databaseInitializer.Initialize(), _globalSettings, highscoreManager, _guildSettingsManager);
         }
 
         private void RegisterSentry()

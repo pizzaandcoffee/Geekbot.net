@@ -8,8 +8,6 @@ namespace Geekbot.Core.Interactions
 {
     public abstract class InteractionBase : IInteractionBase
     {
-        public InteractionBase() {}
-        
         public virtual void BeforeExecute()
         {
             
@@ -32,7 +30,7 @@ namespace Geekbot.Core.Interactions
                 Type = InteractionResponseType.ChannelMessageWithSource,
                 Data = new()
                 {
-                    Content = "Something went wrong :confused:"
+                    Content = Localization.Internal.SomethingWentWrong
                 }
             };
         }

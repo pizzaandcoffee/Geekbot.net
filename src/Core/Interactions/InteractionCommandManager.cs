@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Interactions.ApplicationCommand;
 using Geekbot.Core.Interactions.Request;
 using Geekbot.Core.Interactions.Response;
@@ -14,13 +17,16 @@ namespace Geekbot.Core.Interactions
     {
         private readonly IServiceProvider _provider;
         
+        private readonly IGuildSettingsManager _guildSettingsManager;
+
         private readonly Dictionary<string, Type> _commands = new();
-        
+
         public Dictionary<string, Command> CommandsInfo { get; init; }
 
-        public InteractionCommandManager(IServiceProvider provider)
+        public InteractionCommandManager(IServiceProvider provider, IGuildSettingsManager guildSettingsManager)
         {
             _provider = provider;
+            _guildSettingsManager = guildSettingsManager;
             var interactions = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(InteractionBase)))
@@ -30,7 +36,7 @@ namespace Geekbot.Core.Interactions
             
             foreach (var interactionType in interactions)
             {
-                var instance = (InteractionBase)ActivatorUtilities.CreateInstance(provider, interactionType) ;
+                var instance = (InteractionBase)ActivatorUtilities.CreateInstance(provider, interactionType);
                 var commandInfo = instance.GetCommandInfo();
                 _commands.Add(commandInfo.Name, interactionType);
                 CommandsInfo.Add(commandInfo.Name, commandInfo);
@@ -42,10 +48,26 @@ namespace Geekbot.Core.Interactions
             var type = _commands[interaction.Data.Name];
             var command = ActivatorUtilities.CreateInstance(_provider, type) as InteractionBase;
 
+            if (command == null)
+            {
+                return new InteractionResponse()
+                {
+                    Type = InteractionResponseType.ChannelMessageWithSource,
+                    Data = new InteractionResponseData()
+                    {
+                        Content = "Command not found..."
+                    }
+                };
+            }
+
+            var guildSettings = _guildSettingsManager.GetSettings(ulong.Parse(interaction.GuildId));
+            var language = guildSettings.Language;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+
             InteractionResponse response;
-            command.BeforeExecute();
             try
             {
+                command.BeforeExecute();
                 response = await command.Exec(interaction);
             }
             catch (Exception e)
@@ -57,6 +79,7 @@ namespace Geekbot.Core.Interactions
             {
                 command.AfterExecute();
             }
+
             return response;
         }
     }
