@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
@@ -26,16 +23,15 @@ namespace Geekbot.Commands.Roll
         public async Task<string> RunFromGateway(ulong guildId, ulong userId, string userName, string unparsedGuess)
         {
             int.TryParse(unparsedGuess, out var guess);
-            return await this.Run(guildId, userId, userName, guess);
+            return await this.Run(guildId.AsLong(), userId.AsLong(), userName, guess);
         }
 
         public async Task<string> RunFromInteraction(string guildId, string userId, string userName, int guess)
         {
-            
-            return await this.Run(ulong.Parse(guildId), ulong.Parse(userId), userName, guess);
+            return await this.Run(long.Parse(guildId), long.Parse(userId), userName, guess);
         }
         
-        private async Task<string> Run(ulong guildId, ulong userId, string userName, int guess)
+        private async Task<string> Run(long guildId, long userId, string userName, int guess)
         {
             var number = _randomNumberGenerator.Next(1, 100);
 
@@ -73,18 +69,18 @@ namespace Geekbot.Commands.Roll
             }
         }
         
-        private async Task<RollsModel> GetUser(ulong guildId, ulong userId)
+        private async Task<RollsModel> GetUser(long guildId, long userId)
         {
-            var user = _database.Rolls.FirstOrDefault(u => u.GuildId.Equals(guildId) && u.UserId.Equals(userId.AsLong())) ?? await CreateNewRow(guildId, userId);
+            var user = _database.Rolls.FirstOrDefault(u => u.GuildId.Equals(guildId) && u.UserId.Equals(userId)) ?? await CreateNewRow(guildId, userId);
             return user;
         }
 
-        private async Task<RollsModel> CreateNewRow(ulong guildId, ulong userId)
+        private async Task<RollsModel> CreateNewRow(long guildId, long userId)
         {
             var user = new RollsModel()
             {
-                GuildId = guildId.AsLong(),
-                UserId = userId.AsLong(),
+                GuildId = guildId,
+                UserId = userId,
                 Rolls = 0
             };
             var newUser = _database.Rolls.Add(user).Entity;
