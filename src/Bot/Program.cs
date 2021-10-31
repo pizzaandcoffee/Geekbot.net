@@ -95,12 +95,16 @@ namespace Geekbot.Bot
             RegisterDependencies();
             if (!runParameters.DisableGateway) await RegisterHandlers();
 
-            _logger.Information(LogSource.Api, "Starting Web API");
-            StartWebApi();
-
-            _logger.Information(LogSource.Geekbot, "Done and ready for use");
-
-            await Task.Delay(-1);
+            if (runParameters.DisableApi)
+            {
+                _logger.Information(LogSource.Geekbot, "Done and ready for use");
+                await Task.Delay(-1);
+            }
+            else
+            {
+                _logger.Information(LogSource.Api, "Starting Web API");
+                StartWebApi();
+            }
         }
 
         private async Task Login()
@@ -222,12 +226,6 @@ namespace Geekbot.Bot
 
         private void StartWebApi()
         {
-            if (_runParameters.DisableApi)
-            {
-                _logger.Warning(LogSource.Api, "Web API is disabled");
-                return;
-            }
-            
             var highscoreManager = new HighscoreManager(_databaseInitializer.Initialize(), _userRepository);
             WebApiStartup.StartWebApi(_servicesProvider, _logger, _runParameters, _commands, _databaseInitializer.Initialize(), _client, _globalSettings, highscoreManager);
         }
