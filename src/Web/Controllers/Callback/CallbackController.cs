@@ -12,12 +12,10 @@ namespace Geekbot.Web.Controllers.Callback
 {
     public class CallbackController : Controller
     {
-        private readonly DiscordSocketClient _client;
         private readonly IGlobalSettings _globalSettings;
 
-        public CallbackController(DiscordSocketClient client, IGlobalSettings globalSettings)
+        public CallbackController(IGlobalSettings globalSettings)
         {
-            _client = client;
             _globalSettings = globalSettings;
         }
         
@@ -28,13 +26,13 @@ namespace Geekbot.Web.Controllers.Callback
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("https://discordapp.com");
-                var appInfo = await _client.GetApplicationInfoAsync();
+                var appId = _globalSettings.GetKey("DiscordApplicationId");
                 var accessToken = _globalSettings.GetKey("OAuthToken");
                 var callbackUrl = _globalSettings.GetKey("OAuthCallbackUrl");
 
                 var form = new Dictionary<string, string>
                 {
-                    {"client_id", appInfo.Id.ToString()},
+                    {"client_id", appId},
                     {"client_secret", accessToken},
                     {"grant_type", "authorization_code"},
                     {"code", code},

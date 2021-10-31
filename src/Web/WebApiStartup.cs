@@ -24,7 +24,7 @@ namespace Geekbot.Web
         public static void Main() {}
         
         public static void StartWebApi(IServiceProvider commandProvider, IGeekbotLogger logger, RunParameters runParameters, CommandService commandService,
-            DatabaseContext databaseContext, DiscordSocketClient client, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
+            DatabaseContext databaseContext, IGlobalSettings globalSettings, IHighscoreManager highscoreManager)
         {
             WebHost.CreateDefaultBuilder()
                 .UseKestrel(options =>
@@ -54,7 +54,6 @@ namespace Geekbot.Web
 
                     if (runParameters.DisableGateway) return;
                     services.AddSingleton(commandService);
-                    services.AddSingleton(client);
                 })
                 .Configure(app =>
                 {
