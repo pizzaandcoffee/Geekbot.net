@@ -1,7 +1,9 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Geekbot.Core.WikipediaClient.Page
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum PageTypes
     {
         [EnumMember(Value = "standard")] 

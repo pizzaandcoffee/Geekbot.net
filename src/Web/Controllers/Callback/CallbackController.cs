@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using Geekbot.Core.GlobalSettings;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace Geekbot.Web.Controllers.Callback
 {
@@ -45,8 +44,8 @@ namespace Geekbot.Web.Controllers.Callback
                 result.EnsureSuccessStatusCode();
 
                 var stringResponse = await result.Content.ReadAsStringAsync();
-                var responseData = JsonConvert.DeserializeObject<CallbackTokenResponseDto>(stringResponse);
-                token = responseData.access_token;
+                var responseData = JsonSerializer.Deserialize<CallbackTokenResponseDto>(stringResponse);
+                token = responseData.AccessToken;
             }
 
             return new RedirectResult($"https://geekbot.pizzaandcoffee.rocks/login?token={token}", false);

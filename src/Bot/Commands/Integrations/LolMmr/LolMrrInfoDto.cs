@@ -1,10 +1,11 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Geekbot.Bot.Commands.Integrations.LolMmr
 {
     public class LolMrrInfoDto
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("avg")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public decimal Avg { get; set; } = 0;
     }
 }

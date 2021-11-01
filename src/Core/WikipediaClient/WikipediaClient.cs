@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Geekbot.Core.WikipediaClient.Page;
-using Newtonsoft.Json;
 
 namespace Geekbot.Core.WikipediaClient
 {
@@ -19,7 +19,7 @@ namespace Geekbot.Core.WikipediaClient
             response.EnsureSuccessStatusCode();
 
             var stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<PagePreview>(stringResponse);
+            return JsonSerializer.Deserialize<PagePreview>(stringResponse);
         }
     }
 }

@@ -1,10 +1,16 @@
-﻿namespace Geekbot.Core.WikipediaClient.Page
+﻿using System.Text.Json.Serialization;
+
+namespace Geekbot.Core.WikipediaClient.Page
 {
     public class PageTitles
     {
+        [JsonPropertyName("Canonical")]
         public string Canonical { get; set; }
-        public string Normalized { get; set; }
-        public string Display { get; set; }
         
+        [JsonPropertyName("Normalized")]
+        public string Normalized { get; set; }
+        
+        [JsonPropertyName("Display")]
+        public string Display { get; set; }
     }
 }

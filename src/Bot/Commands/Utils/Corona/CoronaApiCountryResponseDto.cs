@@ -1,19 +1,19 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Geekbot.Bot.Commands.Utils.Corona
 {
     public record CoronaApiCountryResponseDto
     {
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string Country { get; init; }
 
-        [JsonProperty("cases")]
+        [JsonPropertyName("cases")]
         public decimal Cases { get; init; }
 
-        [JsonProperty("deaths")]
+        [JsonPropertyName("deaths")]
         public decimal Deaths { get; init; }
 
-        [JsonProperty("recovered")]
+        [JsonPropertyName("recovered")]
         public decimal Recovered { get; init; }
     }
 }
