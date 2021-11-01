@@ -46,9 +46,9 @@ namespace Geekbot.Bot.Commands.Integrations.LolMmr
 
                 var sb = new StringBuilder();
                 sb.AppendLine($"**MMR for {summonerName}**");
-                sb.AppendLine($"Normal: {data.Normal.Avg}");
-                sb.AppendLine($"Ranked: {data.Ranked.Avg}");
-                sb.AppendLine($"ARAM: {data.ARAM.Avg}");
+                sb.AppendLine($"Normal: {data.Normal?.Avg ?? 0}");
+                sb.AppendLine($"Ranked: {data.Ranked?.Avg ?? 0}");
+                sb.AppendLine($"ARAM: {data.ARAM?.Avg ?? 0}");
                 
                 await Context.Channel.SendMessageAsync(sb.ToString());
             }

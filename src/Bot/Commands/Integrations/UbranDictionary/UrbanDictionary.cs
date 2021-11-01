@@ -45,8 +45,8 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
 
                 if (!string.IsNullOrEmpty(definition.Definition)) eb.Description = ShortenIfToLong(definition.Definition, 1800);
                 if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", ShortenIfToLong(definition.Example, 1024));
-                if (!string.IsNullOrEmpty(definition.ThumbsUp)) eb.AddInlineField("Upvotes", definition.ThumbsUp);
-                if (!string.IsNullOrEmpty(definition.ThumbsDown)) eb.AddInlineField("Downvotes", definition.ThumbsDown);
+                if (definition.ThumbsUp != 0) eb.AddInlineField("Upvotes", definition.ThumbsUp);
+                if (definition.ThumbsDown != 0) eb.AddInlineField("Downvotes", definition.ThumbsDown);
                 if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
 
                 await ReplyAsync("", false, eb.Build());

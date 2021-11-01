@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Geekbot.Core
 {
@@ -39,7 +38,7 @@ namespace Geekbot.Core
                 httpClient.Dispose();
             }
 
-            return JsonConvert.DeserializeObject<TResponse>(stringResponse);
+            return JsonSerializer.Deserialize<TResponse>(stringResponse);
         }
         
         public static async Task<TResponse> Post<TResponse>(Uri location, object data, HttpClient httpClient = null, bool disposeClient = true)
@@ -48,7 +47,7 @@ namespace Geekbot.Core
             httpClient.BaseAddress = location;
 
             var content = new StringContent(
-                System.Text.Json.JsonSerializer.Serialize(data, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                JsonSerializer.Serialize(data, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
                 Encoding.UTF8,
                 "application/json"
             );
@@ -61,7 +60,7 @@ namespace Geekbot.Core
                 httpClient.Dispose();
             }
 
-            return JsonConvert.DeserializeObject<TResponse>(stringResponse);
+            return JsonSerializer.Deserialize<TResponse>(stringResponse);
         }
         
         public static async Task Post(Uri location, object data, HttpClient httpClient = null, bool disposeClient = true)

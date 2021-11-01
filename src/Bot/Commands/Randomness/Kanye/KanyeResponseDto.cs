@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Geekbot.Bot.Commands.Randomness.Kanye
 {
     public class KanyeResponseDto
     {
-        public string Id { get; set; }
+        [JsonPropertyName("quote")]
         public string Quote { get; set; }
     }
 }
