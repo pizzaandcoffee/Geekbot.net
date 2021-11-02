@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Geekbot.Core.Interactions.ApplicationCommand;
 using Geekbot.Core.Interactions.Request;
 using Geekbot.Core.Interactions.Response;
+using Sentry;
 
 namespace Geekbot.Core.Interactions
 {
@@ -20,7 +21,8 @@ namespace Geekbot.Core.Interactions
         
         public virtual void OnException(Exception exception)
         {
-            
+            if (!SentrySdk.IsEnabled) return;
+            SentrySdk.CaptureException(exception);
         }
 
         public virtual InteractionResponse GetExceptionResponse()
