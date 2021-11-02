@@ -67,17 +67,17 @@ namespace Geekbot.Core.Interactions
             InteractionResponse response;
             try
             {
-                command.BeforeExecute();
+                command.BeforeExecute(interaction);
                 response = await command.Exec(interaction);
             }
             catch (Exception e)
             {
-                command.OnException(e);
-                response = command.GetExceptionResponse();
+                command.OnException(interaction, e);
+                response = command.GetExceptionResponse(interaction);
             }
             finally
             {
-                command.AfterExecute();
+                command.AfterExecute(interaction);
             }
 
             return response;
