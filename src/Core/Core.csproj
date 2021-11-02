@@ -31,7 +31,7 @@
         <PackageReference Include="NLog" Version="4.7.2" />
         <PackageReference Include="NLog.Config" Version="4.7.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-preview2" />
-        <PackageReference Include="Sentry" Version="3.9.2" />
+        <PackageReference Include="Sentry" Version="3.11.0" />
         <PackageReference Include="SumoLogic.Logging.NLog" Version="1.0.1.4" />
     </ItemGroup>
 

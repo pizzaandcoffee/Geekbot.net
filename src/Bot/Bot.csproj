@@ -28,7 +28,7 @@
         <PackageReference Include="JikanDotNet" Version="1.6.0" />
         <PackageReference Include="MtgApiManager.Lib" Version="1.2.2" />
         <PackageReference Include="PokeApi.NET" Version="1.1.2" />
-        <PackageReference Include="Sentry" Version="3.9.2" />
+        <PackageReference Include="Sentry" Version="3.11.0" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="Storage\*">
