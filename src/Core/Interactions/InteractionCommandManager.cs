@@ -50,14 +50,7 @@ namespace Geekbot.Core.Interactions
 
             if (command == null)
             {
-                return new InteractionResponse()
-                {
-                    Type = InteractionResponseType.ChannelMessageWithSource,
-                    Data = new InteractionResponseData()
-                    {
-                        Content = "Command not found..."
-                    }
-                };
+                return null;
             }
 
             var guildSettings = _guildSettingsManager.GetSettings(ulong.Parse(interaction.GuildId));
