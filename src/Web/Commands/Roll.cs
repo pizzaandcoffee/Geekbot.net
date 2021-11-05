@@ -59,15 +59,8 @@ namespace Geekbot.Web.Commands
                     interaction.Member.Nick ?? interaction.Member.User.Username,
                     guess
                 );
-            
-            return new InteractionResponse()
-            {
-                Type = InteractionResponseType.ChannelMessageWithSource,
-                Data = new InteractionResponseData()
-                {
-                    Content = res
-                }
-            };
+
+            return SimpleResponse(res);
         }
     }
 }

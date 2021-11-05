@@ -27,12 +27,17 @@ namespace Geekbot.Core.Interactions
 
         public virtual InteractionResponse GetExceptionResponse(Interaction interaction)
         {
+            return SimpleResponse(Localization.Internal.SomethingWentWrong);
+        }
+
+        protected InteractionResponse SimpleResponse(string message)
+        {
             return new InteractionResponse()
             {
                 Type = InteractionResponseType.ChannelMessageWithSource,
                 Data = new()
                 {
-                    Content = Localization.Internal.SomethingWentWrong
+                    Content = message
                 }
             };
         }

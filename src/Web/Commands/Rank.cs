@@ -96,7 +96,7 @@ namespace Geekbot.Web.Commands
                 }
             };
 
-            return Task.FromResult(interactionResponse);
+            return Task.FromResult(SimpleResponse(res));
         }
     }
 }
