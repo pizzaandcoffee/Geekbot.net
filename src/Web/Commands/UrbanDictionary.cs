@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading.Tasks;
 using Geekbot.Core.Interactions;
 using Geekbot.Core.Interactions.ApplicationCommand;
-using Geekbot.Core.Interactions.Embed;
 using Geekbot.Core.Interactions.Request;
 using Geekbot.Core.Interactions.Response;
 

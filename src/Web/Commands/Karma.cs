@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Geekbot.Commands.Karma;
 using Geekbot.Core.Database;
 using Geekbot.Core.Interactions;
