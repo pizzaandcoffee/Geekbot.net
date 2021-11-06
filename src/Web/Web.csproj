@@ -10,6 +10,9 @@
         <RootNamespace>Geekbot.Web</RootNamespace>
         <AssemblyName>Geekbot.Web</AssemblyName>
         <NoWarn>NU1701</NoWarn>
+        <NoWarn>CS8618</NoWarn>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
