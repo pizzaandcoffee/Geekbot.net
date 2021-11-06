@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Geekbot.Bot.CommandPreconditions;
 using Geekbot.Core;
-using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Converters;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;

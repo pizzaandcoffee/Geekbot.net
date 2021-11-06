@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace Geekbot.Core.CommandPreconditions
+namespace Geekbot.Bot.CommandPreconditions
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class DisableInDirectMessageAttribute : PreconditionAttribute

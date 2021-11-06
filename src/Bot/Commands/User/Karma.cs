@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Geekbot.Bot.CommandPreconditions;
 using Geekbot.Commands.Karma;
 using Geekbot.Core;
-using Geekbot.Core.CommandPreconditions;
 using Geekbot.Core.Database;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
