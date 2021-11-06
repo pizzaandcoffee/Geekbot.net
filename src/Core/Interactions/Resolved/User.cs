@@ -50,5 +50,15 @@ namespace Geekbot.Core.Interactions.Resolved
        public int PublicFlags { get; set; }
 
        public string Mention => $"<@{Id}>";
+       
+       public string GetAvatarUrl()
+       {
+           if (string.IsNullOrEmpty(Avatar))
+           {
+               return "https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png";
+           }
+           
+           return $"https://cdn.discordapp.com/avatars/{Id}/{Avatar}.webp";
+       }
     }
 }
