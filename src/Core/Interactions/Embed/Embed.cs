@@ -40,7 +40,7 @@ namespace Geekbot.Core.Interactions.Embed
         public DateTime? Timestamp { get; set; }
 
         [JsonIgnore]
-        private Color _color { get; set; } = System.Drawing.Color.Black;
+        private Color _color { get; set; } = System.Drawing.Color.DimGray;
         
         /// <summary>
         /// color code of the embed
