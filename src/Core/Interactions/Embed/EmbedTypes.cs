@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Geekbot.Core.Interactions.Embed
 {
@@ -8,6 +9,7 @@ namespace Geekbot.Core.Interactions.Embed
     /// Embed types should be considered deprecated and might be removed in a future API version.
     /// </summary>
     /// <see href="https://discord.com/developers/docs/resources/channel#embed-object-embed-types" />
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum EmbedTypes
     {
         /// <summary>
