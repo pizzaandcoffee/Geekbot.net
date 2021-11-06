@@ -1,8 +1,8 @@
 using Geekbot.Core.Database;
-using Geekbot.Core.Interactions;
-using Geekbot.Core.Interactions.ApplicationCommand;
-using Geekbot.Core.Interactions.Request;
-using Geekbot.Core.Interactions.Response;
+using Geekbot.Interactions;
+using Geekbot.Interactions.ApplicationCommand;
+using Geekbot.Interactions.Request;
+using Geekbot.Interactions.Response;
 using Geekbot.Core.KvInMemoryStore;
 using Geekbot.Core.RandomNumberGenerator;
 

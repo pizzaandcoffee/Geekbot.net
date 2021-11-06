@@ -2,8 +2,8 @@ using System.Drawing;
 using Geekbot.Core;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
-using Geekbot.Core.Interactions.Embed;
-using Geekbot.Core.Interactions.Resolved;
+using Geekbot.Interactions.Embed;
+using Geekbot.Interactions.Resolved;
 using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Commands.Karma;

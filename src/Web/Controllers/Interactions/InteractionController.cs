@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using Geekbot.Core.GlobalSettings;
-using Geekbot.Core.Interactions;
-using Geekbot.Core.Interactions.Request;
-using Geekbot.Core.Interactions.Response;
+using Geekbot.Interactions;
+using Geekbot.Interactions.Request;
+using Geekbot.Interactions.Response;
 using Microsoft.AspNetCore.Mvc;
 using Sodium;
 

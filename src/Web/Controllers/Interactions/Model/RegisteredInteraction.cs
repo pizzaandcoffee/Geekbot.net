@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Geekbot.Core.Interactions.Request;
+using Geekbot.Interactions.Request;
 
 namespace Geekbot.Web.Controllers.Interactions.Model;
 

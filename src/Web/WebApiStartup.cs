@@ -6,8 +6,8 @@ using Geekbot.Core.Database;
 using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
-using Geekbot.Core.Interactions;
 using Geekbot.Core.Logger;
+using Geekbot.Interactions;
 using Geekbot.Web.Logging;
 
 namespace Geekbot.Web;

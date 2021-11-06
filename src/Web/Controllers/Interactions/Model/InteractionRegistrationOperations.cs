@@ -1,4 +1,4 @@
-using Geekbot.Core.Interactions.ApplicationCommand;
+using Geekbot.Interactions.ApplicationCommand;
 
 namespace Geekbot.Web.Controllers.Interactions.Model;
 

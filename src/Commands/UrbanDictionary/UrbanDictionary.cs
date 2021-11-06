@@ -1,6 +1,6 @@
 using System.Drawing;
 using Geekbot.Core;
-using Geekbot.Core.Interactions.Embed;
+using Geekbot.Interactions.Embed;
 
 namespace Geekbot.Commands.UrbanDictionary;
 

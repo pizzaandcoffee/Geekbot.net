@@ -47,14 +47,14 @@ namespace Geekbot.Bot.Commands.User
         {
             try
             {
-                var author = new Core.Interactions.Resolved.User()
+                var author = new Interactions.Resolved.User()
                 {
                     Id = Context.User.Id.ToString(),
                     Username = Context.User.Username,
                     Discriminator = Context.User.Discriminator,
                     Avatar = Context.User.AvatarId,
                 };
-                var targetUser = new Core.Interactions.Resolved.User()
+                var targetUser = new Interactions.Resolved.User()
                 {
                     Id = user.Id.ToString(),
                     Username = user.Username,

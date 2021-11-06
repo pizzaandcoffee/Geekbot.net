@@ -1,8 +1,8 @@
 using System.Net.Http.Headers;
 using Geekbot.Core;
 using Geekbot.Core.GlobalSettings;
-using Geekbot.Core.Interactions;
-using Geekbot.Core.Interactions.ApplicationCommand;
+using Geekbot.Interactions;
+using Geekbot.Interactions.ApplicationCommand;
 using Geekbot.Core.Logger;
 using Geekbot.Web.Controllers.Interactions.Model;
 using Microsoft.AspNetCore.Mvc;

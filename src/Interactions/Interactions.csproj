@@ -6,16 +6,16 @@
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
     <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
-    <RootNamespace>Geekbot.Commands</RootNamespace>
-    <AssemblyName>Geekbot.Commands</AssemblyName>
-    <NoWarn>NU1701</NoWarn>
+    <RootNamespace>Geekbot.Interactions</RootNamespace>
+    <AssemblyName>Geekbot.Interactions</AssemblyName>
+    <NoWarn>NU1701</NoWarn> 
+    <NoWarn>CS8618</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Interactions\Interactions.csproj" />
   </ItemGroup>
 
 </Project>
