@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text.Json.Serialization;
+using Discord;
+using Color = System.Drawing.Color;
 
 namespace Geekbot.Core.Interactions.Embed
 {
@@ -37,13 +38,16 @@ namespace Geekbot.Core.Interactions.Embed
         /// </summary>
         [JsonPropertyName("timestamp")]
         public DateTime? Timestamp { get; set; }
+
+        [JsonIgnore]
+        private Color _color { get; set; } = System.Drawing.Color.Black;
         
         /// <summary>
         /// color code of the embed
         /// </summary>
         [JsonPropertyName("color")]
-        public uint Color { get; set; }
-        
+        public uint Color => (uint)(_color.R << 16 | _color.G << 8 | _color.B);
+
         /// <summary>
         /// footer information
         /// </summary>
@@ -84,7 +88,7 @@ namespace Geekbot.Core.Interactions.Embed
         /// fields information
         /// </summary>
         [JsonPropertyName("fields")]
-        public List<EmbedField> Fields { get; set; } = new List<EmbedField>();
+        public List<EmbedField> Fields { get; init; } = new List<EmbedField>();
 
         public void AddField(string name, string value, bool inline = false)
         {
@@ -103,7 +107,24 @@ namespace Geekbot.Core.Interactions.Embed
 
         public void SetColor(Color c)
         {
-            Color = (uint)(c.R << 16 | c.G << 8 | c.B);
+            _color = c;
+        }
+
+        public EmbedBuilder ToDiscordNetEmbed()
+        {
+            var eb = new EmbedBuilder();
+            if (!string.IsNullOrEmpty(Title)) eb.Title = Title;
+            if (!string.IsNullOrEmpty(Description)) eb.Description = Description;
+            if (!string.IsNullOrEmpty(Url)) eb.Url = Url;
+            if (Timestamp != null) eb.Timestamp = Timestamp;
+            if (Color != 0) eb.WithColor(new Discord.Color(_color.R, _color.G, _color.B));
+            if (Footer != null) eb.WithFooter(Footer.Text, Footer.IconUrl);
+            if (Image != null) eb.WithImageUrl(Image.Url);
+            if (Thumbnail != null) eb.WithThumbnailUrl(Thumbnail.Url);
+            if (Author != null) eb.WithAuthor(Author.Name, Author.IconUrl, Author.Url);
+            Fields.ForEach(field => eb.AddField(field.Name, field.Value, field.Inline));
+
+            return eb;
         }
     }
 }
