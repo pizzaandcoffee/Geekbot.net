@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -7,7 +6,7 @@ using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.Extensions;
 
-namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
+namespace Geekbot.Bot.Commands.Integrations
 {
     public class UrbanDictionary : TransactionModuleBase
     {
@@ -24,14 +23,12 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
         {
             try
             {
-                var definitions = await HttpAbstractions.Get<UrbanResponseDto>(new Uri($"https://api.urbandictionary.com/v0/define?term={word}"));
-                if (definitions.List.Count == 0)
+                var definition = await Geekbot.Commands.UrbanDictionary.UrbanDictionary.Run(word);
+                if (definition == null)
                 {
                     await ReplyAsync("That word hasn't been defined...");
                     return;
                 }
-
-                var definition = definitions.List.First(e => !string.IsNullOrWhiteSpace(e.Example));
 
                 var eb = new EmbedBuilder();
                 eb.WithAuthor(new EmbedAuthorBuilder
@@ -39,7 +36,8 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
                     Name = definition.Word,
                     Url = definition.Permalink
                 });
-                eb.WithColor(new Color(239, 255, 0));
+                var c = System.Drawing.Color.Gold;
+                eb.WithColor(new Color(c.R, c.G, c.B));
 
                 static string ShortenIfToLong(string str, int maxLength) => str.Length > maxLength ? $"{str.Substring(0, maxLength - 5)}[...]" : str;
 
@@ -47,9 +45,8 @@ namespace Geekbot.Bot.Commands.Integrations.UbranDictionary
                 if (!string.IsNullOrEmpty(definition.Example)) eb.AddField("Example", ShortenIfToLong(definition.Example, 1024));
                 if (definition.ThumbsUp != 0) eb.AddInlineField("Upvotes", definition.ThumbsUp);
                 if (definition.ThumbsDown != 0) eb.AddInlineField("Downvotes", definition.ThumbsDown);
-                if (definitions.Tags?.Length > 0) eb.AddField("Tags", string.Join(", ", definitions.Tags));
 
-                await ReplyAsync("", false, eb.Build());
+                await ReplyAsync(string.Empty, false, eb.Build());
             }
             catch (Exception e)
             {
