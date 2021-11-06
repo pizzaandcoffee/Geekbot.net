@@ -19,7 +19,11 @@ namespace Geekbot.Core.Interactions
         
         private readonly IGuildSettingsManager _guildSettingsManager;
 
-        private readonly Dictionary<string, Type> _commands = new();
+        private readonly Dictionary<CommandType, Dictionary<string, Type>> _commands = new() {
+            { CommandType.Message, new Dictionary<string, Type>() },
+            { CommandType.User, new Dictionary<string, Type>() },
+            { CommandType.ChatInput, new Dictionary<string, Type>() },
+        };
 
         public Dictionary<string, Command> CommandsInfo { get; init; }
 
@@ -38,14 +42,14 @@ namespace Geekbot.Core.Interactions
             {
                 var instance = (InteractionBase)ActivatorUtilities.CreateInstance(provider, interactionType);
                 var commandInfo = instance.GetCommandInfo();
-                _commands.Add(commandInfo.Name, interactionType);
-                CommandsInfo.Add(commandInfo.Name, commandInfo);
+                _commands[commandInfo.Type].Add(commandInfo.Name, interactionType);
+                CommandsInfo.Add($"{commandInfo.Type}-{commandInfo.Name}", commandInfo);
             }
         }
 
         public async Task<InteractionResponse> RunCommand(Interaction interaction)
         {
-            var type = _commands[interaction.Data.Name];
+            var type = _commands[interaction.Data.Type][interaction.Data.Name];
             var command = ActivatorUtilities.CreateInstance(_provider, type) as InteractionBase;
 
             if (command == null)
