@@ -9,6 +9,7 @@
     <RootNamespace>Geekbot.Commands</RootNamespace>
     <AssemblyName>Geekbot.Commands</AssemblyName>
     <NoWarn>NU1701</NoWarn>
+    <NoWarn>CS8618</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
