@@ -30,9 +30,7 @@ namespace Geekbot.Core.Interactions
             return SimpleResponse(Localization.Internal.SomethingWentWrong);
         }
 
-        protected InteractionResponse SimpleResponse(string message)
-        {
-            return new InteractionResponse()
+        protected InteractionResponse SimpleResponse(string message) => new InteractionResponse()
             {
                 Type = InteractionResponseType.ChannelMessageWithSource,
                 Data = new()
@@ -40,7 +38,19 @@ namespace Geekbot.Core.Interactions
                     Content = message
                 }
             };
-        }
+
+        protected InteractionResponse SimpleResponse(Embed.Embed embed) => new InteractionResponse()
+            {
+                Type = InteractionResponseType.ChannelMessageWithSource,
+                Data = new ()
+                {
+                    Content = string.Empty,
+                    Embeds = new ()
+                    {
+                        embed
+                    }
+                }
+            };
 
         public abstract Command GetCommandInfo();
         public abstract Task<InteractionResponse> Exec(Interaction interaction);
