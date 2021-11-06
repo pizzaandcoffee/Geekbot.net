@@ -1,54 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Geekbot.Core.GlobalSettings;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Geekbot.Web.Controllers.Callback
+namespace Geekbot.Web.Controllers.Callback;
+
+[ApiController]
+public class CallbackController : ControllerBase
 {
-    public class CallbackController : Controller
+    private readonly IGlobalSettings _globalSettings;
+
+    public CallbackController(IGlobalSettings globalSettings)
     {
-        private readonly IGlobalSettings _globalSettings;
+        _globalSettings = globalSettings;
+    }
 
-        public CallbackController(IGlobalSettings globalSettings)
+    [Route("/callback")]
+    public async Task<IActionResult> DoCallback([FromQuery] string code)
+    {
+        var token = "";
+        using (var client = new HttpClient())
         {
-            _globalSettings = globalSettings;
-        }
-        
-        [Route("/callback")]
-        public async Task<IActionResult> DoCallback([FromQuery] string code)
-        {
-            var token = "";
-            using (var client = new HttpClient())
+            client.BaseAddress = new Uri("https://discordapp.com");
+            var appId = _globalSettings.GetKey("DiscordApplicationId");
+            var accessToken = _globalSettings.GetKey("OAuthToken");
+            var callbackUrl = _globalSettings.GetKey("OAuthCallbackUrl");
+
+            var form = new Dictionary<string, string>
             {
-                client.BaseAddress = new Uri("https://discordapp.com");
-                var appId = _globalSettings.GetKey("DiscordApplicationId");
-                var accessToken = _globalSettings.GetKey("OAuthToken");
-                var callbackUrl = _globalSettings.GetKey("OAuthCallbackUrl");
+                { "client_id", appId },
+                { "client_secret", accessToken },
+                { "grant_type", "authorization_code" },
+                { "code", code },
+                { "scope", "identify email guilds" },
+                { "redirect_uri", callbackUrl }
+            };
 
-                var form = new Dictionary<string, string>
-                {
-                    {"client_id", appId},
-                    {"client_secret", accessToken},
-                    {"grant_type", "authorization_code"},
-                    {"code", code},
-                    {"scope", "identify email guilds"},
-                    {"redirect_uri", callbackUrl}
-                };
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            var result = await client.PostAsync("/api/oauth2/token", new FormUrlEncodedContent(form));
+            result.EnsureSuccessStatusCode();
 
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-                var result = await client.PostAsync("/api/oauth2/token", new FormUrlEncodedContent(form));
-                result.EnsureSuccessStatusCode();
-
-                var stringResponse = await result.Content.ReadAsStringAsync();
-                var responseData = JsonSerializer.Deserialize<CallbackTokenResponseDto>(stringResponse);
-                token = responseData.AccessToken;
-            }
-
-            return new RedirectResult($"https://geekbot.pizzaandcoffee.rocks/login?token={token}", false);
+            var stringResponse = await result.Content.ReadAsStringAsync();
+            var responseData = JsonSerializer.Deserialize<CallbackTokenResponse>(stringResponse);
+            token = responseData.AccessToken;
         }
+
+        return new RedirectResult($"https://geekbot.pizzaandcoffee.rocks/login?token={token}", false);
     }
 }

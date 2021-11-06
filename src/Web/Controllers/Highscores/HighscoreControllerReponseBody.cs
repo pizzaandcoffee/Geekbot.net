@@ -1,11 +1,12 @@
 using Geekbot.Core.Highscores;
 
-namespace Geekbot.Web.Controllers.Highscores
+namespace Geekbot.Web.Controllers.Highscores;
+
+public record HighscoreControllerReponseBody
 {
-    public class HighscoreControllerReponseBody
-    {
-        public int rank { get; set; }
-        public HighscoreUserDto user { get; set; }
-        public int count { get; set; }
-    }
+    public int rank { get; set; }
+
+    public HighscoreUserDto user { get; set; }
+
+    public int count { get; set; }
 }
