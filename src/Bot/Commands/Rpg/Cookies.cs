@@ -148,7 +148,7 @@ namespace Geekbot.Bot.Commands.Rpg
                 GuildId = Context.Guild.Id.AsLong(),
                 UserId = userId.AsLong(),
                 Cookies = 0,
-                LastPayout = DateTimeOffset.MinValue
+                LastPayout = DateTimeOffset.MinValue.ToUniversalTime()
             };
             var newUser = _database.Cookies.Add(user).Entity;
             await _database.SaveChangesAsync();

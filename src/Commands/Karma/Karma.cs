@@ -104,7 +104,7 @@ public class Karma
             GuildId = _guildId,
             UserId = userId,
             Karma = 0,
-            TimeOut = DateTimeOffset.MinValue
+            TimeOut = DateTimeOffset.MinValue.ToUniversalTime()
         };
         var newUser = _database.Karma.Add(user).Entity;
         await _database.SaveChangesAsync();
