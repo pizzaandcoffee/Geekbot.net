@@ -313,7 +313,7 @@ namespace Geekbot.Bot.Commands.Utils.Quote
                 InternalId = internalId,
                 GuildId = Context.Guild.Id.AsLong(),
                 UserId = message.Author.Id.AsLong(),
-                Time = message.Timestamp.DateTime,
+                Time = message.Timestamp.DateTime.ToUniversalTime(),
                 Quote = message.Content,
                 Image = image
             };
