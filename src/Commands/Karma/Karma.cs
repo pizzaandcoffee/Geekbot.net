@@ -37,9 +37,11 @@ public class Karma
             return CreateErrorEmbed(string.Format(message, author.Username));
         }
 
-        if (authorRecord.TimeOut.AddMinutes(3) > DateTimeOffset.Now)
+        var timeoutMinutes = 3;
+        if (authorRecord.TimeOut.AddMinutes(timeoutMinutes) > DateTimeOffset.Now.ToUniversalTime())
         {
-            var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(authorRecord.TimeOut.AddMinutes(3));
+            var remaining = authorRecord.TimeOut.AddMinutes(timeoutMinutes) - DateTimeOffset.Now.ToUniversalTime();
+            var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(remaining);
             return CreateErrorEmbed(string.Format(Localization.Karma.WaitUntill, author.Username, formatedWaitTime));
         }
 
@@ -57,7 +59,7 @@ public class Karma
         targetUserRecord.Karma += amount;
         _database.Karma.Update(targetUserRecord);
 
-        authorRecord.TimeOut = DateTimeOffset.Now;
+        authorRecord.TimeOut = DateTimeOffset.Now.ToUniversalTime();
         _database.Karma.Update(authorRecord);
 
         await _database.SaveChangesAsync();

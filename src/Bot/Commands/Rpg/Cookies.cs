@@ -37,14 +37,16 @@ namespace Geekbot.Bot.Commands.Rpg
             try
             {
                 var actor = await GetUser(Context.User.Id);
-                if (actor.LastPayout.Value.AddDays(1).Date > DateTime.Now.Date)
+                var timeoutDays = 1;
+                if (actor.LastPayout?.AddDays(timeoutDays) > DateTime.Now.ToUniversalTime())
                 {
-                    var formattedWaitTime = DateLocalization.FormatDateTimeAsRemaining(DateTimeOffset.Now.AddDays(1).Date);
+                    var remaining = actor.LastPayout.Value.AddDays(timeoutDays) - DateTimeOffset.Now.ToUniversalTime();
+                    var formattedWaitTime = DateLocalization.FormatDateTimeAsRemaining(remaining);
                     await ReplyAsync(string.Format(Localization.Cookies.WaitForMoreCookies, formattedWaitTime));
                     return;
                 }
                 actor.Cookies += 10;
-                actor.LastPayout = DateTimeOffset.Now;
+                actor.LastPayout = DateTimeOffset.Now.ToUniversalTime();
                 await SetUser(actor);
                 await ReplyAsync(string.Format(Localization.Cookies.GetCookies, 10, actor.Cookies));
 

@@ -35,7 +35,7 @@ namespace Geekbot.Core.UserRepository
                 savedUser.Discriminator = user.Discriminator;
                 savedUser.AvatarUrl = user.GetAvatarUrl() ?? "";
                 savedUser.IsBot = user.IsBot;
-                savedUser.Joined = user.CreatedAt;
+                savedUser.Joined = user.CreatedAt.ToUniversalTime();
 
                 if (isNew)
                 {
