@@ -2,6 +2,7 @@
 using CommandLine;
 using Geekbot.Bot;
 using Geekbot.Core;
+using Geekbot.Core.BotCommandLookup;
 using Geekbot.Core.Converters;
 using Geekbot.Core.Database;
 using Geekbot.Core.DiceParser;
@@ -79,7 +80,8 @@ if (!runParameters.DisableGateway)
 //
 if (!runParameters.DisableApi)
 {
-    WebApiStartup.StartWebApi(serviceProvider.BuildServiceProvider(), logger, runParameters, databaseInitializer.Initialize(), globalSettings);
+    var botCommands = new CommandLookup(typeof(BotStartup).Assembly).GetCommands();
+    WebApiStartup.StartWebApi(serviceProvider.BuildServiceProvider(), logger, runParameters, databaseInitializer.Initialize(), globalSettings, botCommands);
 }
 
 ServiceCollection RegisterServices()

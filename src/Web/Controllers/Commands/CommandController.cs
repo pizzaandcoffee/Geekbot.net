@@ -1,4 +1,4 @@
-﻿using Discord.Commands;
+﻿using Geekbot.Core.BotCommandLookup;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,33 +8,29 @@ namespace Geekbot.Web.Controllers.Commands;
 [EnableCors("AllowSpecificOrigin")]
 public class CommandController : ControllerBase
 {
-    private readonly CommandService _commands;
+    private readonly List<CommandInfo> _commandInfos;
 
-    public CommandController(CommandService commands)
+    public CommandController(List<CommandInfo> commandInfos)
     {
-        _commands = commands;
+        _commandInfos = commandInfos;
     }
 
     [HttpGet("/v1/commands")]
     public IActionResult GetCommands()
     {
-        var commandList = (from cmd in _commands.Commands
-            let cmdParamsObj = cmd.Parameters.Select(cmdParam => new ResponseCommandParam
-                {
-                    Summary = cmdParam.Summary,
-                    Default = cmdParam.DefaultValue?.ToString(),
-                    Type = cmdParam.Type?.ToString()
-                })
-                .ToList()
-            let param = string.Join(", !", cmd.Aliases)
-            select new ResponseCommand
+        var commandList = _commandInfos.Select(cmd => new ResponseCommand()
+        {
+            Name = cmd.Name,
+            Summary = cmd.Summary,
+            IsAdminCommand = cmd.Name.StartsWith("admin") || cmd.Name.StartsWith("owner"),
+            Aliases = new List<string>() { cmd.Name },
+            Params = cmd.Parameters.Select(dict => new ResponseCommandParam()
             {
-                Name = cmd.Name,
-                Summary = cmd.Summary,
-                IsAdminCommand = param.Contains("admin") || param.Contains("owner"),
-                Aliases = cmd.Aliases.ToList(),
-                Params = cmdParamsObj
-            }).ToList();
-        return Ok(commandList.FindAll(e => !e.Aliases[0].StartsWith("owner")));
+                Summary = dict.Value.Summary,
+                Default = dict.Value.DefaultValue,
+                Type = dict.Value.Type
+            }).ToList()
+        });
+        return Ok(commandList);
     }
 }
