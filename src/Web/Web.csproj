@@ -2,8 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RuntimeIdentifiers>win10-x64;linux-x64;linux-musl-x64</RuntimeIdentifiers>
-        <SelfContained>false</SelfContained>
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
@@ -13,6 +11,12 @@
         <NoWarn>CS8618</NoWarn>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>

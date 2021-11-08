@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ApplicationIcon>derp.ico</ApplicationIcon>
+    <Company>Pizza and Coffee Studios</Company>
+    <Authors>Pizza and Coffee Studios</Authors>
+    <Description>A Discord bot</Description>
+    <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://geekbot.pizzaandcoffee.rocks</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <SelfContained>false</SelfContained>
+    <DebugType>embedded</DebugType>
+    <TargetFramework>net6.0</TargetFramework>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
+    <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
+    <RootNamespace>Geekbot.Startup</RootNamespace>
+    <AssemblyName>Geekbot</AssemblyName>
+    <NoWarn>NU1701</NoWarn>
+    <NoWarn>CS8618</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Bot\Bot.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Web\Web.csproj" />
+  </ItemGroup>
+
+</Project>

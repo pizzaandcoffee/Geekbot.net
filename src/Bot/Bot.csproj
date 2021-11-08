@@ -1,26 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
-        <RuntimeIdentifiers>win10-x64;linux-x64;linux-musl-x64</RuntimeIdentifiers>
-        <SelfContained>false</SelfContained>
-        <ApplicationIcon>derp.ico</ApplicationIcon>
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <RootNamespace>Geekbot.Bot</RootNamespace>
-        <AssemblyName>Geekbot</AssemblyName>
+        <AssemblyName>Geekbot.Bot</AssemblyName>
         <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
         <Version Condition=" '$(VersionSuffix)' == '' ">0.0.0-DEV</Version>
-        <Company>Pizza and Coffee Studios</Company>
-        <Authors>Pizza and Coffee Studios</Authors>
-        <Description>A Discord bot</Description>
-        <RepositoryUrl>https://github.com/pizzaandcoffee/Geekbot.net</RepositoryUrl>
         <NoWarn>NU1701</NoWarn>
-        <RepositoryType>git</RepositoryType>
-        <PackageProjectUrl>https://geekbot.pizzaandcoffee.rocks</PackageProjectUrl>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <Optimize>true</Optimize>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1929" />
@@ -36,12 +31,7 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Commands\Commands.csproj" />
         <ProjectReference Include="..\Core\Core.csproj" />
-        <ProjectReference Include="..\Web\Web.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Update="Localization\Ship.Designer.cs">
-        <DependentUpon>Ship.resx</DependentUpon>
-      </Compile>
     </ItemGroup>
 </Project>
