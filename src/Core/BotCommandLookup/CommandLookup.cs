@@ -73,7 +73,7 @@ public class CommandLookup
                 {
                     Summary = param.GetCustomAttribute<SummaryAttribute>()?.Text ?? string.Empty,
                     Type = param.ParameterType.Name,
-                    DefaultValue = param.DefaultValue?.ToString() ?? string.Empty
+                    DefaultValue = param.DefaultValue?.ToString()
                 };
                 commandInfo.Parameters.Add(paramName, paramInfo);
             }
