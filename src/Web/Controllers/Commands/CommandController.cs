@@ -27,7 +27,7 @@ public class CommandController : ControllerBase
             Params = cmd.Parameters.Select(dict => new ResponseCommandParam()
             {
                 Summary = dict.Value.Summary,
-                Default = dict.Value.DefaultValue,
+                Default = string.IsNullOrEmpty(dict.Value.DefaultValue) ? null : dict.Value.DefaultValue,
                 Type = dict.Value.Type
             }).ToList()
         });

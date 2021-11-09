@@ -8,7 +8,8 @@ public record ResponseCommandParam
     public string Summary { get; set; }
     
     [JsonPropertyName("default")]
-    public string Default { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Default { get; set; }
     
     [JsonPropertyName("type")]
     public string Type { get; set; }
