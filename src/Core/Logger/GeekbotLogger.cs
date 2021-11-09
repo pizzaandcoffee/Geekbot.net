@@ -41,7 +41,7 @@ namespace Geekbot.Core.Logger
 
         public bool LogAsJson() => _logAsJson;
 
-        private string CreateLogString(string type, LogSource source, string message, Exception stackTrace = null, object extra = null)
+        private string CreateLogString(string type, LogSource source, string message, Exception exception = null, object extra = null)
         {
             if (_logAsJson)
             {
@@ -51,7 +51,7 @@ namespace Geekbot.Core.Logger
                     Type = type,
                     Source = source,
                     Message = message,
-                    StackTrace = stackTrace,
+                    StackTrace = exception != null ? new ExceptionDto(exception) : null,
                     Extra = extra
                 };
                 return JsonSerializer.Serialize(logObject, _serializerSettings);
