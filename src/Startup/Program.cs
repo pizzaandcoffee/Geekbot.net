@@ -92,7 +92,6 @@ ServiceCollection RegisterServices()
     var guildSettingsManager = new GuildSettingsManager(databaseInitializer.Initialize());
     var fortunes = new FortunesProvider(logger);
     var levelCalc = new LevelCalc();
-    var emojiConverter = new EmojiConverter();
     var mtgManaConverter = new MtgManaConverter();
     var wikipediaClient = new WikipediaClient();
     var randomNumberGenerator = new RandomNumberGenerator();
@@ -104,7 +103,6 @@ ServiceCollection RegisterServices()
     services.AddSingleton<IUserRepository>(userRepository);
     services.AddSingleton<IGeekbotLogger>(logger);
     services.AddSingleton<ILevelCalc>(levelCalc);
-    services.AddSingleton<IEmojiConverter>(emojiConverter);
     services.AddSingleton<IFortunesProvider>(fortunes);
     services.AddSingleton<IMediaProvider>(mediaProvider);
     services.AddSingleton<IMtgManaConverter>(mtgManaConverter);

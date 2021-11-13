@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Geekbot.Core;
@@ -16,11 +12,9 @@ namespace Geekbot.Bot.Commands.Utils.Corona
 {
     public class CoronaStats : GeekbotCommandBase
     {
-        private readonly IEmojiConverter _emojiConverter;
 
-        public CoronaStats(IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager, IEmojiConverter emojiConverter) : base(errorHandler, guildSettingsManager)
+        public CoronaStats(IErrorHandler errorHandler, IGuildSettingsManager guildSettingsManager) : base(errorHandler, guildSettingsManager)
         {
-            _emojiConverter = emojiConverter;
         }
 
         [Command("corona", RunMode = RunMode.Async)]
@@ -54,7 +48,7 @@ namespace Geekbot.Bot.Commands.Utils.Corona
                 if (!string.IsNullOrEmpty(summary.Country))
                 {
                     embedTitleBuilder.Append(" - ");
-                    embedTitleBuilder.Append(_emojiConverter.CountryCodeToEmoji(summary.Country));
+                    embedTitleBuilder.Append(EmojiConverter.CountryCodeToEmoji(summary.Country));
                 }
 
                 var eb = new EmbedBuilder

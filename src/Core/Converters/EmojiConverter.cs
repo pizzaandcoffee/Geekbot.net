@@ -1,12 +1,11 @@
 ﻿using System.Collections;
-using System.Net.NetworkInformation;
 using System.Text;
 
 namespace Geekbot.Core.Converters
 {
-    public class EmojiConverter : IEmojiConverter
+    public static class EmojiConverter
     {
-        private readonly string[] NumberEmojiMap =
+        private static readonly string[] NumberEmojiMap =
         {
             ":zero:",
             ":one:",
@@ -20,7 +19,7 @@ namespace Geekbot.Core.Converters
             ":nine:"
         };
 
-        public string NumberToEmoji(int number)
+        public static string NumberToEmoji(int number)
         {
             if (number == 10)
             {
@@ -36,7 +35,7 @@ namespace Geekbot.Core.Converters
             return returnString.ToString();
         }
 
-        private readonly Hashtable TextEmojiMap = new Hashtable
+        private static readonly Hashtable TextEmojiMap = new Hashtable
         {
             ['A'] = ":regional_indicator_a: ",
             ['B'] = ":b: ",
@@ -82,7 +81,7 @@ namespace Geekbot.Core.Converters
             [' '] = " "
         };
         
-        public string TextToEmoji(string text)
+        public static string TextToEmoji(string text)
         {
             var letters = text.ToUpper().ToCharArray();
             var returnString = new StringBuilder();
@@ -94,7 +93,7 @@ namespace Geekbot.Core.Converters
             return returnString.ToString();
         }
 
-        private readonly Hashtable RegionalIndicatorMap = new Hashtable()
+        private static readonly Hashtable RegionalIndicatorMap = new Hashtable()
         {
             ['A'] = new Rune(0x1F1E6),
             ['B'] = new Rune(0x1F1E7),
@@ -124,7 +123,7 @@ namespace Geekbot.Core.Converters
             ['Z'] = new Rune(0x1F1FF)
         };
         
-        public string CountryCodeToEmoji(string countryCode)
+        public static string CountryCodeToEmoji(string countryCode)
         {
             var letters = countryCode.ToUpper().ToCharArray();
             var returnString = new StringBuilder();

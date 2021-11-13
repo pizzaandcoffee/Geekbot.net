@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Geekbot.Core;
 using Geekbot.Core.Converters;
 using Geekbot.Core.ErrorHandling;
@@ -9,13 +7,11 @@ namespace Geekbot.Bot.Commands.Utils
 {
     public class Emojify : TransactionModuleBase
     {
-        private readonly IEmojiConverter _emojiConverter;
         private readonly IErrorHandler _errorHandler;
 
-        public Emojify(IErrorHandler errorHandler, IEmojiConverter emojiConverter)
+        public Emojify(IErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
-            _emojiConverter = emojiConverter;
         }
 
         [Command("emojify", RunMode = RunMode.Async)]
@@ -24,7 +20,7 @@ namespace Geekbot.Bot.Commands.Utils
         {
             try
             {
-                var emojis = _emojiConverter.TextToEmoji(text);
+                var emojis = EmojiConverter.TextToEmoji(text);
                 if (emojis.Length > 1999)
                 {
                     await ReplyAsync("I can't take that much at once!");

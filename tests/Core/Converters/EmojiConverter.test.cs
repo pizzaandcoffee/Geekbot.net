@@ -51,8 +51,7 @@ namespace Tests.Core.Converters
         [Theory, MemberData(nameof(NumberToEmojiTestData))]
         public void NumberToEmoji(string testName, NumberToEmojiTestDto testData)
         {
-            var emojiConverter = new EmojiConverter();
-            var result = emojiConverter.NumberToEmoji(testData.Number);
+            var result = EmojiConverter.NumberToEmoji(testData.Number);
             Assert.Equal(result, testData.Expected);
         }
         
@@ -86,8 +85,7 @@ namespace Tests.Core.Converters
         [Theory, MemberData(nameof(TextToEmojiTestData))]
         public void TextToEmoji(string testName, TextToEmojiTestDto testData)
         {
-            var emojiConverter = new EmojiConverter();
-            var result = emojiConverter.TextToEmoji(testData.Text);
+            var result = EmojiConverter.TextToEmoji(testData.Text);
             Assert.Equal(result, testData.Expected);
         }
     }

@@ -11,13 +11,11 @@ namespace Geekbot.Web.Commands;
 public class Rank : InteractionBase
 {
     private readonly DatabaseContext _database;
-    private readonly IEmojiConverter _emojiConverter;
     private readonly IHighscoreManager _highscoreManager;
 
-    public Rank(DatabaseContext database, IEmojiConverter emojiConverter, IHighscoreManager highscoreManager)
+    public Rank(DatabaseContext database, IHighscoreManager highscoreManager)
     {
         _database = database;
-        _emojiConverter = emojiConverter;
         _highscoreManager = highscoreManager;
     }
 
@@ -75,7 +73,7 @@ public class Rank : InteractionBase
         var amountOption = interaction.Data.Options.Find(o => o.Name == Options.Amount);
         var seasonOption = interaction.Data.Options.Find(o => o.Name == Options.Season);
         
-        var res = new Geekbot.Commands.Rank(_database, _emojiConverter, _highscoreManager)
+        var res = new Geekbot.Commands.Rank(_database, _highscoreManager)
             .Run(
                 counterTypeOption?.Value.GetString() ?? HighscoreTypes.messages.ToString(),
                 amountOption?.Value.GetInt32() ?? 10,

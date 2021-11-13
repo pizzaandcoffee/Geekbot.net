@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Geekbot.Core.Converters;
 using Geekbot.Core.Database;
@@ -13,13 +10,11 @@ namespace Geekbot.Commands
     public class Rank
     {
         private readonly DatabaseContext _database;
-        private readonly IEmojiConverter _emojiConverter;
         private readonly IHighscoreManager _highscoreManager;
 
-        public Rank(DatabaseContext database, IEmojiConverter emojiConverter, IHighscoreManager highscoreManager)
+        public Rank(DatabaseContext database, IHighscoreManager highscoreManager)
         {
             _database = database;
-            _emojiConverter = emojiConverter;
             _highscoreManager = highscoreManager;
         }
 
@@ -84,7 +79,7 @@ namespace Geekbot.Commands
             foreach (var (user, value) in highscoreUsers)
             {
                 replyBuilder.Append(highscorePlace < 11
-                    ? $"{_emojiConverter.NumberToEmoji(highscorePlace)} "
+                    ? $"{EmojiConverter.NumberToEmoji(highscorePlace)} "
                     : $"`{highscorePlace}.` ");
 
                 replyBuilder.Append(user.Username != null
