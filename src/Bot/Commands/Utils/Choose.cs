@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Geekbot.Core;
 using Geekbot.Core.ErrorHandling;
 using Geekbot.Core.GuildSettingsManager;
@@ -15,7 +13,7 @@ namespace Geekbot.Bot.Commands.Utils
         }
 
         [Command("choose", RunMode = RunMode.Async)]
-        [Summary("Let the bot choose for you, seperate options with a semicolon.")]
+        [Summary("Let the bot choose for you, separate options with a semicolon.")]
         public async Task Command([Remainder] [Summary("option1;option2")]
             string choices)
         {
