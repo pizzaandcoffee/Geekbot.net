@@ -9,7 +9,7 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// unique id of the command
         /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         
         /// <summary>
         /// the type of command, defaults 1 if not set
@@ -21,13 +21,13 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// unique id of the parent application
         /// </summary>
         [JsonPropertyName("application_id")]
-        public string ApplicationId { get; set; }
+        public string? ApplicationId { get; set; }
         
         /// <summary>
         ///	guild id of the command, if not global
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public string GuildId { get; set; }
+        public string? GuildId { get; set; }
         
         /// <summary>
         /// 1-32 character name
@@ -46,7 +46,7 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// Exclusive: CHAT_INPUT
         /// </remarks>
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         
         /// <summary>
         /// the parameters for the command, max 25
@@ -55,7 +55,7 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// Exclusive: CHAT_INPUT
         /// </remarks>
         [JsonPropertyName("options")]
-        public List<Option> Options { get; set; }
+        public List<Option>? Options { get; set; }
 
         /// <summary>
         /// whether the command is enabled by default when the app is added to a guild
@@ -67,6 +67,6 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// autoincrementing version identifier updated during substantial record changes
         /// </summary>
         [JsonPropertyName("version")]
-        public string Version { get; set; }
+        public string? Version { get; set; }
     }
 }

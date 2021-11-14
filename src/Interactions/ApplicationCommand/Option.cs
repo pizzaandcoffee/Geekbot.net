@@ -39,12 +39,12 @@ namespace Geekbot.Interactions.ApplicationCommand
         /// choices for STRING, INTEGER, and NUMBER types for the user to pick from, max 25
         /// </summary>
         [JsonPropertyName("choices")]
-        public List<OptionChoice> Choices { get; set; }
+        public List<OptionChoice>? Choices { get; set; }
         
         /// <summary>
         /// if the option is a subcommand or subcommand group type, this nested options will be the parameters
         /// </summary>
         [JsonPropertyName("options")]
-        public List<Option> Options { get; set; }
+        public List<Option>? Options { get; set; }
     }
 }
