@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
 using Geekbot.Core;
 using Geekbot.Core.GlobalSettings;
 using Geekbot.Interactions;
@@ -45,23 +46,21 @@ public class InteractionRegistrarController : ControllerBase
             {
                 operations.Create.Add(command);
             }
-            else
+            else if (!RemoteIsEqualToSource(command, existing))
             {
                 operations.Update.Add(existing.Id, command);
             }
         }
 
-        foreach (var registeredInteraction in registeredInteractions.Where(registeredInteraction => !_interactionCommandManager.CommandsInfo.Values.Any(c => c.Name == registeredInteraction.Name)))
+        foreach (var registeredInteraction in registeredInteractions.Where(registeredInteraction => _interactionCommandManager.CommandsInfo.Values.All(c => c.Name != registeredInteraction.Name)))
         {
             operations.Remove.Add(registeredInteraction.Id);
         }
 
-        await Task.WhenAll(new[]
-        {
-            Create(operations.Create),
-            Update(operations.Update),
-            Remove(operations.Remove)
-        });
+        await Remove(operations.Remove);
+        await Update(operations.Update);
+        await Create(operations.Create);
+
         return Ok(operations);
     }
 
@@ -123,11 +122,25 @@ public class InteractionRegistrarController : ControllerBase
         }
     }
 
-    private async Task<List<RegisteredInteraction>> GetRegisteredInteractions()
+    private async Task<List<Command>> GetRegisteredInteractions()
     {
         var httpClient = HttpAbstractions.CreateDefaultClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", _discordToken);
 
-        return await HttpAbstractions.Get<List<RegisteredInteraction>>(_guildCommandUri, httpClient);
+        return await HttpAbstractions.Get<List<Command>>(_guildCommandUri, httpClient);
+    }
+    
+    private bool RemoteIsEqualToSource(Command source, Command remote)
+    {
+        var enrichedSource = source with
+        {
+            Id = remote.Id,
+            Version = remote.Version,
+            ApplicationId = remote.ApplicationId,
+            GuildId = remote.GuildId,
+            Description = source.Description ?? string.Empty,
+        };
+        
+        return JsonSerializer.Serialize(enrichedSource) == JsonSerializer.Serialize(remote);
     }
 }
