@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Reflection;
+using Geekbot.Core;
 using Geekbot.Core.GuildSettingsManager;
+using Geekbot.Core.Logger;
 using Geekbot.Interactions.ApplicationCommand;
 using Geekbot.Interactions.Request;
 using Geekbot.Interactions.Response;
@@ -14,6 +16,8 @@ namespace Geekbot.Interactions
         
         private readonly IGuildSettingsManager _guildSettingsManager;
 
+        private readonly IGeekbotLogger _logger;
+
         private readonly Dictionary<CommandType, Dictionary<string, Type>> _commands = new() {
             { CommandType.Message, new Dictionary<string, Type>() },
             { CommandType.User, new Dictionary<string, Type>() },
@@ -22,10 +26,12 @@ namespace Geekbot.Interactions
 
         public Dictionary<string, Command> CommandsInfo { get; init; }
 
-        public InteractionCommandManager(IServiceProvider provider, IGuildSettingsManager guildSettingsManager)
+        public InteractionCommandManager(IServiceProvider provider, IGuildSettingsManager guildSettingsManager, IGeekbotLogger logger)
         {
             _provider = provider;
             _guildSettingsManager = guildSettingsManager;
+            _logger = logger;
+
             var interactions = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(InteractionBase)))
@@ -42,16 +48,8 @@ namespace Geekbot.Interactions
             }
         }
 
-        public async Task<InteractionResponse> RunCommand(Interaction interaction)
+        private async Task HandleInteraction(Interaction interaction, InteractionBase command)
         {
-            var type = _commands[interaction.Data.Type][interaction.Data.Name];
-            var command = ActivatorUtilities.CreateInstance(_provider, type) as InteractionBase;
-
-            if (command == null)
-            {
-                return null;
-            }
-
             var guildSettings = _guildSettingsManager.GetSettings(ulong.Parse(interaction.GuildId));
             var language = guildSettings.Language;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
@@ -72,7 +70,36 @@ namespace Geekbot.Interactions
                 command.AfterExecute(interaction);
             }
 
-            return response;
+            try
+            {
+                await HttpAbstractions.Patch(
+                    new Uri($"https://discord.com/api/v8/webhooks/{interaction.ApplicationId}/{interaction.Token}/messages/@original"),
+                    response.Data
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.Error(LogSource.Interaction, "Failed to send interaction response", e);
+                throw;
+            }
+        }
+
+        public InteractionResponse? RunCommand(Interaction interaction)
+        {
+            var type = _commands[interaction.Data.Type][interaction.Data.Name];
+            var command = ActivatorUtilities.CreateInstance(_provider, type) as InteractionBase;
+
+            if (command == null)
+            {
+                return null;
+            }
+            
+            Task.Run(() => HandleInteraction(interaction, command).ConfigureAwait(false));
+
+            return new InteractionResponse()
+            {
+                Type = InteractionResponseType.DeferredChannelMessageWithSource
+            };
         }
     }
 }

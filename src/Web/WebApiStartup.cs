@@ -28,7 +28,7 @@ public static class WebApiStartup
         builder.Services.AddControllers();
         builder.Services.AddCors(options => options.AddPolicy("AllowSpecificOrigin", cors => cors.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-        var interactionCommandManager = new InteractionCommandManager(commandProvider, commandProvider.GetService<IGuildSettingsManager>());
+        var interactionCommandManager = new InteractionCommandManager(commandProvider, commandProvider.GetService<IGuildSettingsManager>(), logger);
         var highscoreManager = new HighscoreManager(commandProvider.GetService<DatabaseContext>(), commandProvider.GetService<IUserRepository>());
 
         builder.Services.AddSingleton(databaseContext);

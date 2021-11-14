@@ -49,7 +49,7 @@ public class InteractionController : ControllerBase
         return (interaction.Type, interaction.Version) switch
         {
             (InteractionType.Ping, 1) => Ping(),
-            (InteractionType.ApplicationCommand, 1) => await ApplicationCommand(interaction),
+            (InteractionType.ApplicationCommand, 1) => ApplicationCommand(interaction),
             (InteractionType.MessageComponent, 1) => MessageComponent(interaction),
             _ => StatusCode(501)
         };
@@ -64,9 +64,9 @@ public class InteractionController : ControllerBase
         return Ok(response);
     }
 
-    private async Task<IActionResult> ApplicationCommand(Interaction interaction)
+    private IActionResult ApplicationCommand(Interaction interaction)
     {
-        var result = await _interactionCommandManager.RunCommand(interaction);
+        var result = _interactionCommandManager.RunCommand(interaction);
 
         if (result == null)
         {

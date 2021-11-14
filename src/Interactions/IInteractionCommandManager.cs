@@ -7,6 +7,6 @@ namespace Geekbot.Interactions
     public interface IInteractionCommandManager
     {
         Dictionary<string, Command> CommandsInfo { get; init; }
-        Task<InteractionResponse> RunCommand(Interaction interaction);
+        InteractionResponse? RunCommand(Interaction interaction);
     }
 }
