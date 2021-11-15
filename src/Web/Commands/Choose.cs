@@ -1,8 +1,8 @@
+using System.Text;
 using Geekbot.Interactions;
 using Geekbot.Interactions.ApplicationCommand;
 using Geekbot.Interactions.Request;
 using Geekbot.Interactions.Response;
-using Localization = Geekbot.Core.Localization;
 
 namespace Geekbot.Web.Commands;
 
@@ -45,6 +45,14 @@ public class Choose : InteractionBase
         
         var choicesArray = options.Split(separator);
         var choice = new Random().Next(choicesArray.Length);
-        return Task.FromResult(SimpleResponse(string.Format(Localization.Choose.Choice, choicesArray[choice].Trim())));
+        
+        var sb = new StringBuilder();
+        for (var i = 0; i < choicesArray.Length; i++)
+        {
+            var o = choicesArray[i].Trim();
+            sb.AppendLine(i == choice ? $"**__{o}__**" : o);
+        }
+        
+        return Task.FromResult(SimpleResponse(sb.ToString()));
     }
 }
