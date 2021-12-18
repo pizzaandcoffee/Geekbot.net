@@ -57,7 +57,16 @@ logger.Information(LogSource.Geekbot, "Connecting to Database");
 var databaseInitializer = new DatabaseInitializer(runParameters, logger);
 var database = databaseInitializer.Initialize();
 database.Database.EnsureCreated();
-if(!runParameters.InMemory) database.Database.Migrate();
+if (!runParameters.InMemory)
+{
+    logger.Information(LogSource.Geekbot, "Using Postgres");
+    database.Database.Migrate();
+}
+else
+{
+    logger.Information(LogSource.Geekbot, "Using In-Memory Database");
+}
+
 var globalSettings = new GlobalSettings(database);
 
 //
@@ -74,6 +83,10 @@ if (!runParameters.DisableGateway)
 {
     new BotStartup(serviceProvider, logger, runParameters, globalSettings).Start();
 }
+else
+{
+    logger.Information(LogSource.Geekbot, "Gateway disabled");
+}
 
 //
 // Start WebApi
@@ -82,6 +95,10 @@ if (!runParameters.DisableApi)
 {
     var botCommands = new CommandLookup(typeof(BotStartup).Assembly).GetCommands();
     WebApiStartup.StartWebApi(serviceProvider.BuildServiceProvider(), logger, runParameters, databaseInitializer.Initialize(), globalSettings, botCommands);
+}
+else
+{
+    logger.Information(LogSource.Geekbot, "Web API disabled");
 }
 
 ServiceCollection RegisterServices()
