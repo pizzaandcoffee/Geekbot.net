@@ -124,5 +124,15 @@ namespace Geekbot.Interactions.Embed
 
             return eb;
         }
+
+        public static Embed ErrorEmbed(string errorMessage)
+        {
+            var eb = new Embed()
+            {
+                Description = errorMessage
+            };
+            eb.SetColor(System.Drawing.Color.Red);
+            return eb;
+        }
     }
 }

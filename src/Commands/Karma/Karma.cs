@@ -34,7 +34,7 @@ public class Karma
                 KarmaChange.Down => Localization.Karma.CannotChangeOwnDown,
                 _ => throw new ArgumentOutOfRangeException(nameof(change), change, null)
             };
-            return CreateErrorEmbed(string.Format(message, author.Username));
+            return Embed.ErrorEmbed(string.Format(message, author.Username));
         }
 
         var timeoutMinutes = 3;
@@ -42,7 +42,7 @@ public class Karma
         {
             var remaining = authorRecord.TimeOut.AddMinutes(timeoutMinutes) - DateTimeOffset.Now.ToUniversalTime();
             var formatedWaitTime = DateLocalization.FormatDateTimeAsRemaining(remaining);
-            return CreateErrorEmbed(string.Format(Localization.Karma.WaitUntill, author.Username, formatedWaitTime));
+            return Embed.ErrorEmbed(string.Format(Localization.Karma.WaitUntill, author.Username, formatedWaitTime));
         }
 
         // Get the values for the change direction
@@ -78,16 +78,6 @@ public class Karma
         eb.AddInlineField(Localization.Karma.By, author.Username);
         eb.AddInlineField(Localization.Karma.Amount, amount.ToString());
         eb.AddInlineField(Localization.Karma.Current, targetUserRecord.Karma.ToString());
-        return eb;
-    }
-    
-    private Embed CreateErrorEmbed(string errorMessage)
-    {
-        var eb = new Embed()
-        {
-            Description = errorMessage
-        };
-        eb.SetColor(Color.Red);
         return eb;
     }
 
