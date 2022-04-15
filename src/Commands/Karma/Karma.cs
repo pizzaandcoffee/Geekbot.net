@@ -25,7 +25,7 @@ public class Karma
         var authorRecord = await GetUser(long.Parse(author.Id));
 
         // Check if the user can change karma
-        if (targetUser == author)
+        if (targetUser.Id == author.Id)
         {
             var message = change switch
             {
