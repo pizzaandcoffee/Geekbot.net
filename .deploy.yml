@@ -33,6 +33,6 @@
           GEEKBOT_SUMOLOGIC: "{{ lookup('env', 'GEEKBOT_SUMOLOCIG') }}"
           GEEKBOT_SENTRY: "{{ lookup('env', 'GEEKBOT_SENTRY') }}"
           GEEKBOT_DB_REDSHIFT_COMPAT: "true"
-    - name: Cleanup Old Container
-      docker_prune:
-        images: yes
+#    - name: Cleanup Old Container
+#      docker_prune:
+#        images: yes
