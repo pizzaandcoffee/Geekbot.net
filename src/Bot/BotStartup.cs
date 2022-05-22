@@ -99,7 +99,7 @@ public class BotStartup
         var commands = new CommandService();
         await commands.AddModulesAsync(Assembly.GetAssembly(typeof(BotStartup)), serviceProvider);
             
-        var commandHandler = new CommandHandler(serviceProvider.GetService<DatabaseContext>(), _client, _logger, serviceProvider, commands, applicationInfo, serviceProvider.GetService<IGuildSettingsManager>());
+        var commandHandler = new CommandHandler(_client, _logger, serviceProvider, commands, applicationInfo, serviceProvider.GetService<IGuildSettingsManager>());
         var userHandler = new UserHandler(serviceProvider.GetService<IUserRepository>(), _logger, serviceProvider.GetService<DatabaseContext>(), _client);
         var reactionHandler = new ReactionHandler(serviceProvider.GetService<IReactionListener>());
         var statsHandler = new StatsHandler(_logger, serviceProvider.GetService<DatabaseContext>());

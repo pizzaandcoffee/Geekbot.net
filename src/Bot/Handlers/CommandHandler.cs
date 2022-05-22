@@ -21,12 +21,10 @@ namespace Geekbot.Bot.Handlers
         private readonly RestApplication _applicationInfo;
         private readonly IGuildSettingsManager _guildSettingsManager;
         private readonly List<ulong> _ignoredServers;
-        private readonly DatabaseContext _database;
 
-        public CommandHandler(DatabaseContext database, IDiscordClient client, IGeekbotLogger logger, IServiceProvider servicesProvider, CommandService commands, RestApplication applicationInfo,
+        public CommandHandler(IDiscordClient client, IGeekbotLogger logger, IServiceProvider servicesProvider, CommandService commands, RestApplication applicationInfo,
             IGuildSettingsManager guildSettingsManager)
         {
-            _database = database;
             _client = client;
             _logger = logger;
             _servicesProvider = servicesProvider;
@@ -39,7 +37,7 @@ namespace Geekbot.Bot.Handlers
             _ignoredServers = new List<ulong>
             {
                 228623803201224704, // SwitzerLAN
-                169844523181015040, // EEvent
+                // 169844523181015040, // EEvent
                 248531441548263425, // MYI
                 110373943822540800 // Discord Bots
             };
