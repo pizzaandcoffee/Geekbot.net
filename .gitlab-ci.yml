@@ -34,7 +34,7 @@ Package:
 
 Deploy:
   stage: deploy
-  image: quay.io/ansible/ansible-runner:latest
+  image: runebaas/ansible-runner:v1.4.7
   only:
     - master
   variables:
