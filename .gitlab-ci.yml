@@ -34,7 +34,7 @@ Package:
 
 Deploy:
   stage: deploy
-  image: runebaas/ansible-runner:v1.4.7
+  image: quay.io/ansible/ansible-runner:stable-2.12-latest
   only:
     - master
   variables:
@@ -46,6 +46,7 @@ Deploy:
     - chmod -R 600 /root/.ssh
     - ssh-keyscan -p 65432 $PROD_IP > /root/.ssh/known_hosts
   script:
+    - ansible-galaxy collection install -r ansible-requirements.yml
     - ansible-playbook -i $PROD_IP, .deploy.yml
 
 Sentry:
