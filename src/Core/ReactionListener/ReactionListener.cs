@@ -70,7 +70,10 @@ namespace Geekbot.Core.ReactionListener
 
         public async void GiveRole(ISocketMessageChannel channel, SocketReaction reaction)
         {
-            var roleId = _listener[reaction.MessageId][reaction.Emote];
+            _listener.TryGetValue(reaction.MessageId, out var registeredReactions);
+            if (registeredReactions == null) return;
+            if (!registeredReactions.ContainsKey(reaction.Emote)) return;
+            var roleId = registeredReactions[reaction.Emote];
             var guild = (SocketGuildChannel) channel;
             var role = guild.Guild.GetRole(roleId);
             await ((IGuildUser) reaction.User.Value).AddRoleAsync(role);
