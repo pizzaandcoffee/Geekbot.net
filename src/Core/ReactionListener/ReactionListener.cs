@@ -1,22 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Geekbot.Core.Database;
 using Geekbot.Core.Database.Models;
 using Geekbot.Core.Extensions;
+using Geekbot.Core.Logger;
+using Sentry;
 
 namespace Geekbot.Core.ReactionListener
 {
     public class ReactionListener : IReactionListener
     {
         private readonly DatabaseContext _database;
+
+        private readonly IGeekbotLogger _logger;
+
         // <messageId, <reaction, roleId>
         private Dictionary<ulong, Dictionary<IEmote, ulong>> _listener;
 
-        public ReactionListener(DatabaseContext database)
+        public ReactionListener(DatabaseContext database, IGeekbotLogger logger)
         {
             _database = database;
+            _logger = logger;
             LoadListeners();
         }
 
@@ -62,10 +69,21 @@ namespace Geekbot.Core.ReactionListener
 
         public async void RemoveRole(ISocketMessageChannel channel, SocketReaction reaction)
         {
-            var roleId = _listener[reaction.MessageId][reaction.Emote];
+            _listener.TryGetValue(reaction.MessageId, out var registeredReactions);
+            if (registeredReactions == null) return;
+            if (!registeredReactions.ContainsKey(reaction.Emote)) return;
+            var roleId = registeredReactions[reaction.Emote];
             var guild = (SocketGuildChannel) channel;
-            var role = guild.Guild.GetRole(roleId);
-            await ((IGuildUser) reaction.User.Value).RemoveRoleAsync(role);
+            
+            try
+            {
+                var role = guild.Guild.GetRole(roleId);
+                await ((IGuildUser) reaction.User.Value).RemoveRoleAsync(role);
+            }
+            catch (Exception error)
+            {
+                HandleDeletedRole(error, guild, reaction, roleId);
+            }
         }
 
         public async void GiveRole(ISocketMessageChannel channel, SocketReaction reaction)
@@ -75,8 +93,33 @@ namespace Geekbot.Core.ReactionListener
             if (!registeredReactions.ContainsKey(reaction.Emote)) return;
             var roleId = registeredReactions[reaction.Emote];
             var guild = (SocketGuildChannel) channel;
-            var role = guild.Guild.GetRole(roleId);
-            await ((IGuildUser) reaction.User.Value).AddRoleAsync(role);
+            
+            try
+            {
+                
+                var role = guild.Guild.GetRole(roleId);
+                await ((IGuildUser) reaction.User.Value).AddRoleAsync(role);
+            }
+            catch (Exception error)
+            {
+                HandleDeletedRole(error, guild, reaction, roleId);
+            }
+        }
+
+        private void HandleDeletedRole(Exception error, SocketGuildChannel guild, SocketReaction reaction, ulong roleId)
+        {
+            _logger.Warning(LogSource.Interaction, "Failed to get or assign role in reaction listener", error);
+                
+            if (!SentrySdk.IsEnabled) return;
+            var sentryEvent = new SentryEvent(error)
+            {
+                Message = "Failed to get or assign role in reaction listener"
+            };
+            sentryEvent.SetTag("discord_server", guild.Id.ToString());
+            sentryEvent.SetExtra("Message", reaction.MessageId.ToString());
+            sentryEvent.SetExtra("User", roleId.ToString());
+
+            SentrySdk.CaptureEvent(sentryEvent);
         }
 
         public IEmote ConvertStringToEmote(string emoji)

@@ -105,7 +105,7 @@ ServiceCollection RegisterServices()
 {
     var services = new ServiceCollection();
     var userRepository = new UserRepository(databaseInitializer.Initialize(), logger);
-    var reactionListener = new ReactionListener(databaseInitializer.Initialize());
+    var reactionListener = new ReactionListener(databaseInitializer.Initialize(), logger);
     var guildSettingsManager = new GuildSettingsManager(databaseInitializer.Initialize());
     var fortunes = new FortunesProvider(logger);
     var levelCalc = new LevelCalc();
