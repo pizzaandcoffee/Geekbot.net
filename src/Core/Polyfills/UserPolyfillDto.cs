@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Discord;
@@ -12,8 +13,17 @@ namespace Geekbot.Core.Polyfills
         public string Mention { get; set; }
         public IActivity Activity { get; }
         public UserStatus Status { get; set; }
+        IReadOnlyCollection<ClientType> IPresence.ActiveClients => ActiveClients;
+
+        IReadOnlyCollection<IActivity> IPresence.Activities => Activities;
+
         public IImmutableSet<ClientType> ActiveClients { get; }
         public IImmutableList<IActivity> Activities { get; }
+        public Task<IDMChannel> CreateDMChannelAsync(RequestOptions options = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public string AvatarId { get; set; }
         public string AvatarUrl { get; set; }
         public string Discriminator { get; set; }

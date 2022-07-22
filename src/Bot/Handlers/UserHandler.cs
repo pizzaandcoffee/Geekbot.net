@@ -74,15 +74,15 @@ namespace Geekbot.Bot.Handlers
             await _userRepository.Update(newUser);
         }
 
-        public async Task Left(SocketGuildUser user)
+        public async Task Left(SocketGuild socketGuild, SocketUser socketUser)
         {
             try
             {
-                var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(user.Guild.Id.AsLong()));
+                var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(socketGuild.Id.AsLong()));
                 if (guild?.ShowLeave ?? false)
                 {
                     var modChannelSocket = (ISocketMessageChannel) await _client.GetChannelAsync(guild.ModChannel.AsUlong());
-                    await modChannelSocket.SendMessageAsync($"{user.Username}#{user.Discriminator} left the server");
+                    await modChannelSocket.SendMessageAsync($"{socketUser.Username}#{socketUser.Discriminator} left the server");
                 }
             }
             catch (Exception e)
@@ -90,7 +90,7 @@ namespace Geekbot.Bot.Handlers
                 _logger.Error(LogSource.Geekbot, "Failed to send leave message", e);
             }
 
-            _logger.Information(LogSource.Geekbot, $"{user.Username} ({user.Id}) joined {user.Guild.Name} ({user.Guild.Id})");
+            _logger.Information(LogSource.Geekbot, $"{socketUser.Username} ({socketUser.Id}) joined {socketGuild.Name} ({socketGuild.Id})");
         }
     }
 }

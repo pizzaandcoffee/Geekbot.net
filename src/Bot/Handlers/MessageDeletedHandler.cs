@@ -23,11 +23,11 @@ namespace Geekbot.Bot.Handlers
             _client = client;
         }
 
-        public async Task HandleMessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
+        public async Task HandleMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> cacheableMessageChannel)
         {
             try
             {
-                var guildSocketData = ((IGuildChannel) channel).Guild;
+                var guildSocketData = ((IGuildChannel) cacheableMessageChannel.Value).Guild;
                 var guild = _database.GuildSettings.FirstOrDefault(g => g.GuildId.Equals(guildSocketData.Id.AsLong()));
                 if ((guild?.ShowDelete ?? false) && guild?.ModChannel != 0)
                 {
@@ -35,7 +35,7 @@ namespace Geekbot.Bot.Handlers
                     var sb = new StringBuilder();
                     if (message.Value != null)
                     {
-                        sb.AppendLine($"The following message from {message.Value.Author.Username}#{message.Value.Author.Discriminator} was deleted in <#{channel.Id}>");
+                        sb.AppendLine($"The following message from {message.Value.Author.Username}#{message.Value.Author.Discriminator} was deleted in <#{cacheableMessageChannel.Id}>");
                         sb.AppendLine(message.Value.Content);
                     }
                     else

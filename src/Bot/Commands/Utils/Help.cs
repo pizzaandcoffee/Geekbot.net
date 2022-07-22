@@ -27,7 +27,7 @@ namespace Geekbot.Bot.Commands.Utils
 
                 sb.AppendLine("For a list of all commands, please visit the following page");
                 sb.AppendLine("https://geekbot.pizzaandcoffee.rocks/commands");
-                var dm = await Context.User.GetOrCreateDMChannelAsync();
+                var dm = await Context.User.CreateDMChannelAsync(RequestOptions.Default);
                 await dm.SendMessageAsync(sb.ToString());
                 await Context.Message.AddReactionAsync(new Emoji("✅"));
             }

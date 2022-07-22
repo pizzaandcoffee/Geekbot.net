@@ -67,7 +67,7 @@ namespace Geekbot.Core.ReactionListener
             _listener[messageId].Add(emote, role.Id);
         }
 
-        public async void RemoveRole(ISocketMessageChannel channel, SocketReaction reaction)
+        public async void RemoveRole(IMessageChannel channel, SocketReaction reaction)
         {
             _listener.TryGetValue(reaction.MessageId, out var registeredReactions);
             if (registeredReactions == null) return;
@@ -86,7 +86,7 @@ namespace Geekbot.Core.ReactionListener
             }
         }
 
-        public async void GiveRole(ISocketMessageChannel channel, SocketReaction reaction)
+        public async void GiveRole(IMessageChannel channel, SocketReaction reaction)
         {
             _listener.TryGetValue(reaction.MessageId, out var registeredReactions);
             if (registeredReactions == null) return;

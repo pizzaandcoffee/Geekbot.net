@@ -8,8 +8,8 @@ namespace Geekbot.Core.ReactionListener
     {
         bool IsListener(ulong id);
         Task AddRoleToListener(ulong messageId, ulong guildId, string emoji, IRole role);
-        void RemoveRole(ISocketMessageChannel channel, SocketReaction reaction);
-        void GiveRole(ISocketMessageChannel message, SocketReaction reaction);
+        void RemoveRole(IMessageChannel channel, SocketReaction reaction);
+        void GiveRole(IMessageChannel message, SocketReaction reaction);
         IEmote ConvertStringToEmote(string emoji);
     }
 }

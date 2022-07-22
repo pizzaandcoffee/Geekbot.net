@@ -14,19 +14,19 @@ namespace Geekbot.Bot.Handlers
             _reactionListener = reactionListener;
         }
         
-        public Task Added(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction reaction)
+        public Task Added(Cacheable<IUserMessage, ulong> cacheableUserMessage, Cacheable<IMessageChannel, ulong> cacheableMessageChannel, SocketReaction reaction)
         {
             if (reaction.User.Value.IsBot) return Task.CompletedTask;
             if (!_reactionListener.IsListener(reaction.MessageId)) return Task.CompletedTask;
-            _reactionListener.GiveRole(socketMessageChannel, reaction);
+            _reactionListener.GiveRole(cacheableMessageChannel.Value, reaction);
             return Task.CompletedTask;
         }
 
-        public Task Removed(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction reaction)
+        public Task Removed(Cacheable<IUserMessage, ulong> cacheableUserMessage, Cacheable<IMessageChannel, ulong> cacheableMessageChannel, SocketReaction reaction)
         {
             if (reaction.User.Value.IsBot) return Task.CompletedTask;
             if (!_reactionListener.IsListener(reaction.MessageId)) return Task.CompletedTask;
-            _reactionListener.RemoveRole(socketMessageChannel, reaction);
+            _reactionListener.RemoveRole(cacheableMessageChannel.Value, reaction);
             return Task.CompletedTask;
         }
     }

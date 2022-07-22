@@ -34,7 +34,7 @@ namespace Geekbot.Core
             Transaction.Finish();
         }
 
-        protected override Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null)
+        protected Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null)
         {
             var replySpan = Transaction.StartChild("Reply");
             var msg = base.ReplyAsync(message, isTTS, embed, options, allowedMentions, messageReference);

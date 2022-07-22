@@ -49,9 +49,18 @@ public class BotStartup
     {
         _client = new DiscordSocketClient(new DiscordSocketConfig
         {
+            GatewayIntents = GatewayIntents.DirectMessageReactions |
+                             GatewayIntents.DirectMessages |
+                             GatewayIntents.GuildMessageReactions |
+                             GatewayIntents.GuildMessages |
+                             GatewayIntents.GuildWebhooks |
+                             GatewayIntents.GuildIntegrations |
+                             GatewayIntents.GuildEmojis |
+                             GatewayIntents.GuildBans |
+                             GatewayIntents.Guilds |
+                             GatewayIntents.GuildMembers,
             LogLevel = LogSeverity.Verbose,
             MessageCacheSize = 1000,
-            ExclusiveBulkDelete = true
         });
             
         var discordLogger = new DiscordLogger(_logger);
