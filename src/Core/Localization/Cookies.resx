@@ -39,4 +39,7 @@
     <data name="AteCookies" xml:space="preserve">
         <value>You ate {0} cookies, you've only got {1} cookies left</value>
     </data>
+    <data name="CantTakeCookies" xml:space="preserve">
+        <value>You can't take someone else's cookies</value>
+    </data>
 </root>

@@ -80,6 +80,12 @@ namespace Geekbot.Bot.Commands.Rpg
             {
                 var giver = await GetUser(Context.User.Id);
 
+                if (amount < 1)
+                {
+                    await ReplyAsync(Localization.Cookies.CantTakeCookies);
+                    return;
+                }
+
                 if (giver.Cookies < amount)
                 {
                     await ReplyAsync(Localization.Cookies.NotEnoughToGive);

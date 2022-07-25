@@ -32,4 +32,7 @@
     <data name="AteCookies" xml:space="preserve">
         <value>Du hesch {0} guetzli gesse und hesch jezt no {1} übrig</value>
     </data>
+    <data name="CantTakeCookies" xml:space="preserve">
+        <value>:police_officer: Du chasch nid guetzli vo anderne chlaue... </value>
+    </data>
 </root>
