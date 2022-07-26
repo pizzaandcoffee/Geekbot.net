@@ -8,6 +8,7 @@ using Geekbot.Core.Database;
 using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Logger;
+using Geekbot.Core.Logger.Adapters;
 using Geekbot.Core.ReactionListener;
 using Geekbot.Core.UserRepository;
 using Microsoft.Extensions.DependencyInjection;

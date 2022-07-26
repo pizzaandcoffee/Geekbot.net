@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 
-namespace Geekbot.Core.Logger
+namespace Geekbot.Core.Logger.Adapters
 {
     public class DiscordLogger : IDiscordLogger
     {

@@ -1,16 +1,17 @@
-﻿using Geekbot.Core.Logger;
+using System;
+using Microsoft.Extensions.Logging;
 
-namespace Geekbot.Web.Logging;
+namespace Geekbot.Core.Logger.Adapters;
 
-public class AspLogger : ILogger
+public class ILoggerAdapter : ILogger
 {
     private readonly string _categoryName;
+    private readonly LogSource _logSource;
     private readonly IGeekbotLogger _geekbotLogger;
-
-    public AspLogger(string categoryName, IGeekbotLogger geekbotLogger)
+    public ILoggerAdapter(string categoryName, LogSource logSource, IGeekbotLogger geekbotLogger)
     {
-        geekbotLogger.Trace(LogSource.Api, $"Adding {categoryName}");
         _categoryName = categoryName;
+        _logSource = logSource;
         _geekbotLogger = geekbotLogger;
     }
 
@@ -19,20 +20,20 @@ public class AspLogger : ILogger
         switch (logLevel)
         {
             case LogLevel.Trace:
-                _geekbotLogger.Trace(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}");
+                _geekbotLogger.Trace(_logSource, $"{eventId.Id} - {_categoryName} - {state}");
                 break;
             case LogLevel.Debug:
-                _geekbotLogger.Debug(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}");
+                _geekbotLogger.Debug(_logSource, $"{eventId.Id} - {_categoryName} - {state}");
                 break;
             case LogLevel.Information:
-                _geekbotLogger.Information(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}");
+                _geekbotLogger.Information(_logSource, $"{eventId.Id} - {_categoryName} - {state}");
                 break;
             case LogLevel.Warning:
-                _geekbotLogger.Warning(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}", exception);
+                _geekbotLogger.Warning(_logSource, $"{eventId.Id} - {_categoryName} - {state}", exception);
                 break;
             case LogLevel.Error:
             case LogLevel.Critical:
-                _geekbotLogger.Error(LogSource.Api, $"{eventId.Id} - {_categoryName} - {state}", exception);
+                _geekbotLogger.Error(_logSource, $"{eventId.Id} - {_categoryName} - {state}", exception);
                 break;
             case LogLevel.None:
                 break;
@@ -43,7 +44,8 @@ public class AspLogger : ILogger
 
     public bool IsEnabled(LogLevel logLevel)
     {
-        return !_geekbotLogger.LogAsJson() && _geekbotLogger.GetNLogger().IsEnabled(ToGeekbotLogLevel(logLevel));
+        return _geekbotLogger.GetNLogger().IsEnabled(ToGeekbotLogLevel(logLevel));
+        // return !_geekbotLogger.LogAsJson() && _geekbotLogger.GetNLogger().IsEnabled(ToGeekbotLogLevel(logLevel));
     }
 
     public IDisposable BeginScope<TState>(TState state)

@@ -7,9 +7,9 @@ using Geekbot.Core.GlobalSettings;
 using Geekbot.Core.GuildSettingsManager;
 using Geekbot.Core.Highscores;
 using Geekbot.Core.Logger;
+using Geekbot.Core.Logger.Adapters;
 using Geekbot.Core.UserRepository;
 using Geekbot.Interactions;
-using Geekbot.Web.Logging;
 
 namespace Geekbot.Web;
 
@@ -40,7 +40,7 @@ public static class WebApiStartup
 
         builder.Logging.ClearProviders();
         builder.Logging.SetMinimumLevel(LogLevel.Debug);
-        builder.Logging.AddProvider(new AspLogProvider(logger));
+        builder.Logging.AddProvider(new ILoggerProviderProvider(logger, LogSource.Api));
 
         var app = builder.Build();
         app.UseCors(cors => cors.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build());
